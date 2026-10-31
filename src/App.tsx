@@ -16,7 +16,7 @@ import { WaqfPage } from './components/pages/WaqfPage';
 import { AboutPage } from './components/pages/AboutPage';
 import { RegisterPage } from './components/pages/RegisterPage';
 import { NewMuslimsPage } from './components/pages/NewMuslimsPage';
-import { SudaneseVoiceAdStudio } from './components/SudaneseVoiceAdStudio';
+import { LiveMakkahQuranRadio } from './components/LiveMakkahQuranRadio';
 import { NavigationPage } from './types';
 import { COMPLEX_INFO } from './data/islamicData';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
@@ -37,7 +37,7 @@ function MainAppContent() {
   };
 
   return (
-    <div className={`min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950 antialiased pb-20 xl:pb-0 ${isRtl ? 'text-right' : 'text-left'}`}>
+    <div className={`min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950 antialiased pb-36 xl:pb-8 ${isRtl ? 'text-right' : 'text-left'}`}>
       
       {/* Offline Alert Indicator if user loses connection */}
       {!isOnline && (
@@ -63,7 +63,11 @@ function MainAppContent() {
         {currentPage === 'waqf' && <WaqfPage onNavigate={handleNavigate} />}
         {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
         {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
-        {currentPage === 'audioAd' && <SudaneseVoiceAdStudio />}
+        {currentPage === 'radio' && (
+          <div className="space-y-8 animate-fade-in">
+            <LiveMakkahQuranRadio initialExpanded={true} />
+          </div>
+        )}
       </main>
 
       {/* Global Comprehensive Islamic Footer */}
@@ -163,11 +167,11 @@ function MainAppContent() {
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate('audioAd')} className="text-amber-400 hover:text-amber-300 font-bold transition-colors flex items-center gap-1.5">
+                  <button onClick={() => handleNavigate('radio')} className="text-amber-400 hover:text-amber-300 font-bold transition-colors flex items-center gap-1.5">
                     <ChevronLeft className={`w-3.5 h-3.5 text-amber-500 ${isRtl ? '' : 'rotate-180'}`} />
                     <span className="flex items-center gap-1">
                       <Radio className="w-3.5 h-3.5 animate-pulse" />
-                      <span>{lang === 'ar' ? 'استوديو الصوت الإعلاني السوداني' : 'Sudanese Voice Ad Studio'}</span>
+                      <span>{lang === 'ar' ? 'إذاعة القرآن الكريم (مباشر من مكة) 🕋' : 'Holy Quran Radio (Makkah Live)'}</span>
                     </span>
                   </button>
                 </li>
@@ -267,6 +271,9 @@ function MainAppContent() {
         currentPage={currentPage}
         onNavigate={handleNavigate}
       />
+
+      {/* Floating 24/7 Live Makkah Quran Radio Mini Player */}
+      <LiveMakkahQuranRadio dockedMode={true} />
 
       {/* Floating Professional WhatsApp Widget */}
       <FloatingWhatsApp />

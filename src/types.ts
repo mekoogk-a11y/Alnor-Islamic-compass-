@@ -2,12 +2,12 @@ export type NavigationPage =
   | 'home' 
   | 'newMuslims'
   | 'quran' 
+  | 'radio'
   | 'sciences' 
   | 'library' 
   | 'waqf' 
   | 'about' 
-  | 'register'
-  | 'audioAd';
+  | 'register';
 
 export type Language = 
   | 'ar' 
@@ -23,6 +23,14 @@ export type Language =
   | 'sw' 
   | 'fa';
 
+export interface QuranAyah {
+  number: number;
+  text: string;
+  translation?: string;
+  tafsir?: string;
+  translations?: Partial<Record<Language, string>>;
+}
+
 export interface QuranSurah {
   number: number;
   name: string;
@@ -30,7 +38,19 @@ export interface QuranSurah {
   numberOfAyahs: number;
   revelationType: 'مكية' | 'مدنية';
   audioUrl?: string;
-  sampleAyahs: { number: number; text: string; translation?: string; tafsir?: string }[];
+  sampleAyahs: QuranAyah[];
+}
+
+export interface LiveRadioStation {
+  id: string;
+  name: string;
+  nameEn: string;
+  origin: string;
+  streamUrl: string;
+  frequency: string;
+  description: string;
+  badge: string;
+  featuredImam?: string;
 }
 
 export interface QuranReciter {

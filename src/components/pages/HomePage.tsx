@@ -8,6 +8,7 @@ import {
 import { NavigationPage } from '../../types';
 import { COMPLEX_INFO, FEATURED_SURAHS, RECITERS } from '../../data/islamicData';
 import { PWAInstallButton } from '../PWAInstallButton';
+import { LiveMakkahQuranRadio } from '../LiveMakkahQuranRadio';
 import { useLanguage } from '../../context/LanguageContext';
 
 interface HomePageProps {
@@ -22,81 +23,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Quick Sudanese Audio Ad state
-  const [isPlayingAd, setIsPlayingAd] = useState(false);
-  const isAdCancelledRef = useRef(false);
-
-  const toggleSudaneseAd = () => {
-    if (!('speechSynthesis' in window)) {
-      alert('متصفحك لا يدعم توليد الصوت المباشر');
-      return;
-    }
-
-    if (isPlayingAd) {
-      isAdCancelledRef.current = true;
-      window.speechSynthesis.cancel();
-      setIsPlayingAd(false);
-      return;
-    }
-
-    if (isPlayingAudio && audioRef.current) {
-      audioRef.current.pause();
-      setIsPlayingAudio(false);
-    }
-
-    isAdCancelledRef.current = false;
-    setIsPlayingAd(true);
-
-    const script = "يا زول يا أصيل! السلام عليكم ورحمة الله.. بتفتش لأولادك على مكان يحفظهم كتاب الله بإتقان وأسانيد متصلة؟ مجمع النور الإسلامي العالمي الخيري الشامل فاتح أبوابه ليكم في كل مكان! شيوخ مجازين، قراءات عشر، ومتابعة يومية على مدار الساعة، وبرامج لكل الأعمار وبشهادات معتمدة عالمياً! ما تفوت الفرصة عليك وعلى عيالك.. النور في بيوتكم وقلوبكم! تواصل هسع مع مجمع النور طوالي عبر الواتساب والموقع الرسمي.. ألحق سجّل هسع وما تتردد!";
-
-    const utterance = new SpeechSynthesisUtterance(script);
-    utterance.lang = 'ar-SA';
-    utterance.rate = 1.08;
-    utterance.pitch = 0.92;
-
-    const voices = window.speechSynthesis.getVoices();
-    const arabicVoice = voices.find(
-      (v) => v.lang.startsWith('ar') && (v.name.includes('Maged') || v.name.includes('Tarik') || v.name.includes('Male'))
-    ) || voices.find((v) => v.lang.startsWith('ar'));
-    
-    if (arabicVoice) {
-      utterance.voice = arabicVoice;
-    }
-
-    utterance.onend = () => {
-      setIsPlayingAd(false);
-    };
-
-    utterance.onerror = () => {
-      setIsPlayingAd(false);
-    };
-
-    window.speechSynthesis.speak(utterance);
-  };
-
-  const toggleAudio = () => {
-    if (!audioRef.current) return;
-    if (isPlayingAudio) {
-      audioRef.current.pause();
-      setIsPlayingAudio(false);
-    } else {
-      if (isPlayingAd) {
-        window.speechSynthesis.cancel();
-        setIsPlayingAd(false);
-      }
-      audioRef.current.play().catch(console.warn);
-      setIsPlayingAudio(true);
-    }
-  };
-
-  const handleSurahChange = (surahIndex: number) => {
-    const surah = FEATURED_SURAHS[surahIndex];
-    setSelectedSurah(surah);
-    setIsPlayingAudio(false);
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-    }
-  };
 
   // Quick navigation filter based on search
   const handleQuickSearchSubmit = (e: React.FormEvent) => {
@@ -105,14 +31,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
     if (!q) return;
     if (q.includes('قرآن') || q.includes('مصحف') || q.includes('تلاوة') || q.includes('فاتحة') || q.includes('يس')) {
       onNavigate('quran');
+    } else if (q.includes('إذاعة') || q.includes('مكة') || q.includes('راديو') || q.includes('بث') || q.includes('صوت')) {
+      onNavigate('radio');
+    } else if (q.includes('مهتدي') || q.includes('جدد') || q.includes('دعوة') || q.includes('إسلام')) {
+      onNavigate('newMuslims');
     } else if (q.includes('علم') || q.includes('فقه') || q.includes('حديث') || q.includes('شريعة') || q.includes('دبلوم')) {
       onNavigate('sciences');
     } else if (q.includes('كتب') || q.includes('مكتبة') || q.includes('بحث')) {
       onNavigate('library');
     } else if (q.includes('وقف') || q.includes('تبرع') || q.includes('زكاة') || q.includes('صدقة')) {
       onNavigate('waqf');
-    } else if (q.includes('صوت') || q.includes('إعلان') || q.includes('سودان') || q.includes('راديو')) {
-      onNavigate('audioAd');
     } else {
       onNavigate('register');
     }
@@ -208,13 +136,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           {/* Primary Action Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
             
-            {/* Highlighted Sudanese Voice Ad Studio Action */}
+            {/* Direct Live Makkah Quran Radio Action */}
             <button
-              onClick={() => onNavigate('audioAd')}
+              onClick={() => onNavigate('radio')}
               className="flex items-center gap-2.5 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black px-6 py-3.5 rounded-2xl text-xs sm:text-sm shadow-xl shadow-amber-500/25 transition-all transform hover:-translate-y-0.5 cursor-pointer"
             >
               <Radio className="w-4 h-4 text-slate-950 animate-pulse" />
-              <span>{lang === 'ar' ? 'استوديو الصوت الإعلاني الحماسي 🎙️' : 'Sudanese Voice Ad Studio'}</span>
+              <span>{lang === 'ar' ? 'إذاعة القرآن الكريم (مباشر من مكة) 🕋' : 'Holy Quran Radio (Makkah Live)'}</span>
             </button>
 
             {/* Dedicated New Muslims & Global Dawah Portal Shortcut */}
@@ -290,72 +218,6 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
       </section>
 
-      {/* =========================================================================
-          SUDANESE VOICE ADVERTISING BROADCAST BANNER & CONSOLE (Ultra-Prestigious)
-          ========================================================================= */}
-      <section className="bg-gradient-to-r from-slate-950 via-emerald-950/60 to-slate-950 border border-emerald-800/50 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-        
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
-          
-          {/* Ad Info & Identity */}
-          <div className="space-y-3 text-center lg:text-right max-w-2xl">
-            <div className="flex items-center justify-center lg:justify-start gap-2 text-xs font-bold text-amber-400">
-              <Radio className="w-4 h-4 animate-pulse" />
-              <span>البث الصوتي الإعلاني الحماسي · صوت رجالي بالعامية السودانية</span>
-              <span aria-hidden="true" className="text-slate-600">·</span>
-              <span className="text-emerald-400 font-mono">35 ثانية</span>
-            </div>
-
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white leading-tight font-sans">
-              «يا زول يا أصيل! النور لبيتك وعيالك.. مجمع النور مستنيك!»
-            </h2>
-
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              استمع الآن لإعلان مجمع النور الحماسي بالعامية السودانية المحبوبة بصوت رجالي جهوري ومتحمس، يبث الهمة للتسجيل في حلقات القرآن الكريم والإسناد المتصل ودعم الوقف الخيري.
-            </p>
-
-            <div className="flex items-center justify-center lg:justify-start gap-3 pt-1 text-xs text-slate-400">
-              <span>تسجيل إذاعي استوديو معتمد</span>
-              <span aria-hidden="true">·</span>
-              <span className="text-emerald-400 font-medium">متاح للتحميل والمشاركة الفورية</span>
-            </div>
-          </div>
-
-          {/* Ad Actions: Play Voiceover / Open Full Studio */}
-          <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full sm:w-auto shrink-0">
-            <button
-              onClick={toggleSudaneseAd}
-              className={`flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-black text-sm transition-all transform hover:scale-105 active:scale-95 shadow-xl cursor-pointer ${
-                isPlayingAd
-                  ? 'bg-red-600 hover:bg-red-500 text-white shadow-red-600/30 animate-pulse'
-                  : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-amber-500/25'
-              }`}
-            >
-              {isPlayingAd ? (
-                <>
-                  <Pause className="w-5 h-5 fill-current" />
-                  <span>إيقاف الإعلان الصوتي</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-5 h-5 fill-current" />
-                  <span>استمع للإعلان الحماسي الآن 🔊</span>
-                </>
-              )}
-            </button>
-
-            <button
-              onClick={() => onNavigate('audioAd')}
-              className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-amber-300 hover:text-white border border-amber-500/30 hover:border-amber-500 px-6 py-3 rounded-2xl text-xs font-bold transition-all"
-            >
-              <Mic className="w-4 h-4 text-amber-400" />
-              <span>فتح الاستوديو الصوتي وتوليد الإعلانات</span>
-            </button>
-          </div>
-
-        </div>
-      </section>
 
       {/* =========================================================================
           NEW MUSLIMS & GLOBAL DAWAH PORTAL BANNER (Dedicated Institutional Portal)
@@ -470,101 +332,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
       </section>
 
       {/* =========================================================================
-          LIVE QURAN RECITATION SUITE: High-Fidelity Audio Deck
+          LIVE MAKKAH QURAN RADIO: Direct 24/7 Broadcast from the Grand Mosque
           ========================================================================= */}
-      <section className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl space-y-5">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
-              <Volume2 className="w-6 h-6" />
-            </div>
-            <div>
-              <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider block">
-                {t.quranRadioTitle}
-              </span>
-              <h3 className="text-base sm:text-lg font-black text-white">
-                {t.quranRadioSub}
-              </h3>
-            </div>
-          </div>
-
-          {/* Select Reciter & Surah */}
-          <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
-            <select
-              value={FEATURED_SURAHS.findIndex((s) => s.number === selectedSurah.number)}
-              onChange={(e) => handleSurahChange(Number(e.target.value))}
-              className="bg-slate-950 border border-slate-700 text-white text-xs font-bold rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-amber-500"
-            >
-              {FEATURED_SURAHS.map((s, idx) => (
-                <option key={s.number} value={idx}>
-                  {s.name} ({s.revelationType})
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedReciter.id}
-              onChange={(e) => {
-                const r = RECITERS.find((x) => x.id === e.target.value) || RECITERS[0];
-                setSelectedReciter(r);
-                setIsPlayingAudio(false);
-              }}
-              className="bg-slate-950 border border-slate-700 text-white text-xs font-bold rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-amber-500"
-            >
-              {RECITERS.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={toggleAudio}
-              className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl transition-all shadow-md shadow-amber-500/20 cursor-pointer"
-            >
-              {isPlayingAudio ? (
-                <>
-                  <Pause className="w-4 h-4 fill-current" />
-                  <span>{t.btnPauseRecitation}</span>
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>{t.btnPlayRecitation}</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Hidden canonical Audio Element */}
-        <audio
-          ref={audioRef}
-          src={selectedSurah.audioUrl}
-          onEnded={() => setIsPlayingAudio(false)}
-        />
-
-        {/* Selected Surah Preview Ayah */}
-        <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-right">
-          <div className="space-y-1.5">
-            <div className="text-xs text-amber-400 font-bold flex items-center justify-center sm:justify-start gap-2">
-              <span>قبس مبارك من {selectedSurah.name}</span>
-              <span aria-hidden="true" className="text-slate-600">·</span>
-              <span className="text-slate-400 font-normal">{selectedReciter.style}</span>
-            </div>
-            <p className="text-base sm:text-xl font-amiri text-slate-100 font-bold leading-relaxed">
-              « {selectedSurah.sampleAyahs[0]?.text || 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ'} »
-            </p>
-          </div>
-          <button
-            onClick={() => onNavigate('quran')}
-            className="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1.5 shrink-0 bg-emerald-950/40 border border-emerald-800/50 px-4 py-2 rounded-xl transition-colors"
-          >
-            <span>فتح المصحف كاملاً مع التفسير</span>
-            <ArrowLeft className={`w-3.5 h-3.5 ${isRtl ? '' : 'rotate-180'}`} />
-          </button>
-        </div>
-      </section>
+      <LiveMakkahQuranRadio initialExpanded={false} dockedMode={false} />
 
       {/* =========================================================================
           THE 4 CORE PILLARS: Crafted with British-Islamic Prestige

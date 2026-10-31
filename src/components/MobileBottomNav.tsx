@@ -11,7 +11,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPage, o
   const items: { id: NavigationPage; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: 'home', label: 'الرئيسية', icon: Globe },
     { id: 'newMuslims', label: 'المهتدون', icon: Compass },
-    { id: 'audioAd', label: 'إعلان صوتي 🎙️', icon: Radio },
+    { id: 'radio', label: 'إذاعة مكة 📻', icon: Radio },
     { id: 'quran', label: 'المصحف', icon: BookOpen },
     { id: 'sciences', label: 'العلوم', icon: GraduationCap },
     { id: 'waqf', label: 'الوقف', icon: HeartHandshake },

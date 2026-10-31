@@ -34,7 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   const navItems: { id: NavigationPage; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: 'home', label: t.navHome, icon: Globe },
     { id: 'newMuslims', label: t.navNewMuslims, icon: Compass },
-    { id: 'audioAd', label: lang === 'ar' ? 'صوت إعلاني حماسي 🎙️' : 'Voice Ad Studio', icon: Radio },
+    { id: 'radio', label: lang === 'ar' ? 'إذاعة القرآن الكريم (مباشر من مكة) 📻' : 'Holy Quran Radio (Live)', icon: Radio },
     { id: 'quran', label: t.navQuran, icon: BookOpen },
     { id: 'sciences', label: t.navSciences, icon: GraduationCap },
     { id: 'library', label: t.navLibrary, icon: Library },
@@ -78,9 +78,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             </span>
           </div>
 
-          {/* Right Actions: Instant WhatsApp Inquiry + World Languages Selector + PWA */}
+          {/* Right Actions: Live Makkah Radio + Instant WhatsApp + World Languages + PWA */}
           <div className="flex items-center gap-2">
             
+            {/* Live Quran Radio from Makkah indicator button */}
+            <button
+              onClick={() => handleNavClick('radio')}
+              className="flex items-center gap-1.5 bg-slate-950/25 hover:bg-slate-950/40 text-slate-950 px-2.5 py-1 rounded-lg text-[11px] font-black transition-colors cursor-pointer"
+              title="الاستماع لإذاعة القرآن الكريم مباشر من مكة المكرمة"
+            >
+              <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />
+              <span>مباشر من مكة 🕋</span>
+            </button>
+
             {/* Quick Contact Helpdesk (Without raw phone numbers) */}
             <a
               href={`https://wa.me/${whatsappCleanNumber}?text=${encodeURIComponent('السلام عليكم ورحمة الله، أود الاستفسار عن مجمع النور الإسلامي العالمي')}`}
@@ -213,11 +223,11 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
           {/* Direct CTA & Mobile Toggle */}
           <div className="flex items-center gap-2">
             <button
-              onClick={() => handleNavClick('audioAd')}
-              className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black px-3.5 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all transform hover:scale-105 active:scale-95"
+              onClick={() => handleNavClick('radio')}
+              className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black px-3.5 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all transform hover:scale-105 active:scale-95 cursor-pointer"
             >
               <Radio className="w-3.5 h-3.5 text-slate-950 animate-pulse" />
-              <span>{lang === 'ar' ? 'صوت إعلاني حماسي 🎙️' : 'Voice Ad Studio'}</span>
+              <span>{lang === 'ar' ? 'إذاعة القرآن الكريم (مباشر) 📻' : 'Live Quran Radio'}</span>
             </button>
 
             <button
