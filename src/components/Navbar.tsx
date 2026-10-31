@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   BookOpen, Globe, HeartHandshake, GraduationCap, Library, 
-  Info, Mail, Menu, X, Sparkles, Phone, MessageCircle, Radio, Mic 
+  Info, Mail, Menu, X, Sparkles, MessageCircle, Radio, 
+  ChevronDown, Check, ExternalLink, Compass 
 } from 'lucide-react';
-import { NavigationPage, Language } from '../types';
+import { NavigationPage } from '../types';
 import { COMPLEX_INFO } from '../data/islamicData';
 import { PWAInstallButton } from './PWAInstallButton';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage, WORLD_LANGUAGES } from '../context/LanguageContext';
 
 interface NavbarProps {
   currentPage: NavigationPage;
@@ -15,10 +16,24 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { lang, setLang, t, isRtl } = useLanguage();
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const { lang, setLang, t, isRtl, currentLangInfo } = useLanguage();
+  const langDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Close language dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target as Node)) {
+        setLangMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const navItems: { id: NavigationPage; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: 'home', label: t.navHome, icon: Globe },
+    { id: 'newMuslims', label: t.navNewMuslims, icon: Compass },
     { id: 'audioAd', label: lang === 'ar' ? 'صوت إعلاني حماسي 🎙️' : 'Voice Ad Studio', icon: Radio },
     { id: 'quran', label: t.navQuran, icon: BookOpen },
     { id: 'sciences', label: t.navSciences, icon: GraduationCap },
@@ -34,76 +49,113 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const languages: { code: Language; label: string; flag: string }[] = [
-    { code: 'ar', label: 'العربية', flag: '🇸🇦' },
-    { code: 'en', label: 'English', flag: '🇬🇧' },
-    { code: 'fr', label: 'Français', flag: '🇫🇷' },
-  ];
+  const handleSelectLanguage = (code: typeof lang) => {
+    setLang(code);
+    setLangMenuOpen(false);
+  };
+
+  const whatsappCleanNumber = COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '');
 
   return (
     <header className="border-b border-emerald-900/40 bg-slate-950/95 backdrop-blur-md sticky top-0 z-40 shadow-2xl">
-      {/* Top Islamic Golden Ribbon with Contact Numbers & Language Selector */}
-      <div className="bg-gradient-to-r from-amber-700 via-amber-500 to-emerald-700 py-1.5 px-4 text-xs font-bold text-slate-950 tracking-wide shadow-inner">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+      
+      {/* Top International Institutional Ribbon (Clean, NO phone numbers displayed) */}
+      <div className="bg-gradient-to-r from-amber-700 via-amber-600 to-emerald-800 py-1.5 px-4 text-xs font-bold text-slate-950 tracking-wide shadow-inner">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5">
           
-          {/* Official Phone & WhatsApp quick links */}
-          <div className="flex items-center gap-3 font-mono text-[11px] overflow-x-auto w-full md:w-auto justify-center md:justify-start">
+          {/* Institutional Global Mission & Slogan */}
+          <div className="flex items-center gap-3 text-[11px] overflow-x-auto w-full md:w-auto justify-center md:justify-start">
+            <span className="flex items-center gap-1.5 bg-slate-950/20 px-2.5 py-0.5 rounded-full text-slate-950 font-bold">
+              <Sparkles className="w-3 h-3" />
+              <span>{t.sloganQuote}</span>
+            </span>
+
+            <span className="hidden sm:inline-block text-slate-950/50">•</span>
+
+            <span className="hidden sm:inline-flex items-center gap-1 text-slate-900 font-semibold">
+              <Globe className="w-3 h-3 text-slate-950" />
+              <span>120 دولة حول العالم • اعتماد أكاديمي ووقفي</span>
+            </span>
+          </div>
+
+          {/* Right Actions: Instant WhatsApp Inquiry + World Languages Selector + PWA */}
+          <div className="flex items-center gap-2">
+            
+            {/* Quick Contact Helpdesk (Without raw phone numbers) */}
             <a
-              href={`https://wa.me/${COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '')}`}
+              href={`https://wa.me/${whatsappCleanNumber}?text=${encodeURIComponent('السلام عليكم ورحمة الله، أود الاستفسار عن مجمع النور الإسلامي العالمي')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 bg-slate-950/20 hover:bg-slate-950/40 px-2 py-0.5 rounded text-slate-950 transition-colors"
-              title="تواصل عبر واتساب"
+              className="flex items-center gap-1.5 bg-slate-950/20 hover:bg-slate-950/40 text-slate-950 px-2.5 py-1 rounded-lg text-[11px] font-black transition-colors"
+              title="محادثة فورية مع خدمة المستفيدين"
             >
-              <span className="font-bold">واتساب:</span>
-              <span>{COMPLEX_INFO.phones.whatsapp}</span>
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t.contactWhatsapp}</span>
+              <span className="sm:hidden">واتساب</span>
             </a>
 
-            <span className="text-slate-950/60">•</span>
-
-            <a
-              href={`tel:${COMPLEX_INFO.phones.mobile.replace(/[^0-9+]/g, '')}`}
-              className="flex items-center gap-1 bg-slate-950/20 hover:bg-slate-950/40 px-2 py-0.5 rounded text-slate-950 transition-colors"
-              title="اتصال هاتفي مباشر"
-            >
-              <Phone className="w-3 h-3" />
-              <span>{COMPLEX_INFO.phones.mobile}</span>
-            </a>
-          </div>
-
-          {/* Slogan Banner */}
-          <div className="hidden lg:flex items-center gap-1.5 font-amiri text-sm font-black">
-            <Sparkles className="w-3.5 h-3.5 text-slate-950 shrink-0" />
-            <span>{t.sloganQuote}</span>
-          </div>
-
-          {/* Actions: PWA Install & Language Switcher */}
-          <div className="flex items-center gap-2">
             <PWAInstallButton />
-            
-            {/* 3-Language Selector (AR / EN / FR) */}
-            <div className="flex items-center gap-1 bg-slate-950/25 p-0.5 rounded-lg border border-slate-950/20">
-              {languages.map((item) => (
-                <button
-                  key={item.code}
-                  onClick={() => setLang(item.code)}
-                  className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-black transition-all ${
-                    lang === item.code
-                      ? 'bg-slate-950 text-amber-300 shadow-sm'
-                      : 'text-slate-900 hover:text-white'
-                  }`}
-                >
-                  <span>{item.flag}</span>
-                  <span className="hidden sm:inline">{item.label}</span>
-                </button>
-              ))}
+
+            {/* International Language Dropdown Selector (12 World Languages) */}
+            <div className="relative" ref={langDropdownRef}>
+              <button
+                onClick={() => setLangMenuOpen(!langMenuOpen)}
+                className="flex items-center gap-1.5 bg-slate-950 text-amber-300 border border-slate-800 px-3 py-1 rounded-lg text-[11px] font-black hover:bg-slate-900 transition-all shadow-sm"
+                aria-label="اختيار لغة الموقع العالمية"
+              >
+                <span>{currentLangInfo.flag}</span>
+                <span>{currentLangInfo.nativeName}</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${langMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Language Selection Grid Modal */}
+              {langMenuOpen && (
+                <div className={`absolute top-full mt-2 w-72 sm:w-80 bg-slate-900 border border-amber-500/30 rounded-2xl p-3 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 ${isRtl ? 'left-0 text-right' : 'right-0 text-left'}`}>
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-2 px-1">
+                    <span className="text-xs font-bold text-amber-300 flex items-center gap-1">
+                      <Globe className="w-3.5 h-3.5" />
+                      <span>اللغات العالمية المتاحة ({WORLD_LANGUAGES.length})</span>
+                    </span>
+                    <span className="text-[10px] text-emerald-400 font-semibold">Active Translations</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-1.5 max-h-72 overflow-y-auto p-0.5 custom-scrollbar">
+                    {WORLD_LANGUAGES.map((item) => {
+                      const isSelected = item.code === lang;
+                      return (
+                        <button
+                          key={item.code}
+                          onClick={() => handleSelectLanguage(item.code)}
+                          className={`flex items-center justify-between p-2 rounded-xl text-xs transition-all ${
+                            isSelected
+                              ? 'bg-amber-500 text-slate-950 font-black shadow-md'
+                              : 'bg-slate-950/70 text-slate-300 hover:text-white hover:bg-slate-800 border border-slate-800/80'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-base">{item.flag}</span>
+                            <div className="flex flex-col text-[11px] leading-tight">
+                              <span className="font-bold">{item.nativeName}</span>
+                              <span className={`text-[9px] ${isSelected ? 'text-slate-800 font-semibold' : 'text-slate-500'}`}>
+                                {item.name}
+                              </span>
+                            </div>
+                          </div>
+                          {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
+
           </div>
 
         </div>
       </div>
 
-      {/* Main Navigation Bar */}
+      {/* Main Global Navigation Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="flex items-center justify-between gap-4">
           
@@ -125,7 +177,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm sm:text-base lg:text-lg font-black text-white group-hover:text-amber-300 transition-colors">
+                <span className="text-sm sm:text-base lg:text-lg font-black text-white group-hover:text-amber-300 transition-colors leading-snug">
                   {t.complexName}
                 </span>
               </div>
@@ -162,7 +214,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleNavClick('audioAd')}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black px-3.5 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all transform hover:scale-105 active:scale-95"
+              className="hidden md:flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black px-3.5 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all transform hover:scale-105 active:scale-95"
             >
               <Radio className="w-3.5 h-3.5 text-slate-950 animate-pulse" />
               <span>{lang === 'ar' ? 'صوت إعلاني حماسي 🎙️' : 'Voice Ad Studio'}</span>
@@ -190,28 +242,23 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-slate-950 border-b border-slate-800 px-4 py-4 space-y-3 animate-in fade-in duration-200">
+        <div className="xl:hidden bg-slate-950 border-b border-slate-800 px-4 py-4 space-y-4 animate-in fade-in duration-200">
           
-          {/* Mobile Numbers Quick Bar */}
-          <div className="p-3 bg-slate-900 rounded-2xl border border-slate-800 flex items-center justify-between text-xs font-mono">
+          {/* Quick Helpdesk Banner (No raw phone numbers) */}
+          <div className="p-3 bg-slate-900 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
+            <span className="text-slate-400">خدمة المستفيدين والاستفسارات:</span>
             <a
-              href={`https://wa.me/${COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '')}`}
+              href={`https://wa.me/${whatsappCleanNumber}?text=${encodeURIComponent('السلام عليكم ورحمة الله، استفسار عن برامج مجمع النور')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-emerald-400 font-bold"
+              className="flex items-center gap-1 bg-[#25D366] text-slate-950 px-3 py-1 rounded-lg font-bold"
             >
-              <MessageCircle className="w-4 h-4" />
-              <span>{COMPLEX_INFO.phones.whatsapp}</span>
-            </a>
-            <a
-              href={`tel:${COMPLEX_INFO.phones.mobile.replace(/[^0-9+]/g, '')}`}
-              className="flex items-center gap-1.5 text-amber-300 font-bold"
-            >
-              <Phone className="w-4 h-4" />
-              <span>{COMPLEX_INFO.phones.mobile}</span>
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>تواصل واتساب</span>
             </a>
           </div>
 
+          {/* Navigation Links */}
           <div className="grid grid-cols-1 gap-1.5">
             {navItems.map((item) => {
               const Icon = item.icon;
@@ -233,18 +280,35 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
             })}
           </div>
 
-          <div className="pt-2 space-y-2">
-            <PWAInstallButton variant="card" />
-            <button
-              onClick={() => handleNavClick('register')}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-black text-xs py-3 rounded-xl shadow-md"
-            >
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span>{t.btnRegister}</span>
-            </button>
+          {/* Mobile Language Selector Grid */}
+          <div className="pt-2 border-t border-slate-800">
+            <span className="text-[11px] font-bold text-amber-400 block mb-2">
+              اللغة العالمية / Language:
+            </span>
+            <div className="grid grid-cols-3 gap-1.5 max-h-40 overflow-y-auto">
+              {WORLD_LANGUAGES.map((l) => (
+                <button
+                  key={l.code}
+                  onClick={() => {
+                    setLang(l.code);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`p-2 rounded-lg text-[10px] font-bold text-center border transition-all ${
+                    lang === l.code
+                      ? 'bg-amber-500 text-slate-950 border-amber-400'
+                      : 'bg-slate-900 text-slate-300 border-slate-800'
+                  }`}
+                >
+                  <span className="block text-sm">{l.flag}</span>
+                  <span className="truncate block mt-0.5">{l.nativeName}</span>
+                </button>
+              ))}
+            </div>
           </div>
+
         </div>
       )}
+
     </header>
   );
 };

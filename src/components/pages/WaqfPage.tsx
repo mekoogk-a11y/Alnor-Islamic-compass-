@@ -57,84 +57,28 @@ export const WaqfPage: React.FC<WaqfPageProps> = () => {
         </p>
       </div>
 
-      {/* Official Bank Accounts (Strictly NO mobile phone numbers) */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div>
-            <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded border border-amber-500/20">
-              قنوات الإيداع والتحويل المصرفي المعتمدة
-            </span>
-            <h2 className="text-lg sm:text-xl font-black text-white mt-1">
-              الحسابات البنكية الرسمية لمجمع النور الإسلامي
-            </h2>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1.5 rounded-xl border border-emerald-500/20">
-            <ShieldCheck className="w-4 h-4" />
-            <span>حسابات مصرفية وقفية معتمدة دولياً</span>
-          </div>
+      {/* Official Institutional Waqf Accounts Status (Without fake banks) */}
+      <div className="bg-slate-900/90 border border-emerald-900/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 text-center">
+        <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3.5 py-1 rounded-full text-xs font-bold text-amber-400">
+          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          <span>القنوات المصرفية والتحويلات الوقفية الرسمية</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {COMPLEX_INFO.officialBankAccounts.map((acc, idx) => (
-            <div
-              key={idx}
-              className="bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-3.5 hover:border-amber-500/30 transition-all text-right"
-            >
-              <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
-                <span className="text-xs font-black text-amber-300">{acc.bankName}</span>
-                <CreditCard className="w-4 h-4 text-slate-400" />
-              </div>
+        <h2 className="text-lg sm:text-2xl font-black text-white">
+          الحسابات البنكية المعتمدة لمجمع النور الإسلامي
+        </h2>
 
-              <div className="space-y-2 text-xs">
-                <div>
-                  <span className="text-slate-400 block text-[11px]">اسم الحساب:</span>
-                  <span className="font-bold text-white text-xs">{acc.accountTitle}</span>
-                </div>
-
-                <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] text-slate-400 block">رقم الحساب:</span>
-                    <span className="font-mono font-bold text-amber-400 text-xs">{acc.accountNumber}</span>
-                  </div>
-                  <button
-                    onClick={() => handleCopy(`acc-${idx}`, acc.accountNumber)}
-                    className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs"
-                    title="نسخ رقم الحساب"
-                  >
-                    {copiedKey === `acc-${idx}` ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
-                </div>
-
-                <div className="p-2.5 bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-between">
-                  <div className="overflow-hidden">
-                    <span className="text-[10px] text-slate-400 block">الآيبان الدولي (IBAN):</span>
-                    <span className="font-mono font-bold text-emerald-400 text-[11px] truncate block">{acc.iban}</span>
-                  </div>
-                  <button
-                    onClick={() => handleCopy(`iban-${idx}`, acc.iban)}
-                    className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs shrink-0"
-                    title="نسخ الآيبان"
-                  >
-                    {copiedKey === `iban-${idx}` ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
-                </div>
-
-                <div className="flex justify-between items-center text-[11px] text-slate-400 pt-1">
-                  <span>رمز السويفت (SWIFT):</span>
-                  <span className="font-mono font-bold text-slate-200">{acc.swiftCode}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="p-3.5 bg-slate-950/60 rounded-xl border border-slate-800/80 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-right">
-          <span>
-            📌 يمكنكم إرسال إشعارات التحويل المصرفي مباشرة إلى البريد الإلكتروني الرسمي: <strong className="text-amber-400 font-mono">{COMPLEX_INFO.officialEmail}</strong>
-          </span>
-          <span className="text-emerald-400 font-bold shrink-0">
-            تصدر إيصالات وسندات وقفية رسمية موثقة
-          </span>
+        <div className="max-w-2xl mx-auto p-6 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs sm:text-sm text-slate-300 leading-relaxed space-y-3">
+          <p>
+            تخضع جميع التبرعات والمساهمات الوقفية لمجمع النور الإسلامي لأعلى معايير الحوكمة المؤسسية والشفافية الشرعية.
+          </p>
+          <div className="p-4 bg-emerald-950/40 border border-emerald-800/60 rounded-xl text-emerald-300 font-medium text-xs sm:text-sm">
+            جاري تحديث وتوثيق بيانات الحسابات المصرفية الدولية من قِبل الإدارة العامة للشؤون المالية للمجمع، وسيتم رفعها ونشرها رسمياً في هذه الصفحة فور اكتمال الاعتماد المالي.
+          </div>
+          <p className="text-slate-400 text-xs">
+            للتواصل المباشر مع أمانة الوقف أو الاستفسار المؤسسي، يرجى المراسلة عبر البريد الإلكتروني الرسمي المعتمد:
+            <span className="font-mono text-amber-400 font-bold block mt-1.5">{COMPLEX_INFO.officialEmail}</span>
+          </p>
         </div>
       </div>
 

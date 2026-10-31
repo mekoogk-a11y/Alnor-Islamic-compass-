@@ -4,7 +4,7 @@ export const COMPLEX_INFO: ComplexGlobalInfo = {
   name: 'مجمع النور الإسلامي العالمي الخيري الشامل لتحفيظ القرآن الكريم والعلوم الإسلامية',
   slogan: 'نورٌ يهدي.. وصرحٌ يبني أجيال القرآن',
   officialEmail: 'info@alnoor-islamic-complex.org',
-  headquarters: 'المقر العام - شارع المعرفة الإسلامية، مجمع الصروح الوقفية',
+  headquarters: 'المنصة العالمية المعتمدة لتعليم القرآن الكريم والعلوم الإسلامية (120 دولة)',
   phones: {
     whatsapp: '+249904499914',
     mobile: '+249912169169',
@@ -13,29 +13,6 @@ export const COMPLEX_INFO: ComplexGlobalInfo = {
   totalStudents: 48500,
   graduatedHuffaz: 14200,
   activeTeachers: 920,
-  officialBankAccounts: [
-    {
-      bankName: 'المصرف الإسلامي الدولي للتنمية والوقف',
-      accountTitle: 'مجمع النور الإسلامي العالمي الخيري الشامل',
-      accountNumber: '109827465001',
-      iban: 'SA4480000109827465001',
-      swiftCode: 'ALNRSA22',
-    },
-    {
-      bankName: 'بنك التضامن الإسلامي الدولي',
-      accountTitle: 'حساب كفالة الحلقات والوقف القرآني',
-      accountNumber: '4488992211',
-      iban: 'AE290330004488992211',
-      swiftCode: 'TADMAE44',
-    },
-    {
-      bankName: 'بنك فيصل الإسلامي العالمي',
-      accountTitle: 'حساب الصدقات الجارية والمشاريع الخيرية',
-      accountNumber: '774411009',
-      iban: 'SD1200100774411009',
-      swiftCode: 'FIBLSDXX',
-    },
-  ],
 };
 
 export const RECITERS: QuranReciter[] = [

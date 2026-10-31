@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, BookOpen, GraduationCap, Library, HeartHandshake, UserPlus, Radio } from 'lucide-react';
+import { Globe, BookOpen, GraduationCap, Library, HeartHandshake, UserPlus, Radio, Compass } from 'lucide-react';
 import { NavigationPage } from '../types';
 
 interface MobileBottomNavProps {
@@ -10,6 +10,7 @@ interface MobileBottomNavProps {
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPage, onNavigate }) => {
   const items: { id: NavigationPage; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: 'home', label: 'الرئيسية', icon: Globe },
+    { id: 'newMuslims', label: 'المهتدون', icon: Compass },
     { id: 'audioAd', label: 'إعلان صوتي 🎙️', icon: Radio },
     { id: 'quran', label: 'المصحف', icon: BookOpen },
     { id: 'sciences', label: 'العلوم', icon: GraduationCap },

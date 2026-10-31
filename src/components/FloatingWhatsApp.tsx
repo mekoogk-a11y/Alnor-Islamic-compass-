@@ -11,26 +11,58 @@ export const FloatingWhatsApp: React.FC = () => {
   const whatsappCleanNumber = COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '');
   const mobileCleanNumber = COMPLEX_INFO.phones.mobile.replace(/[^0-9+]/g, '');
 
-  const quickMessages = [
+  const quickMessages: { ar: string; en: string; [key: string]: string }[] = [
     {
       ar: 'السلام عليكم ورحمة الله، أرغب بالتسجيل في المقرأة القرآنية بمجمع النور.',
       en: 'Peace be upon you, I would like to enroll in the Quran Academy at Al-Noor Complex.',
       fr: 'Que la paix soit sur vous, je souhaite m’inscrire à l’académie coranique Al-Noor.',
+      es: 'La paz sea con vosotros, deseo inscribirme en la Academia del Corán Al-Noor.',
+      de: 'Friede sei mit Ihnen, ich möchte mich an der Al-Noor Koran-Akademie einschreiben.',
+      tr: 'Selamün aleyküm, El-Nur Kur\'an Akademisi\'ne kayıt yaptırmak istiyorum.',
+      id: 'Assalamu\'alaikum, saya ingin mendaftar di Akademi Al-Quran Al-Noor.',
+      ur: 'السلام علیکم ورحمۃ اللہ، میں مجمع النور قرآنی اکیڈمی میں داخلہ لینا چاہتا ہوں۔',
+      ru: 'Мир вам, я хотел бы записаться в Академию Корана «Ан-Нур».',
+      zh: '愿平安降临于您，我想报名参加安努尔古兰经学院。',
+      sw: 'Amani iwe nanyi, ningependa kujiandikisha katika Chuo cha Qurani cha Al-Noor.',
+      fa: 'سلام علیکم، مایل به ثبت‌نام در آکادمی قرآنی مجمع النور هستم.',
     },
     {
       ar: 'السلام عليكم، أود الاستفسار عن كفالة حلقات القرآن والمشاريع الوقفية.',
       en: 'Peace be upon you, I would like to inquire about Quran circle sponsorships and Waqf projects.',
       fr: 'Que la paix soit sur vous, je souhaite me renseigner sur le parrainage des cercles coraniques et le Waqf.',
+      es: 'La paz sea con vosotros, deseo consultar sobre el patrocinio de círculos del Corán y el Waqf.',
+      de: 'Friede sei mit Ihnen, ich möchte mich über Patenschaften für Korankreise und Waqf informieren.',
+      tr: 'Selamün aleyküm, Kur\'an halkaları kefaleti ve vakıf projeleri hakkında bilgi almak istiyorum.',
+      id: 'Assalamu\'alaikum, saya ingin bertanya tentang program donasi wakaf dan santri Quran.',
+      ur: 'السلام علیکم، میں قرآنی حلقوں کی کفالت اور وقفی منصوبوں کے بارے میں استفسار کرنا چاہتا ہوں۔',
+      ru: 'Мир вам, я хотел бы узнать о поддержке коранических кружков и проектах вакфа.',
+      zh: '愿平安降临于您，我想咨询关于瓦克夫古兰经学子赞助项目。',
+      sw: 'Amani iwe nanyi, ningependa kuulizia kuhusu ufadhili wa masomo ya Qurani na miradi ya wakfu.',
+      fa: 'سلام علیکم، درباره کفالت حلقه‌های قرآنی و پروژه‌های وقفی سوال داشتم.',
     },
     {
       ar: 'السلام عليكم، استفسار عام بخصوص البرامج والمقر العام لمجمع النور.',
       en: 'Peace be upon you, general inquiry regarding courses and headquarters of Al-Noor Complex.',
       fr: 'Que la paix soit sur vous, demande d’informations générales sur les programmes et le siège.',
+      es: 'La paz sea con vosotros, consulta general sobre cursos y la sede del Complejo Al-Noor.',
+      de: 'Friede sei mit Ihnen, allgemeine Anfrage zu Kursen und zum Hauptsitz von Al-Noor.',
+      tr: 'Selamün aleyküm, El-Nur Külliyesi programları ve genel merkezi hakkında bilgi rica ediyorum.',
+      id: 'Assalamu\'alaikum, pertanyaan umum seputar program studi dan kantor pusat Al-Noor.',
+      ur: 'السلام علیکم، مجمع النور کے تعلیمی کورسز اور مرکزی دفتر کے بارے میں عمومی استفسار۔',
+      ru: 'Мир вам, общий вопрос по учебным программам и штаб-квартире комплекса «Ан-Нур».',
+      zh: '愿平安降临于您，我想了解关于安努尔中心的常规课程与总部信息。',
+      sw: 'Amani iwe nanyi, ningependa taarifa za jumla kuhusu kozi na makao makuu ya Al-Noor.',
+      fa: 'سلام علیکم، استعلام کلی درباره برنامه‌های آموزشی و مقر اصلی مجمع النور.',
     },
   ];
 
+  const getMsgText = (m: { ar: string; en: string; [key: string]: string }) => {
+    return m[lang] || (lang === 'ar' || isRtl ? m.ar : m.en);
+  };
+
   const handleStartChat = (msgToSend?: string) => {
-    const text = encodeURIComponent(msgToSend || userMsg || quickMessages[0][lang]);
+    const defaultMsg = getMsgText(quickMessages[0]);
+    const text = encodeURIComponent(msgToSend || userMsg || defaultMsg);
     const url = `https://wa.me/${whatsappCleanNumber}?text=${text}`;
     window.open(url, '_blank');
     setIsOpen(false);
@@ -95,31 +127,31 @@ export const FloatingWhatsApp: React.FC = () => {
             </div>
           </div>
 
-          {/* Official Numbers Highlight Box */}
+          {/* Official Channels Action Box (Clean, no raw phone numbers displayed) */}
           <div className="p-4 bg-slate-950/80 border-b border-slate-800 space-y-2.5 text-xs">
-            {/* WhatsApp line */}
+            {/* WhatsApp channel */}
             <div className="flex items-center justify-between p-2.5 bg-emerald-950/40 border border-emerald-900/60 rounded-xl">
               <div>
-                <span className="text-[10px] text-emerald-300/80 block">{t.contactWhatsapp}:</span>
-                <span className="font-mono font-bold text-white text-xs tracking-wider">{COMPLEX_INFO.phones.whatsapp}</span>
+                <span className="text-[10px] text-emerald-300/80 block">{t.contactWhatsapp}</span>
+                <span className="font-bold text-white text-xs">{t.onlineNow}</span>
               </div>
               <button
                 onClick={() => handleStartChat()}
-                className="px-2.5 py-1 bg-[#25D366] hover:bg-emerald-500 text-slate-950 font-black rounded-lg text-[11px] transition-colors"
+                className="px-3 py-1 bg-[#25D366] hover:bg-emerald-500 text-slate-950 font-black rounded-lg text-xs transition-colors"
               >
-                واتساب
+                {t.chatWhatsapp}
               </button>
             </div>
 
-            {/* Mobile line */}
+            {/* Direct Voice Support */}
             <div className="flex items-center justify-between p-2.5 bg-slate-900 border border-slate-800 rounded-xl">
               <div>
-                <span className="text-[10px] text-slate-400 block">{t.contactMobile}:</span>
-                <span className="font-mono font-bold text-amber-300 text-xs tracking-wider">{COMPLEX_INFO.phones.mobile}</span>
+                <span className="text-[10px] text-slate-400 block">{t.contactMobile}</span>
+                <span className="font-bold text-amber-300 text-xs">استفسارات القبول والوقف</span>
               </div>
               <a
                 href={`tel:${mobileCleanNumber}`}
-                className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg text-[11px] transition-colors flex items-center gap-1"
+                className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-lg text-xs transition-colors flex items-center gap-1"
               >
                 <Phone className="w-3 h-3 text-emerald-400" />
                 <span>{t.callDirect}</span>
@@ -134,16 +166,19 @@ export const FloatingWhatsApp: React.FC = () => {
             </span>
 
             <div className="space-y-1.5">
-              {quickMessages.map((m, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleStartChat(m[lang])}
-                  className="w-full text-right p-2.5 rounded-xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800/90 hover:border-emerald-500/40 text-slate-200 text-[11px] leading-relaxed transition-all flex items-center justify-between gap-2"
-                >
-                  <span className="line-clamp-2">{m[lang]}</span>
-                  <Send className={`w-3.5 h-3.5 text-emerald-400 shrink-0 ${isRtl ? 'rotate-180' : ''}`} />
-                </button>
-              ))}
+              {quickMessages.map((m, idx) => {
+                const text = getMsgText(m);
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => handleStartChat(text)}
+                    className="w-full text-right p-2.5 rounded-xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800/90 hover:border-emerald-500/40 text-slate-200 text-[11px] leading-relaxed transition-all flex items-center justify-between gap-2"
+                  >
+                    <span className="line-clamp-2">{text}</span>
+                    <Send className={`w-3.5 h-3.5 text-emerald-400 shrink-0 ${isRtl ? 'rotate-180' : ''}`} />
+                  </button>
+                );
+              })}
             </div>
 
             {/* Custom Input */}

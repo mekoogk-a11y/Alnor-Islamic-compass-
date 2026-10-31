@@ -293,7 +293,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = () => {
 
             <div className="space-y-3 text-xs">
               
-              {/* WhatsApp Official Contact Card */}
+              {/* WhatsApp Official Contact Channel */}
               <div className="p-3.5 bg-emerald-950/40 border border-emerald-500/40 rounded-2xl space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -301,31 +301,22 @@ export const RegisterPage: React.FC<RegisterPageProps> = () => {
                       <MessageCircle className="w-4 h-4 fill-current" />
                     </div>
                     <div>
-                      <span className="text-[10px] text-emerald-300 block font-bold">واتساب خدمة المستفيدين والاستفسار:</span>
-                      <span className="font-mono font-black text-white text-sm tracking-wider">{COMPLEX_INFO.phones.whatsapp}</span>
+                      <span className="text-[10px] text-emerald-300 block font-bold">{t.contactWhatsapp}:</span>
+                      <span className="font-bold text-white text-xs">{t.onlineNow}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => handleCopy('whatsapp', COMPLEX_INFO.phones.whatsapp)}
-                      className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs"
-                      title="نسخ الرقم"
-                    >
-                      {copiedKey === 'whatsapp' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                    <a
-                      href={`https://wa.me/${COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '')}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1.5 bg-[#25D366] hover:bg-emerald-500 text-slate-950 font-black rounded-xl text-xs transition-colors flex items-center gap-1"
-                    >
-                      <span>محادثة</span>
-                    </a>
-                  </div>
+                  <a
+                    href={`https://wa.me/${COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('السلام عليكم ورحمة الله، استفسار عن التسجيل في مجمع النور')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-1.5 bg-[#25D366] hover:bg-emerald-500 text-slate-950 font-black rounded-xl text-xs transition-colors flex items-center gap-1 shadow-md"
+                  >
+                    <span>{t.chatWhatsapp}</span>
+                  </a>
                 </div>
               </div>
 
-              {/* Direct Mobile Phone Call Card */}
+              {/* Direct Telephone Channel */}
               <div className="p-3.5 bg-slate-950 border border-slate-800 rounded-2xl space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -333,25 +324,16 @@ export const RegisterPage: React.FC<RegisterPageProps> = () => {
                       <Phone className="w-4 h-4" />
                     </div>
                     <div>
-                      <span className="text-[10px] text-slate-400 block font-bold">هاتف المجمع والاتصال المباشر:</span>
-                      <span className="font-mono font-black text-amber-300 text-sm tracking-wider">{COMPLEX_INFO.phones.mobile}</span>
+                      <span className="text-[10px] text-slate-400 block font-bold">{t.contactMobile}:</span>
+                      <span className="font-bold text-amber-300 text-xs">استفسارات القبول والتسجيل</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      onClick={() => handleCopy('mobile', COMPLEX_INFO.phones.mobile)}
-                      className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs"
-                      title="نسخ الرقم"
-                    >
-                      {copiedKey === 'mobile' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                    <a
-                      href={`tel:${COMPLEX_INFO.phones.mobile.replace(/[^0-9+]/g, '')}`}
-                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-black rounded-xl text-xs transition-colors flex items-center gap-1"
-                    >
-                      <span>اتصال</span>
-                    </a>
-                  </div>
+                  <a
+                    href={`tel:${COMPLEX_INFO.phones.mobile.replace(/[^0-9+]/g, '')}`}
+                    className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-black rounded-xl text-xs transition-colors flex items-center gap-1 border border-slate-700"
+                  >
+                    <span>{t.callDirect}</span>
+                  </a>
                 </div>
               </div>
 
@@ -364,11 +346,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = () => {
               </div>
 
               <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
-                <span className="text-slate-400 block text-[11px]">العنوان البريدي والمقر العام:</span>
+                <span className="text-slate-400 block text-[11px]">الاعتماد والانتشار الدولي:</span>
                 <span className="font-bold text-white block">
                   {COMPLEX_INFO.headquarters}
                 </span>
-                <span className="text-[10px] text-slate-500">استقبال الوفود والدارسين والمشايخ</span>
+                <span className="text-[10px] text-slate-500">منظومة تعليمية إلكترونية متصلة بـ 120 دولة</span>
               </div>
 
               <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">

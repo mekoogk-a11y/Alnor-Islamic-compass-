@@ -15,6 +15,7 @@ import { LibraryPage } from './components/pages/LibraryPage';
 import { WaqfPage } from './components/pages/WaqfPage';
 import { AboutPage } from './components/pages/AboutPage';
 import { RegisterPage } from './components/pages/RegisterPage';
+import { NewMuslimsPage } from './components/pages/NewMuslimsPage';
 import { SudaneseVoiceAdStudio } from './components/SudaneseVoiceAdStudio';
 import { NavigationPage } from './types';
 import { COMPLEX_INFO } from './data/islamicData';
@@ -22,7 +23,7 @@ import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { 
   BookOpen, Globe, Mail, MapPin, Sparkles, ChevronLeft, 
-  WifiOff, Smartphone, Laptop, Phone, MessageCircle, Radio 
+  WifiOff, Smartphone, Laptop, Phone, MessageCircle, Radio, Compass 
 } from 'lucide-react';
 
 function MainAppContent() {
@@ -55,6 +56,7 @@ function MainAppContent() {
       {/* Main Pages Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-12">
         {currentPage === 'home' && <HomePage onNavigate={handleNavigate} />}
+        {currentPage === 'newMuslims' && <NewMuslimsPage onNavigate={handleNavigate} />}
         {currentPage === 'quran' && <QuranPage onNavigate={handleNavigate} />}
         {currentPage === 'sciences' && <SciencesPage onNavigate={handleNavigate} />}
         {currentPage === 'library' && <LibraryPage onNavigate={handleNavigate} />}
@@ -125,6 +127,12 @@ function MainAppContent() {
                   </button>
                 </li>
                 <li>
+                  <button onClick={() => handleNavigate('newMuslims')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5 font-bold text-amber-300">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-amber-500 ${isRtl ? '' : 'rotate-180'}`} />
+                    <span>{t.navNewMuslims}</span>
+                  </button>
+                </li>
+                <li>
                   <button onClick={() => handleNavigate('quran')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
                     <ChevronLeft className={`w-3.5 h-3.5 text-slate-600 ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{t.navQuran}</span>
@@ -180,39 +188,39 @@ function MainAppContent() {
               </ul>
             </div>
 
-            {/* Column 4: Official Contact With Specified Numbers */}
+            {/* Column 4: Official Contact & Headquarters (No raw phone numbers) */}
             <div className="space-y-3">
               <h5 className="text-sm font-bold text-white border-b border-slate-800 pb-2">
-                {lang === 'ar' ? 'أرقام التواصل والمقر العام' : 'Official Contact & Phones'}
+                {lang === 'ar' ? 'التواصل الرسمي والمقر العام' : 'Official Contact & Office'}
               </h5>
               <div className="space-y-2.5 text-xs">
                 
-                {/* Official WhatsApp */}
+                {/* Official WhatsApp Action */}
                 <a
-                  href={`https://wa.me/${COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '')}`}
+                  href={`https://wa.me/${COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('السلام عليكم ورحمة الله، استفسار عن مجمع النور')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-2 p-2 rounded-xl bg-emerald-950/30 border border-emerald-900/50 hover:border-emerald-500/50 transition-colors group"
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-900/60 hover:border-emerald-500/50 transition-colors group"
                 >
-                  <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0 mt-0.5" />
+                  <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" />
                   <div>
-                    <span className="text-[10px] text-emerald-300 block">{t.contactWhatsapp}:</span>
-                    <span className="font-mono text-white text-xs font-bold tracking-wider group-hover:text-emerald-300">
-                      {COMPLEX_INFO.phones.whatsapp}
+                    <span className="text-[10px] text-emerald-300/80 block">{t.contactWhatsapp}</span>
+                    <span className="text-white text-xs font-bold group-hover:text-emerald-300">
+                      {t.chatWhatsapp}
                     </span>
                   </div>
                 </a>
 
-                {/* Official Mobile */}
+                {/* Direct Call Action */}
                 <a
                   href={`tel:${COMPLEX_INFO.phones.mobile.replace(/[^0-9+]/g, '')}`}
-                  className="flex items-start gap-2 p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/40 transition-colors group"
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/40 transition-colors group"
                 >
-                  <Phone className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <Phone className="w-4 h-4 text-amber-400 shrink-0" />
                   <div>
-                    <span className="text-[10px] text-slate-400 block">{t.contactMobile}:</span>
-                    <span className="font-mono text-white text-xs font-bold tracking-wider group-hover:text-amber-300">
-                      {COMPLEX_INFO.phones.mobile}
+                    <span className="text-[10px] text-slate-400 block">{t.contactMobile}</span>
+                    <span className="text-white text-xs font-bold group-hover:text-amber-300">
+                      {t.callDirect}
                     </span>
                   </div>
                 </a>

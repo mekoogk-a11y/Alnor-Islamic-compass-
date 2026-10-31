@@ -1,5 +1,6 @@
 export type NavigationPage = 
   | 'home' 
+  | 'newMuslims'
   | 'quran' 
   | 'sciences' 
   | 'library' 
@@ -8,7 +9,19 @@ export type NavigationPage =
   | 'register'
   | 'audioAd';
 
-export type Language = 'ar' | 'en' | 'fr';
+export type Language = 
+  | 'ar' 
+  | 'en' 
+  | 'fr' 
+  | 'es' 
+  | 'de' 
+  | 'tr' 
+  | 'id' 
+  | 'ur' 
+  | 'ru' 
+  | 'zh' 
+  | 'sw' 
+  | 'fa';
 
 export interface QuranSurah {
   number: number;
@@ -75,7 +88,7 @@ export interface ComplexGlobalInfo {
   totalStudents: number;
   graduatedHuffaz: number;
   activeTeachers: number;
-  officialBankAccounts: {
+  officialBankAccounts?: {
     bankName: string;
     accountTitle: string;
     accountNumber: string;
@@ -83,3 +96,4 @@ export interface ComplexGlobalInfo {
     swiftCode: string;
   }[];
 }
+
