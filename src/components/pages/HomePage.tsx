@@ -2,7 +2,8 @@ import React, { useState, useRef } from 'react';
 import { 
   BookOpen, GraduationCap, Library, HeartHandshake, 
   Sparkles, Globe, Users, Award, Play, Pause, Volume2, 
-  ArrowLeft, CheckCircle2, Star, ShieldCheck, ChevronRight 
+  ArrowLeft, CheckCircle2, Star, ShieldCheck, ChevronRight,
+  Radio, Mic, MessageCircle, Phone
 } from 'lucide-react';
 import { NavigationPage } from '../../types';
 import { COMPLEX_INFO, FEATURED_SURAHS, RECITERS } from '../../data/islamicData';
@@ -20,12 +21,69 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Quick Sudanese Audio Ad state
+  const [isPlayingAd, setIsPlayingAd] = useState(false);
+  const isAdCancelledRef = useRef(false);
+
+  const toggleSudaneseAd = () => {
+    if (!('speechSynthesis' in window)) {
+      alert('متصفحك لا يدعم توليد الصوت المباشر');
+      return;
+    }
+
+    if (isPlayingAd) {
+      isAdCancelledRef.current = true;
+      window.speechSynthesis.cancel();
+      setIsPlayingAd(false);
+      return;
+    }
+
+    // Stop recitation if playing
+    if (isPlayingAudio && audioRef.current) {
+      audioRef.current.pause();
+      setIsPlayingAudio(false);
+    }
+
+    isAdCancelledRef.current = false;
+    setIsPlayingAd(true);
+
+    const script = "يا زول يا أصيل! السلام عليكم ورحمة الله.. بتفتش لأولادك على مكان يحفظهم كتاب الله بإتقان وأسانيد متصلة؟ مجمع النور الإسلامي العالمي الخيري الشامل فاتح أبوابه ليكم في كل مكان! شيوخ مجازين، قراءات عشر، ومتابعة يومية على مدار الساعة، وبرامج لكل الأعمار وبشهادات معتمدة عالمياً! ما تفوت الفرصة عليك وعلى عيالك.. النور في بيوتكم وقلوبكم! تواصل هسع مع مجمع النور طوالي عبر الواتساب على 00249904499914 أو اتصل على موبايل 00249912169169.. ألحق سجّل هسع وما تتردد!";
+
+    const utterance = new SpeechSynthesisUtterance(script);
+    utterance.lang = 'ar-SA';
+    utterance.rate = 1.08;
+    utterance.pitch = 0.92;
+
+    const voices = window.speechSynthesis.getVoices();
+    const arabicVoice = voices.find(
+      (v) => v.lang.startsWith('ar') && (v.name.includes('Maged') || v.name.includes('Tarik') || v.name.includes('Male'))
+    ) || voices.find((v) => v.lang.startsWith('ar'));
+    
+    if (arabicVoice) {
+      utterance.voice = arabicVoice;
+    }
+
+    utterance.onend = () => {
+      setIsPlayingAd(false);
+    };
+
+    utterance.onerror = () => {
+      setIsPlayingAd(false);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
   const toggleAudio = () => {
     if (!audioRef.current) return;
     if (isPlayingAudio) {
       audioRef.current.pause();
       setIsPlayingAudio(false);
     } else {
+      if (isPlayingAd) {
+        window.speechSynthesis.cancel();
+        setIsPlayingAd(false);
+      }
       audioRef.current.play().catch(console.warn);
       setIsPlayingAudio(true);
     }
@@ -82,10 +140,18 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           {/* Quick Action Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
             <button
-              onClick={() => onNavigate('quran')}
-              className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-6 py-3 rounded-xl text-sm shadow-lg shadow-amber-500/25 transition-all transform hover:-translate-y-0.5"
+              onClick={() => onNavigate('audioAd')}
+              className="flex items-center gap-2 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black px-6 py-3 rounded-xl text-sm shadow-xl shadow-amber-500/30 transition-all transform hover:-translate-y-0.5 cursor-pointer"
             >
-              <BookOpen className="w-4 h-4" />
+              <Radio className="w-4 h-4 text-slate-950 animate-pulse" />
+              <span>صوت إعلاني حماسي (سوداني) 🎙️</span>
+            </button>
+
+            <button
+              onClick={() => onNavigate('quran')}
+              className="flex items-center gap-2 bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-slate-600 font-bold px-6 py-3 rounded-xl text-sm transition-all"
+            >
+              <BookOpen className="w-4 h-4 text-amber-400" />
               <span>{t.btnQuran}</span>
             </button>
 
@@ -155,6 +221,75 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
 
         </div>
 
+      </section>
+
+      {/* Featured Sudanese Voice Advertising Broadcast Banner & Mini-Player */}
+      <section className="bg-gradient-to-r from-slate-900 via-amber-950/20 to-emerald-950/40 border-2 border-amber-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+        
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+          
+          {/* Ad Info & Identity */}
+          <div className="space-y-3 text-center lg:text-right max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-amber-500/15 border border-amber-500/40 px-3.5 py-1 rounded-full text-xs font-bold text-amber-300">
+              <Radio className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+              <span>البث الصوتي الإعلاني الحماسي • صوت رجالي بالعامية السودانية</span>
+            </div>
+
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white leading-tight">
+              «يا زول يا أصيل! النور لبيتك وعيالك.. مجمع النور مستنيك!»
+            </h2>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+              استمع الآن لإعلان مجمع النور الحماسي بالعامية السودانية المحبوبة، بصوت رجالي جهوري ومتحمس، للتسجيل في حلقات القرآن الكريم والإسناد المتصل، والتواصل المباشر مع الشيوخ عبر الواتساب والموبايل.
+            </p>
+
+            {/* Quick Contact Badges */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-1 text-xs font-mono">
+              <span className="flex items-center gap-1.5 text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-3 py-1 rounded-lg">
+                <MessageCircle className="w-3.5 h-3.5 text-[#25D366]" />
+                <span>واتساب: {COMPLEX_INFO.phones.whatsapp}</span>
+              </span>
+              <span className="flex items-center gap-1.5 text-amber-300 bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg">
+                <Phone className="w-3.5 h-3.5 text-amber-400" />
+                <span>موبايل: {COMPLEX_INFO.phones.mobile}</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Ad Actions: Play Voiceover / Open Full Studio */}
+          <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full sm:w-auto shrink-0">
+            <button
+              onClick={toggleSudaneseAd}
+              className={`flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-black text-sm transition-all transform hover:scale-105 active:scale-95 shadow-xl cursor-pointer ${
+                isPlayingAd
+                  ? 'bg-red-600 hover:bg-red-500 text-white shadow-red-600/30 animate-pulse'
+                  : 'bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 shadow-amber-500/25'
+              }`}
+            >
+              {isPlayingAd ? (
+                <>
+                  <Pause className="w-5 h-5 fill-current" />
+                  <span>إيقاف الإعلان الصوتي</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-5 h-5 fill-current" />
+                  <span>استمع للإعلان الحماسي الآن 🔊</span>
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={() => onNavigate('audioAd')}
+              className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-amber-300 hover:text-white border border-amber-500/30 hover:border-amber-500 px-6 py-3 rounded-2xl text-xs font-bold transition-all"
+            >
+              <Mic className="w-4 h-4 text-amber-400" />
+              <span>فتح الاستوديو الصوتي وتوليد الإعلانات</span>
+            </button>
+          </div>
+
+        </div>
       </section>
 
       {/* Live Quran Recitation Bar */}

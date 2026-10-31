@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   BookOpen, Globe, HeartHandshake, GraduationCap, Library, 
-  Info, Mail, Menu, X, Sparkles, Phone, MessageCircle 
+  Info, Mail, Menu, X, Sparkles, Phone, MessageCircle, Radio, Mic 
 } from 'lucide-react';
 import { NavigationPage, Language } from '../types';
 import { COMPLEX_INFO } from '../data/islamicData';
@@ -19,6 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
 
   const navItems: { id: NavigationPage; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: 'home', label: t.navHome, icon: Globe },
+    { id: 'audioAd', label: lang === 'ar' ? 'صوت إعلاني حماسي 🎙️' : 'Voice Ad Studio', icon: Radio },
     { id: 'quran', label: t.navQuran, icon: BookOpen },
     { id: 'sciences', label: t.navSciences, icon: GraduationCap },
     { id: 'library', label: t.navLibrary, icon: Library },
@@ -159,6 +160,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
 
           {/* Direct CTA & Mobile Toggle */}
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleNavClick('audioAd')}
+              className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 text-xs font-black px-3.5 py-2.5 rounded-xl shadow-lg shadow-amber-500/20 transition-all transform hover:scale-105 active:scale-95"
+            >
+              <Radio className="w-3.5 h-3.5 text-slate-950 animate-pulse" />
+              <span>{lang === 'ar' ? 'صوت إعلاني حماسي 🎙️' : 'Voice Ad Studio'}</span>
+            </button>
+
             <button
               onClick={() => handleNavClick('register')}
               className="hidden sm:flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs font-black px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-600/25 transition-all"

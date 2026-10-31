@@ -5,7 +5,8 @@ export type NavigationPage =
   | 'library' 
   | 'waqf' 
   | 'about' 
-  | 'register';
+  | 'register'
+  | 'audioAd';
 
 export type Language = 'ar' | 'en' | 'fr';
 

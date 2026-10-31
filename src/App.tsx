@@ -15,13 +15,14 @@ import { LibraryPage } from './components/pages/LibraryPage';
 import { WaqfPage } from './components/pages/WaqfPage';
 import { AboutPage } from './components/pages/AboutPage';
 import { RegisterPage } from './components/pages/RegisterPage';
+import { SudaneseVoiceAdStudio } from './components/SudaneseVoiceAdStudio';
 import { NavigationPage } from './types';
 import { COMPLEX_INFO } from './data/islamicData';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { 
   BookOpen, Globe, Mail, MapPin, Sparkles, ChevronLeft, 
-  WifiOff, Smartphone, Laptop, Phone, MessageCircle 
+  WifiOff, Smartphone, Laptop, Phone, MessageCircle, Radio 
 } from 'lucide-react';
 
 function MainAppContent() {
@@ -60,6 +61,7 @@ function MainAppContent() {
         {currentPage === 'waqf' && <WaqfPage onNavigate={handleNavigate} />}
         {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
         {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
+        {currentPage === 'audioAd' && <SudaneseVoiceAdStudio />}
       </main>
 
       {/* Global Comprehensive Islamic Footer */}
@@ -150,6 +152,15 @@ function MainAppContent() {
                   <button onClick={() => handleNavigate('about')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
                     <ChevronLeft className={`w-3.5 h-3.5 text-slate-600 ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{t.navAbout}</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('audioAd')} className="text-amber-400 hover:text-amber-300 font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-amber-500 ${isRtl ? '' : 'rotate-180'}`} />
+                    <span className="flex items-center gap-1">
+                      <Radio className="w-3.5 h-3.5 animate-pulse" />
+                      <span>{lang === 'ar' ? 'استوديو الصوت الإعلاني السوداني' : 'Sudanese Voice Ad Studio'}</span>
+                    </span>
                   </button>
                 </li>
               </ul>
