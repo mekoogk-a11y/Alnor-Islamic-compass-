@@ -914,3 +914,6 @@ export const WAQF_PROJECTS: WaqfProject[] = [
     imageIcon: 'Users',
   },
 ];
+
+export const SURAHS_INDEX = FEATURED_SURAHS;
+

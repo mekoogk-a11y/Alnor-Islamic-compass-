@@ -13,9 +13,10 @@ import { useLanguage } from '../../context/LanguageContext';
 
 interface HomePageProps {
   onNavigate: (page: NavigationPage) => void;
+  onOpenSearch?: () => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) => {
   const { lang, t, isRtl } = useLanguage();
   const [selectedSurah, setSelectedSurah] = useState(FEATURED_SURAHS[0]);
   const [selectedReciter, setSelectedReciter] = useState(RECITERS[0]);
@@ -23,22 +24,27 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-
   // Quick navigation filter based on search
   const handleQuickSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (onOpenSearch) {
+      onOpenSearch();
+      return;
+    }
     const q = searchQuery.trim().toLowerCase();
     if (!q) return;
     if (q.includes('قرآن') || q.includes('مصحف') || q.includes('تلاوة') || q.includes('فاتحة') || q.includes('يس')) {
       onNavigate('quran');
-    } else if (q.includes('إذاعة') || q.includes('مكة') || q.includes('راديو') || q.includes('بث') || q.includes('صوت')) {
+    } else if (q.includes('حديث') || q.includes('سنة') || q.includes('بخاري') || q.includes('مسلم')) {
+      onNavigate('hadith');
+    } else if (q.includes('أكاديمية') || q.includes('دورة') || q.includes('تسميع') || q.includes('إجازة')) {
+      onNavigate('academy');
+    } else if (q.includes('عالم') || q.includes('شيخ') || q.includes('مقرئ')) {
+      onNavigate('scholars');
+    } else if (q.includes('إذاعة') || q.includes('مكة') || q.includes('راديو') || q.includes('بث')) {
       onNavigate('radio');
     } else if (q.includes('مهتدي') || q.includes('جدد') || q.includes('دعوة') || q.includes('إسلام')) {
       onNavigate('newMuslims');
-    } else if (q.includes('علم') || q.includes('فقه') || q.includes('حديث') || q.includes('شريعة') || q.includes('دبلوم')) {
-      onNavigate('sciences');
-    } else if (q.includes('كتب') || q.includes('مكتبة') || q.includes('بحث')) {
-      onNavigate('library');
     } else if (q.includes('وقف') || q.includes('تبرع') || q.includes('زكاة') || q.includes('صدقة')) {
       onNavigate('waqf');
     } else {
@@ -354,9 +360,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
-          {/* Pillar 1 */}
+          {/* Pillar 1: Quran & Maqra'ah */}
           <div 
             onClick={() => onNavigate('quran')}
             className="group p-6 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 transition-all cursor-pointer shadow-xl space-y-4 flex flex-col justify-between hover:translate-y-[-2px]"
@@ -366,21 +372,43 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <BookOpen className="w-6 h-6" />
               </div>
               <h3 className="text-base font-black text-white group-hover:text-amber-300 transition-colors">
-                المقرأة القرآنية والإجازات
+                المصحف الشريف والمقرأة القرآنية
               </h3>
               <p className="text-xs text-slate-300 leading-relaxed">
-                حلقات قرآنية نموذجية إلكترونية وحضورية، مع منح الإجازات بالسند المتصل إلى رسول الله ﷺ بالقراءات العشر الصغرى والكبرى.
+                مصحف إلكتروني معتمد بالرسم العثماني، وترجمات موثقة لمعاني الآيات، مع حلقات تسميع وتصحيح التلاوة وإجازة القراءات العشر.
               </p>
             </div>
             <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-amber-400">
-              <span>استكشف الحلقات</span>
+              <span>تصفح المصحف والمقارئ</span>
               <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
             </div>
           </div>
 
-          {/* Pillar 2 */}
+          {/* Pillar 2: Hadith Encyclopedia */}
           <div 
-            onClick={() => onNavigate('sciences')}
+            onClick={() => onNavigate('hadith')}
+            className="group p-6 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-amber-500/50 transition-all cursor-pointer shadow-xl space-y-4 flex flex-col justify-between hover:translate-y-[-2px]"
+          >
+            <div className="space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <BookCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-black text-white group-hover:text-amber-300 transition-colors">
+                موسوعة السنة النبوية المطهرة
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                دواوين الحديث التسعة المعتمدة (البخاري، مسلم، السنن) مع ضبط الأسانيد، ودرجات الصحة، والشرح الميسر وغريب الألفاظ.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-amber-400">
+              <span>دخول موسوعة الحديث</span>
+              <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
+          </div>
+
+          {/* Pillar 3: Academy & Virtual Rooms */}
+          <div 
+            onClick={() => onNavigate('academy')}
             className="group p-6 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer shadow-xl space-y-4 flex flex-col justify-between hover:translate-y-[-2px]"
           >
             <div className="space-y-3">
@@ -388,41 +416,63 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <GraduationCap className="w-6 h-6" />
               </div>
               <h3 className="text-base font-black text-white group-hover:text-emerald-300 transition-colors">
-                كلية العلوم الإسلامية
+                أكاديمية النور والمقارئ الافتراضية
               </h3>
               <p className="text-xs text-slate-300 leading-relaxed">
-                برامج أكاديمية في الفقه المقارن، أصول الفقه، الحديث النبوي، التفسير والعقيدة، مع شهادات ودبلومات تخصصية معتمدة.
+                برامج حفظ متقن، وغرف تسميع صوتية مباشرة 24 ساعة، وتصحيح تسجيلات التلاوة، مع نظام إصدار الشهادات بالسند المتصل.
               </p>
             </div>
             <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-emerald-400">
-              <span>تصفح المناهج والدورات</span>
+              <span>استكشف برامج الأكاديمية</span>
               <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
             </div>
           </div>
 
-          {/* Pillar 3 */}
+          {/* Pillar 4: Verified Scholars */}
           <div 
-            onClick={() => onNavigate('library')}
+            onClick={() => onNavigate('scholars')}
             className="group p-6 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 transition-all cursor-pointer shadow-xl space-y-4 flex flex-col justify-between hover:translate-y-[-2px]"
           >
             <div className="space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <Library className="w-6 h-6" />
+                <Users className="w-6 h-6" />
               </div>
               <h3 className="text-base font-black text-white group-hover:text-blue-300 transition-colors">
-                المكتبة والبحوث الرقمية
+                هيئة كبار العلماء والمقرئين المعتمدين
               </h3>
               <p className="text-xs text-slate-300 leading-relaxed">
-                مكتبة رقمية شاملة تضم أمهات المصادر والمراجع، مع مساعد بحثي ذكي متخصص للإجابة على الاستفسارات العلمية والشرعية الموثقة.
+                نخبة من كبار أئمة الإقراء وعلماء الفقه والحديث، مع عرض أسانيدهم المتصلة وإمكانية حجز جلسات إقراء فردية مباشرة.
               </p>
             </div>
             <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-blue-400">
-              <span>دخول المكتبة والباحث</span>
+              <span>دليل العلماء وحجز الجلسات</span>
               <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
             </div>
           </div>
 
-          {/* Pillar 4 */}
+          {/* Pillar 5: AI Scholar Knowledge Assistant */}
+          <div 
+            onClick={() => onNavigate('aiScholar')}
+            className="group p-6 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-amber-400/50 transition-all cursor-pointer shadow-xl space-y-4 flex flex-col justify-between hover:translate-y-[-2px]"
+          >
+            <div className="space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <h3 className="text-base font-black text-white group-hover:text-amber-300 transition-colors">
+                المساعد المعرفي الإسلامي الموثق
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                محرك بحث ذكي منضبط بالضوابط الشرعية، موثق بالأدلة من الكتاب والسنة وأقوال أئمة السلف، لمساعدة الباحثين والطلاب.
+              </p>
+            </div>
+            <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-amber-400">
+              <span>طرح مسألة علمية</span>
+              <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
+          </div>
+
+          {/* Pillar 6: Waqf & Charities */}
           <div 
             onClick={() => onNavigate('waqf')}
             className="group p-6 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 transition-all cursor-pointer shadow-xl space-y-4 flex flex-col justify-between hover:translate-y-[-2px]"
@@ -432,10 +482,10 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
                 <HeartHandshake className="w-6 h-6" />
               </div>
               <h3 className="text-base font-black text-white group-hover:text-purple-300 transition-colors">
-                الأوقاف والمشاريع الخيرية
+                الأوقاف والمشاريع الخيرية التنموية
               </h3>
               <p className="text-xs text-slate-300 leading-relaxed">
-                صناديق وقفية مستدامة لكفالة الحلقات والطلاب، ورعاية حفظة كتاب الله، وطباعة المصاحف الشريفة بنظام حوكمة وشفافية مالية تامة.
+                صناديق وقفية لكفالة الحلقات وحفظة كتاب الله، وطباعة المصاحف، وحاسبة الزكاة الشرعية بنظام حوكمة وشفافية تامة.
               </p>
             </div>
             <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-purple-400">

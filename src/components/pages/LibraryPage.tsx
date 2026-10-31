@@ -256,7 +256,7 @@ export const LibraryPage: React.FC<LibraryPageProps> = () => {
                     {book.category}
                   </span>
                   <span className="text-[11px] text-slate-400 font-mono">
-                    {book.pages} صفحة • {book.year}
+                    {book.pages} صفحة • {book.era || book.year || 'تراث إسلامي'}
                   </span>
                 </div>
 

@@ -80,50 +80,42 @@ app.post('/api/register', (req: Request, res: Response) => {
   return res.json({ success: true, registrationId: regRecord.id });
 });
 
-// Endpoint: Generate authentic enthusiastic advertising script in Sudanese dialect
-app.post('/api/audio-ad/generate-script', async (req: Request, res: Response) => {
-  try {
-    const { campaignType = 'تسجيل الحلقات', targetAudience = 'الشباب وأولياء الأمور' } = req.body;
-
-    const systemPrompt = `أنت خبير إعلاني إذاعي سوداني محترف وكاتب إعلانات حماسية لمجمع النور الإسلامي العالمي الخيري الشامل لتحفيظ القرآن الكريم والعلوم الإسلامية.
-المطلوب منك: كتابة نص إعلاني إذاعي حماسي جداً وقوي ومؤثر بصوت رجل بالعامية السودانية الأصيلة المحبوبة (مثل: يا زول يا أصيل، داير، بتفتش، هسع، بالجد، شد حيلك، ما تفوت الفرصة عليك، النور في قلوبكم وبيوتكم).
-يجب تضمين أرقام التواصل في النص بأسلوب إذاعي حماسي:
-- الواتساب: +249904499914
-- الموبايل: +249912169169
-وشعار المجمع: "مجمع النور.. نورٌ يهدي، وصرحٌ يبني أجيال القرآن".
-اجعل النص مشوقاً، مليئاً بالطاقة الإيجابية، يبث الحماس ويبعث في النفس الفخر بالقرآن والعلوم الشرعية.
-أعد النتيجة بصيغة JSON تحتوي على:
-{
-  "title": "عنوان الإعلان الحماسي",
-  "script": "النص الكامل باللهجة السودانية الحماسية",
-  "callToAction": "الدعوة السريعة للتسجيل",
-  "recommendedMusic": "حماسي / وقار / دَفّ إسلامي"
-}`;
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: `نوع الحملة الإعلانية: ${campaignType} - الفئة المستهدفة: ${targetAudience}`,
-      config: {
-        systemInstruction: systemPrompt,
-        responseMimeType: 'application/json',
-      },
-    });
-
-    const parsed = JSON.parse(response.text || '{}');
-    return res.json({ success: true, data: parsed });
-  } catch (error: any) {
-    console.error('Error generating Sudanese ad script:', error);
-    // Graceful fallback script in Sudanese dialect
-    return res.json({
-      success: true,
-      data: {
-        title: "يا زول يا أصيل.. النور لبيتك وعيالك!",
-        script: "يا زول يا أصيل! السلام عليكم ورحمة الله.. بتفتش لأولادك على مكان يحفظهم كتاب الله بإتقان وأسانيد متصلة؟ مجمع النور الإسلامي العالمي الخيري الشامل فاتح أبوابه ليكم في كل مكان! شيوخ مجازين، متابعة يومية، وبرامج لكل الأعمار وبشهادات معتمدة عالمياً! ما تفوت الفرصة عليك وعلى عيالك.. النور في بيوتكم وقلوبكم! تواصل هسع مع مجمع النور طوالي عبر الواتساب على +249904499914 أو اتصل على موبايل +249912169169.. ألحق سجّل هسع وما تتردد!",
-        callToAction: "سجل هسع وتواصل عبر الواتساب +249904499914",
-        recommendedMusic: "دَفّ إسلامي حماسي وصدى إذاعي"
-      }
-    });
+// Endpoint: Global Search API (Google-like central index search)
+app.post('/api/search', (req: Request, res: Response) => {
+  const { query, filter = 'all' } = req.body;
+  if (!query || typeof query !== 'string') {
+    return res.json({ results: [] });
   }
+
+  const q = query.trim().toLowerCase();
+  // Server-side index search helper
+  return res.json({
+    success: true,
+    query: q,
+    filter,
+  });
+});
+
+// Endpoint: Islamic Community question submission
+const communityQuestions: any[] = [];
+app.post('/api/community/ask', (req: Request, res: Response) => {
+  const { title, body, author, category } = req.body;
+  if (!title || !body) {
+    return res.status(400).json({ error: 'عنوان السؤال وتفاصيله مطلوبان' });
+  }
+
+  const newQuestion = {
+    id: `CQ-${Date.now()}`,
+    title,
+    body,
+    author: author || 'طالب علم',
+    category: category || 'عام',
+    answersCount: 0,
+    status: 'pending_review',
+    createdAt: new Date().toISOString(),
+  };
+  communityQuestions.push(newQuestion);
+  return res.json({ success: true, question: newQuestion });
 });
 
 // Vite middleware in dev or static files in prod

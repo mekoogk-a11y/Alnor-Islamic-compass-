@@ -162,7 +162,7 @@ export const SciencesPage: React.FC<SciencesPageProps> = ({ onNavigate }) => {
                         <span>مفردات الخطة الدراسية للمنهج:</span>
                       </h4>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                        {course.syllabus.map((item, idx) => (
+                        {course.syllabus?.map((item: string, idx: number) => (
                           <div
                             key={idx}
                             className="p-3 bg-slate-900 rounded-xl border border-slate-800/80 flex items-center gap-2.5 text-slate-200"

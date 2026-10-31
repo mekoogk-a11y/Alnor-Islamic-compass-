@@ -95,7 +95,8 @@ export const WaqfPage: React.FC<WaqfPageProps> = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {WAQF_PROJECTS.map((project) => {
-            const percentage = Math.min(100, Math.round((project.collectedAmount / project.targetAmount) * 100));
+            const collected = project.collectedAmount ?? project.currentAmount ?? 0;
+            const percentage = Math.min(100, Math.round((collected / project.targetAmount) * 100));
             return (
               <div
                 key={project.id}
@@ -107,7 +108,7 @@ export const WaqfPage: React.FC<WaqfPageProps> = () => {
                       {project.category}
                     </span>
                     <span className="text-xs text-emerald-400 font-bold">
-                      سهم المشاركة: ${project.shareAmount}
+                      سهم المشاركة: ${project.shareAmount || 50}
                     </span>
                   </div>
 
@@ -120,13 +121,13 @@ export const WaqfPage: React.FC<WaqfPageProps> = () => {
                   </p>
 
                   <div className="text-xs text-slate-400 font-medium">
-                    الأثر المبارك: <strong className="text-white">{project.beneficiaries}</strong>
+                    الأثر المبارك: <strong className="text-white">{project.beneficiaries || `${project.beneficiariesCount || 1000} مستفيد`}</strong>
                   </div>
 
                   {/* Progress Bar */}
                   <div className="space-y-1.5 pt-2">
                     <div className="flex justify-between text-[11px] text-slate-400 font-mono">
-                      <span>تم جمع: ${project.collectedAmount.toLocaleString()}</span>
+                      <span>تم جمع: ${collected.toLocaleString()}</span>
                       <span>الهدف: ${project.targetAmount.toLocaleString()} ({percentage}%)</span>
                     </div>
                     <div className="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
