@@ -17,8 +17,8 @@ export default defineConfig(() => {
           name: 'مجمع النور الإسلامي العالمي الخيري الشامل لتحفيظ القرآن الكريم والعلوم الإسلامية',
           short_name: 'مجمع النور',
           description: 'البوابة الإلكترونية لمجمع النور الإسلامي العالمي - تحفيظ القرآن الكريم والإجازات والعلوم الشرعية والأوقاف.',
-          theme_color: '#022c22',
-          background_color: '#020617',
+          theme_color: '#394E43',
+          background_color: '#F7F5EF',
           display: 'standalone',
           orientation: 'portrait-primary',
           start_url: '/',
@@ -80,8 +80,7 @@ export default defineConfig(() => {
           ],
         },
         devOptions: {
-          enabled: true,
-          type: 'module',
+          enabled: false,
         },
       }),
     ],
@@ -91,8 +90,9 @@ export default defineConfig(() => {
       },
     },
     server: {
-      hmr: process.env.DISABLE_HMR !== 'true',
-      watch: process.env.DISABLE_HMR === 'true' ? null : {},
+      port: 3000,
+      host: '0.0.0.0',
+      hmr: false,
     },
   };
 });

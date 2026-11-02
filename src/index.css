@@ -1,11 +1,56 @@
 @import "tailwindcss";
 
+:root {
+  /* Al-Noor Global Islamic Platform Design System */
+  --color-ivory: #F7F5EF;
+  --color-cream: #F0EDE4;
+  --color-champagne: #E5DCCB;
+  --color-beige: #D8CEBB;
+  --color-olive: #657568;
+  --color-deep-green: #394E43;
+  --color-charcoal: #343832;
+  --color-subtle-gold: #B9A477;
+
+  /* Semantic Theme Tokens (Default: Light / Warm Ivory & Cream) */
+  --bg-main: #F7F5EF;
+  --bg-surface: #F0EDE4;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #E5DCCB;
+  --border-fine: #E5DCCB;
+  --border-strong: #D8CEBB;
+  --border-gold: rgba(185, 164, 119, 0.4);
+  --text-main: #343832;
+  --text-muted: #5E655B;
+  --text-faint: #80887D;
+  --accent-primary: #394E43;
+  --accent-secondary: #657568;
+  --accent-gold: #B9A477;
+}
+
+.dark {
+  /* Warm Deep Charcoal Night Palette (Harmonious with Ivory Identity) */
+  --bg-main: #1F221E;
+  --bg-surface: #272B25;
+  --bg-card: #2C322A;
+  --bg-subtle: #363D34;
+  --border-fine: #3A4237;
+  --border-strong: #4A5447;
+  --border-gold: rgba(185, 164, 119, 0.35);
+  --text-main: #F7F5EF;
+  --text-muted: #D8CEBB;
+  --text-faint: #9EA89A;
+  --accent-primary: #4D6657;
+  --accent-secondary: #7A8C7E;
+  --accent-gold: #CBB991;
+}
+
 @layer base {
   body {
     font-family: 'Cairo', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #020617;
-    color: #f8fafc;
+    background-color: var(--bg-main);
+    color: var(--text-main);
     overflow-x: hidden;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 }
 
@@ -17,64 +62,61 @@
   font-family: 'Cinzel', serif;
 }
 
-/* Subtle luxury geometric grid pattern */
+/* Subtle, sophisticated Islamic sacred geometric watermark */
 .bg-islamic-pattern {
-  background-image: radial-gradient(rgba(245, 158, 11, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(101, 117, 104, 0.12) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
-/* Custom luxury scrollbar */
+.dark .bg-islamic-pattern {
+  background-image: radial-gradient(rgba(185, 164, 119, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Premium Minimalist Institutional Card */
+.institutional-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-fine);
+  box-shadow: 0 4px 20px -4px rgba(52, 56, 50, 0.05);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.institutional-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 10px 25px -5px rgba(52, 56, 50, 0.08);
+}
+
+.dark .institutional-card {
+  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.3);
+}
+
+.dark .institutional-card:hover {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
+}
+
+/* Subtle Gold Luxury Border Plate */
+.gold-plate-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-gold);
+  box-shadow: 0 4px 15px -3px rgba(185, 164, 119, 0.08);
+}
+
+/* Custom refined institutional scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(2, 6, 23, 0.6);
+  background: var(--bg-surface);
   border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(217, 119, 6, 0.4);
+  background: var(--border-strong);
   border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(245, 158, 11, 0.7);
-}
-
-/* Luxury card glow and glassmorphism */
-.luxury-card {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.75) 0%, rgba(2, 44, 34, 0.45) 50%, rgba(2, 6, 23, 0.85) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(245, 158, 11, 0.15);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.luxury-card:hover {
-  border-color: rgba(245, 158, 11, 0.35);
-  box-shadow: 0 20px 40px -15px rgba(245, 158, 11, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-}
-
-/* Subtle shimmer animation for high-impact CTA */
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.animate-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.animate-shimmer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-  animation: shimmer 2.5s infinite;
+  background: var(--accent-secondary);
 }

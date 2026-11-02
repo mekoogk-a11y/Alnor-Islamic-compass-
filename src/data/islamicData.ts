@@ -1,4 +1,4 @@
-import { ComplexGlobalInfo, QuranSurah, QuranReciter, IslamicCourse, LibraryBook, WaqfProject } from '../types';
+import { ComplexGlobalInfo, QuranSurah, QuranReciter, IslamicCourse, LibraryBook, WaqfProject, LiveRadioStation } from '../types';
 
 export const COMPLEX_INFO: ComplexGlobalInfo = {
   name: 'مجمع النور الإسلامي العالمي الخيري الشامل لتحفيظ القرآن الكريم والعلوم الإسلامية',
@@ -117,61 +117,118 @@ export const QURAN_TRANSLATION_AUTHORITIES: Record<string, { name: string; trans
   },
 };
 
-export const MAKKAH_LIVE_RADIO_STATIONS = [
+export const MAKKAH_LIVE_RADIO_STATIONS: LiveRadioStation[] = [
   {
     id: 'makkah-live',
-    name: 'إذاعة القرآن الكريم مباشر من مكة المكرمة (الحرم المكي)',
-    nameEn: 'Holy Quran Radio Live from Makkah Al-Mukarramah',
+    name: 'إذاعة القرآن الكريم - تلاوات الحرمين الشريفين (مباشر 24/7)',
+    nameEn: 'Holy Quran Radio - Two Holy Mosques Live Broadcast',
     origin: 'مكة المكرمة • المسجد الحرام',
-    streamUrl: 'https://backup.qurango.net/radio/makkah',
+    streamUrl: 'https://backup.qurango.net/radio/mix',
+    backupUrls: [
+      'https://qurango.net/radio/mix',
+      'https://backup.qurango.net/radio/abdulrahman_alsudaes',
+      'https://backup.qurango.net/radio/bandar_balilah',
+      'https://backup.qurango.net/radio/tarateel'
+    ],
     frequency: '98.0 FM • مكة المكرمة',
-    description: 'بث مباشر متواصل 24 ساعة من أروقة المسجد الحرام بمكة المكرمة بأصوات أئمة الحرم المكي الشريف (السديس، المعيقلي، الدوسري، بليلة، الجهني).',
+    description: 'بث مباشر متواصل 24 ساعة لصفوة تلاوات المسجد الحرام بمكة المكرمة والمسجد النبوي الشريف بجودة صوتية فائقة النقاء.',
     badge: 'بث مباشر من الكعبة المشرفة 🕋',
-    featuredImam: 'أئمة الحرم المكي الشريف',
+    featuredImam: 'أئمة الحرم المكي والمسجد النبوي',
   },
   {
-    id: 'saudi-quran',
-    name: 'إذاعة القرآن الكريم من المملكة العربية السعودية',
-    nameEn: 'Saudi Quran Radio (Riyadh Official Broadcast)',
-    origin: 'الرياض • المملكة العربية السعودية',
-    streamUrl: 'https://backup.qurango.net/radio/saudi',
-    frequency: '100.0 FM • البث العام',
-    description: 'البث الإذاعي الرسمي المعتمد من هيئة الإذاعة والتلفزيون بالمملكة العربية السعودية لبرامج التفسير والختمات المرتلة.',
-    badge: 'البث الرسمي المعتمد',
-    featuredImam: 'كبار قراء العالم الإسلامي',
+    id: 'makkah-sudaes',
+    name: 'إذاعة إمام وخطيب المسجد الحرام - الشيخ د. عبدالرحمن السديس',
+    nameEn: 'Sheikh Abdulrahman Al-Sudais Radio - Grand Mosque Imam',
+    origin: 'مكة المكرمة • الحرم المكي',
+    streamUrl: 'https://backup.qurango.net/radio/abdulrahman_alsudaes',
+    backupUrls: [
+      'https://qurango.net/radio/abdulrahman_alsudaes',
+      'https://backup.qurango.net/radio/mix',
+      'https://backup.qurango.net/radio/saud_alshuraim'
+    ],
+    frequency: '100.0 FM • الحرم المكي',
+    description: 'تلاوات خاشعة مرتلة ومجودة بصوت معالي الشيخ الدكتور عبد الرحمن السديس، إمام وخطيب المسجد الحرام.',
+    badge: 'إمام الحرم المكي الشريف',
+    featuredImam: 'الشيخ د. عبدالرحمن السديس',
   },
   {
-    id: 'cairo-quran',
-    name: 'إذاعة القرآن الكريم من القاهرة (بث مباشر)',
-    nameEn: 'Holy Quran Radio from Cairo',
-    origin: 'القاهرة • جمهورية مصر العربية',
-    streamUrl: 'https://stream.radiojar.com/8s5u8p4845ruv',
-    frequency: '98.2 FM • القاهرة',
-    description: 'أعرق إذاعة قرآنية في العالم العربي، تنقل تلاوات عمالقة المقرئين: الشيخ عبد الباسط، المنشاوي، الحصري، ومصطفى إسماعيل.',
-    badge: 'صوت التلاوة المجودة',
-    featuredImam: 'عمالقة الترتيل والتجويد',
+    id: 'makkah-maher',
+    name: 'إذاعة إمام المسجد الحرام - الشيخ د. ماهر المعيقلي',
+    nameEn: 'Sheikh Maher Al-Muaiqly Radio - Makkah Live',
+    origin: 'مكة المكرمة • الكعبة المشرفة',
+    streamUrl: 'https://backup.qurango.net/radio/maher',
+    backupUrls: [
+      'https://qurango.net/radio/maher',
+      'https://backup.qurango.net/radio/bandar_balilah',
+      'https://backup.qurango.net/radio/mix'
+    ],
+    frequency: '99.5 FM • مكة المكرمة',
+    description: 'تلاوات باهرة خاشعة ومحبوبة للمسلمين حول العالم بصوت الشيخ الدكتور ماهر المعيقلي، إمام المسجد الحرام.',
+    badge: 'تلاوات الحرم المكي الخاشعة',
+    featuredImam: 'الشيخ د. ماهر المعيقلي',
   },
   {
-    id: 'tarteel-live',
-    name: 'إذاعة الترتيل الدولية والتلاوات الخاشعة (مباشر 24/7)',
+    id: 'makkah-balilah',
+    name: 'إذاعة إمام المسجد الحرام - الشيخ د. بندر بليلة',
+    nameEn: 'Sheikh Bandar Baleelah Radio - Makkah Grand Mosque',
+    origin: 'مكة المكرمة • المسجد الحرام',
+    streamUrl: 'https://backup.qurango.net/radio/bandar_balilah',
+    backupUrls: [
+      'https://qurango.net/radio/bandar_balilah',
+      'https://backup.qurango.net/radio/saud_alshuraim',
+      'https://backup.qurango.net/radio/mix'
+    ],
+    frequency: '97.4 FM • مكة المكرمة',
+    description: 'تلاوات محبرة برواية حفص عن عاصم من صلوات التراويح والفرائض بأروقة الحرم المكي الشريف.',
+    badge: 'تلاوات التراويح والفرائض 🕋',
+    featuredImam: 'الشيخ د. بندر بليلة',
+  },
+  {
+    id: 'sudan-quran',
+    name: 'إذاعة القراء السودانيين (الشيخ الفاتح الزبير والشيخ الزين)',
+    nameEn: 'Sudanese Quran Radio - Sheikh Al-Fateh Al-Zubair & Al-Zain',
+    origin: 'السودان • رواية الدوري عن أبي عمرو',
+    streamUrl: 'https://backup.qurango.net/radio/alfateh_alzubair',
+    backupUrls: [
+      'https://backup.qurango.net/radio/alzain_mohammad_ahmad',
+      'https://qurango.net/radio/alfateh_alzubair',
+      'https://backup.qurango.net/radio/mix'
+    ],
+    frequency: '102.5 FM • البث السوداني الأصيل',
+    description: 'إذاعة متخصصة لتلاوات القرآن الكريم برواية الدوري عن أبي عمرو البصري بأصوات كبار قراء السودان الشيخ الفاتح محمد الزبير والشيخ الزين محمد أحمد.',
+    badge: 'رواية الدوري عن أبي عمرو 🇸🇩',
+    featuredImam: 'الشيخ الفاتح الزبير والشيخ الزين أحمد',
+  },
+  {
+    id: 'tarateel-live',
+    name: 'إذاعة التراتيل القرآنية الخاشعة والتلاوات الدولية (24/7)',
     nameEn: 'International Tarteel & Khushoo Broadcast',
     origin: 'المنصة العالمية لمجمع النور',
-    streamUrl: 'https://backup.qurango.net/radio/tarteel',
+    streamUrl: 'https://backup.qurango.net/radio/tarateel',
+    backupUrls: [
+      'https://qurango.net/radio/tarateel',
+      'https://backup.qurango.net/radio/sakeenah',
+      'https://backup.qurango.net/radio/mix'
+    ],
     frequency: '104.5 FM • البث الرقمي العالمي',
-    description: 'بث حي متواصل لأجمل التلاوات القرآنية الخاشعة والمؤثرة بأصوات خيرة المقرئين المجازين بالقراءات العشر.',
-    badge: 'تلاوات خاشعة متواصلة',
-    featuredImam: 'صفوة قراء الحرمين والعالم',
+    description: 'بث حي متواصل لأجمل التلاوات القرآنية الخاشعة والمؤثرة بأصوات خيرة المقرئين المعتمدين والمجازين بالقراءات العشر.',
+    badge: 'تلاوات خاشعة متواصلة 🌿',
+    featuredImam: 'صفوة قراء العالم الإسلامي',
   },
   {
-    id: 'makkah-adhan',
-    name: 'إذاعة الأذان والتكبيرات من الحرم المكي الشريف',
-    nameEn: 'Live Makkah Adhan & Takbeerat Broadcast',
-    origin: 'مكة المكرمة • المكبرية',
-    streamUrl: 'https://backup.qurango.net/radio/takbeer',
-    frequency: '93.5 FM • مكة المكرمة',
-    description: 'بث حي متصل لأذان الصلوات الخمس والتكبيرات والأذكار المأثورة مباشرة من المكبرية بالمسجد الحرام بمكة المكرمة.',
-    badge: 'أذان وتكبيرات مكة المكرمة',
-    featuredImam: 'مؤذنو الحرم المكي الشريف',
+    id: 'quran-tafseer',
+    name: 'إذاعة تفسير القرآن الكريم وبيان معاني الآيات',
+    nameEn: 'Holy Quran Exegesis & Tafsir Radio',
+    origin: 'مجمع النور • قسم الدراسات القرآنية',
+    streamUrl: 'https://backup.qurango.net/radio/tafseer',
+    backupUrls: [
+      'https://qurango.net/radio/tafseer',
+      'https://backup.qurango.net/radio/mix'
+    ],
+    frequency: '92.0 FM • علوم القرآن',
+    description: 'شروح ميسرة وموثقة لمعاني آيات الذكر الحكيم مستخلصة من أمهات كتب التفسير (تفسير الطبري وابن كثير والسعدي).',
+    badge: 'علوم القرآن والتفسير الميسر',
+    featuredImam: 'نخبة من علماء التفسير والبيان',
   },
 ];
 

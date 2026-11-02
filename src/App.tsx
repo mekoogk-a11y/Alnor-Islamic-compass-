@@ -28,6 +28,9 @@ import { AboutPage } from './components/pages/AboutPage';
 import { RegisterPage } from './components/pages/RegisterPage';
 import { NewMuslimsPage } from './components/pages/NewMuslimsPage';
 import { LiveMakkahQuranRadio } from './components/LiveMakkahQuranRadio';
+import { SudaneseAudioStudioPage } from './components/pages/SudaneseAudioStudioPage';
+import { ApiGatewayPage } from './components/pages/ApiGatewayPage';
+import { PrayerTimesBar } from './components/PrayerTimesBar';
 
 import { NavigationPage } from './types';
 import { COMPLEX_INFO } from './data/islamicData';
@@ -37,7 +40,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { 
   BookOpen, Globe, Mail, MapPin, Sparkles, ChevronLeft, 
-  WifiOff, Laptop, Phone, MessageCircle, Radio, Compass, Scroll, GraduationCap, Users 
+  WifiOff, Laptop, Phone, MessageCircle, Radio, Compass, Scroll, GraduationCap, Users, Mic, Zap 
 } from 'lucide-react';
 
 function MainAppContent() {
@@ -54,13 +57,13 @@ function MainAppContent() {
   };
 
   return (
-    <div className={`min-h-screen bg-slate-950 dark:bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950 antialiased pb-36 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
+    <div className={`min-h-screen bg-[#F7F5EF] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] flex flex-col font-sans selection:bg-[#394E43] selection:text-[#F7F5EF] antialiased pb-36 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
       
       {/* Offline Alert Indicator if user loses connection */}
       {!isOnline && (
-        <div className="bg-amber-600 text-slate-950 text-xs font-black py-2 px-4 text-center flex items-center justify-center gap-2 sticky top-0 z-50 shadow-md">
+        <div className="bg-[#B9A477] text-[#343832] text-xs font-bold py-2 px-4 text-center flex items-center justify-center gap-2 sticky top-0 z-50 shadow-sm border-b border-[#D8CEBB]">
           <WifiOff className="w-4 h-4" />
-          <span>أنت الآن في وضع عدم الاتصال (Offline) - يتم استخدام البيانات المحفوظة في التطبيق.</span>
+          <span>أنت الآن في وضع عدم الاتصال (Offline) - يتم استخدام البيانات المحفوظة محلياً في المنصة.</span>
         </div>
       )}
 
@@ -70,6 +73,9 @@ function MainAppContent() {
         onNavigate={handleNavigate}
         onOpenSearch={() => setIsSearchOpen(true)}
       />
+
+      {/* Real-time Astronomical Prayer Times & Hijri Calendar Bar */}
+      <PrayerTimesBar />
 
       {/* Main Pages Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-12">
@@ -88,15 +94,22 @@ function MainAppContent() {
         {currentPage === 'waqf' && <WaqfPage onNavigate={handleNavigate} />}
         {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
         {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
+        {currentPage === 'audioStudio' && <SudaneseAudioStudioPage onNavigate={handleNavigate} />}
+        {currentPage === 'apiGateway' && <ApiGatewayPage onNavigate={handleNavigate} />}
         {currentPage === 'radio' && (
           <div className="space-y-8 animate-fade-in">
             <LiveMakkahQuranRadio initialExpanded={true} />
           </div>
         )}
+
+        {/* Global Floating Docked Radio Player when navigating other subpages */}
+        {currentPage !== 'radio' && currentPage !== 'home' && (
+          <LiveMakkahQuranRadio dockedMode={true} />
+        )}
       </main>
 
-      {/* Global Comprehensive Islamic Footer */}
-      <footer className="border-t border-emerald-950/80 bg-slate-950 text-slate-400 pt-14 pb-12 xl:pb-8 px-4 text-xs">
+      {/* Global Comprehensive Islamic Institutional Footer */}
+      <footer className="border-t border-[#D8CEBB] dark:border-[#3A4237] bg-[#343832] text-[#E5DCCB] pt-14 pb-12 xl:pb-8 px-4 text-xs transition-colors">
         <div className="max-w-7xl mx-auto space-y-12">
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
@@ -104,38 +117,38 @@ function MainAppContent() {
             {/* Column 1: Identity & Slogan (2 cols on lg) */}
             <div className="lg:col-span-2 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-emerald-600 p-0.5 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/10 shrink-0">
-                  <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center p-2 text-amber-400">
-                    <BookOpen className="w-7 h-7" />
+                <div className="w-11 h-11 rounded-2xl bg-[#282C26] p-0.5 flex items-center justify-center text-[#F7F5EF] border border-[#B9A477]/40 shrink-0">
+                  <div className="w-full h-full bg-[#394E43] rounded-[14px] flex items-center justify-center p-2 text-[#B9A477]">
+                    <BookOpen className="w-5 h-5 stroke-[2.2]" />
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-sm sm:text-base font-black text-white leading-tight">
+                  <h4 className="text-sm sm:text-base font-black text-[#F7F5EF] leading-tight">
                     {t.complexName}
                   </h4>
-                  <span className="text-xs text-emerald-400 font-medium">{t.heroBadge}</span>
+                  <span className="text-xs text-[#B9A477] font-medium">{t.heroBadge}</span>
                 </div>
               </div>
 
               {/* Official Slogan */}
-              <div className="p-3.5 bg-slate-900/90 rounded-2xl border border-amber-500/30 shadow-inner">
-                <span className="text-[11px] text-amber-400/90 font-bold block mb-0.5">
+              <div className="p-3.5 bg-[#282C26] rounded-2xl border border-[#B9A477]/30 shadow-sm">
+                <span className="text-[11px] text-[#B9A477] font-bold block mb-0.5">
                   {lang === 'ar' ? 'الشعار الرسمي المعتمد:' : 'Official Slogan:'}
                 </span>
-                <span className="text-base sm:text-lg font-amiri font-black text-amber-300">
-                  {t.sloganQuote}
+                <span className="text-base sm:text-lg font-amiri font-bold text-[#F7F5EF]">
+                  «نورٌ يهدي، وعلمٌ يبني»
                 </span>
               </div>
 
-              <p className="text-xs text-slate-400 leading-relaxed max-w-md">
+              <p className="text-xs text-[#D8CEBB] leading-relaxed max-w-md">
                 {t.heroDesc}
               </p>
 
               {/* PWA Install Promotion Box */}
-              <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-800 flex items-center justify-between gap-3">
+              <div className="p-3 bg-[#282C26] rounded-xl border border-[#464D43] flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <Laptop className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span className="text-[11px] text-slate-300">
+                  <Laptop className="w-4 h-4 text-[#B9A477] shrink-0" />
+                  <span className="text-[11px] text-[#D8CEBB]">
                     {lang === 'ar' ? 'متوافق كتطبيق على أجهزة الحاسوب والآيفون والأندرويد' : 'Installable on Desktop, iPhone & Android'}
                   </span>
                 </div>
@@ -145,58 +158,76 @@ function MainAppContent() {
 
             {/* Column 2: Quick Links */}
             <div className="space-y-3">
-              <h5 className="text-sm font-bold text-white border-b border-slate-800 pb-2">
+              <h5 className="text-sm font-bold text-[#F7F5EF] border-b border-[#464D43] pb-2">
                 {lang === 'ar' ? 'أقسام البوابة الإلكترونية' : 'Portal Navigation'}
               </h5>
               <ul className="space-y-2 text-xs">
                 <li>
-                  <button onClick={() => handleNavigate('home')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-slate-600 ${isRtl ? '' : 'rotate-180'}`} />
+                  <button onClick={() => handleNavigate('home')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 text-[#D8CEBB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{t.navHome}</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate('quran')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-slate-600 ${isRtl ? '' : 'rotate-180'}`} />
+                  <button onClick={() => handleNavigate('quran')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 text-[#D8CEBB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{t.navQuran}</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate('hadith')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5 font-bold text-amber-300">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-amber-500 ${isRtl ? '' : 'rotate-180'}`} />
+                  <button onClick={() => handleNavigate('hadith')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 font-bold text-[#F7F5EF]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{lang === 'ar' ? 'موسوعة السنة النبوية' : 'Hadith Encyclopedia'}</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate('academy')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-slate-600 ${isRtl ? '' : 'rotate-180'}`} />
+                  <button onClick={() => handleNavigate('academy')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 text-[#D8CEBB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{lang === 'ar' ? 'أكاديمية النور والمقارئ' : 'Quran Academy'}</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate('scholars')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-slate-600 ${isRtl ? '' : 'rotate-180'}`} />
+                  <button onClick={() => handleNavigate('scholars')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 text-[#D8CEBB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{lang === 'ar' ? 'هيئة كبار العلماء' : 'Scholars Directory'}</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate('aiScholar')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-slate-600 ${isRtl ? '' : 'rotate-180'}`} />
+                  <button onClick={() => handleNavigate('aiScholar')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 text-[#D8CEBB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{lang === 'ar' ? 'المساعد العلمي الذكي' : 'AI Islamic Scholar'}</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate('newMuslims')} className="hover:text-amber-400 transition-colors flex items-center gap-1.5 font-bold text-emerald-300">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-emerald-500 ${isRtl ? '' : 'rotate-180'}`} />
+                  <button onClick={() => handleNavigate('newMuslims')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 font-bold text-[#E5DCCB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{t.navNewMuslims}</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate('radio')} className="text-amber-400 hover:text-amber-300 font-bold transition-colors flex items-center gap-1.5">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-amber-500 ${isRtl ? '' : 'rotate-180'}`} />
+                  <button onClick={() => handleNavigate('radio')} className="text-[#B9A477] hover:text-[#F7F5EF] font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
                     <span className="flex items-center gap-1">
                       <Radio className="w-3.5 h-3.5 animate-pulse" />
                       <span>{lang === 'ar' ? 'إذاعة القرآن الكريم (مباشر من مكة) 🕋' : 'Holy Quran Radio (Makkah Live)'}</span>
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('audioStudio')} className="text-[#D8CEBB] hover:text-[#B9A477] font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span className="flex items-center gap-1">
+                      <Mic className="w-3.5 h-3.5 text-[#B9A477] animate-pulse" />
+                      <span>{lang === 'ar' ? 'استوديو الصوت الإعلاني السوداني 🇸🇩' : 'Sudanese Voice Ads Studio'}</span>
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('apiGateway')} className="text-[#D8CEBB] hover:text-[#B9A477] font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span className="flex items-center gap-1">
+                      <Zap className="w-3.5 h-3.5 text-[#B9A477]" />
+                      <span>{lang === 'ar' ? 'بوابة واجهات API السحابية ⚡' : 'API Gateway & Architecture'}</span>
                     </span>
                   </button>
                 </li>
@@ -205,10 +236,10 @@ function MainAppContent() {
 
             {/* Column 3: Academic & Maqra'ah Tracks */}
             <div className="space-y-3">
-              <h5 className="text-sm font-bold text-white border-b border-slate-800 pb-2">
+              <h5 className="text-sm font-bold text-[#F7F5EF] border-b border-[#464D43] pb-2">
                 {lang === 'ar' ? 'المسارات والبرامج' : 'Programs & Tracks'}
               </h5>
-              <ul className="space-y-2 text-xs text-slate-400">
+              <ul className="space-y-2 text-xs text-[#D8CEBB]">
                 <li>• {lang === 'ar' ? 'مسار الحفظ المتقن (عن بُعد وحضورياً)' : 'Comprehensive Quran Memorization'}</li>
                 <li>• {lang === 'ar' ? 'مسار الإجازة بالسند المتصل (القراءات العشر)' : 'Continuous Chain (Isnad) Ijaza Track'}</li>
                 <li>• {lang === 'ar' ? 'مقارئ تصحيح التلاوة المباشرة 24/7' : 'Live Recitation Correction Rooms'}</li>
@@ -219,7 +250,7 @@ function MainAppContent() {
 
             {/* Column 4: Official Contact & Headquarters (No raw phone numbers) */}
             <div className="space-y-3">
-              <h5 className="text-sm font-bold text-white border-b border-slate-800 pb-2">
+              <h5 className="text-sm font-bold text-[#F7F5EF] border-b border-[#464D43] pb-2">
                 {lang === 'ar' ? 'التواصل الرسمي والمقر العام' : 'Official Contact & Office'}
               </h5>
               <div className="space-y-2.5 text-xs">
@@ -229,12 +260,12 @@ function MainAppContent() {
                   href={`https://wa.me/${COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('السلام عليكم ورحمة الله، استفسار عن مجمع النور')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-900/60 hover:border-emerald-500/50 transition-colors group"
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#282C26] border border-[#464D43] hover:border-[#B9A477] transition-colors group"
                 >
-                  <MessageCircle className="w-4 h-4 text-[#25D366] shrink-0" />
+                  <MessageCircle className="w-4 h-4 text-[#B9A477] shrink-0" />
                   <div>
-                    <span className="text-[10px] text-emerald-300/80 block">{t.contactWhatsapp}</span>
-                    <span className="text-white text-xs font-bold group-hover:text-emerald-300">
+                    <span className="text-[10px] text-[#B9A477] block">{t.contactWhatsapp}</span>
+                    <span className="text-[#F7F5EF] text-xs font-bold group-hover:text-[#B9A477]">
                       {t.chatWhatsapp}
                     </span>
                   </div>
@@ -243,30 +274,30 @@ function MainAppContent() {
                 {/* Direct Call Action */}
                 <a
                   href={`tel:${COMPLEX_INFO.phones.mobile.replace(/[^0-9+]/g, '')}`}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/40 transition-colors group"
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#282C26] border border-[#464D43] hover:border-[#B9A477] transition-colors group"
                 >
-                  <Phone className="w-4 h-4 text-amber-400 shrink-0" />
+                  <Phone className="w-4 h-4 text-[#B9A477] shrink-0" />
                   <div>
-                    <span className="text-[10px] text-slate-400 block">{t.contactMobile}</span>
-                    <span className="text-white text-xs font-bold group-hover:text-amber-300">
+                    <span className="text-[10px] text-[#D8CEBB] block">{t.contactMobile}</span>
+                    <span className="text-[#F7F5EF] text-xs font-bold group-hover:text-[#B9A477]">
                       {t.callDirect}
                     </span>
                   </div>
                 </a>
 
-                <div className="flex items-start gap-2">
-                  <Mail className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <div className="flex items-start gap-2 pt-1">
+                  <Mail className="w-4 h-4 text-[#B9A477] shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[10px] text-slate-500 block">{t.contactEmail}:</span>
-                    <span className="font-mono text-white text-xs font-bold">{COMPLEX_INFO.officialEmail}</span>
+                    <span className="text-[10px] text-[#80887D] block">{t.contactEmail}:</span>
+                    <span className="font-mono text-[#F7F5EF] text-xs font-bold">{COMPLEX_INFO.officialEmail}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-[#B9A477] shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[10px] text-slate-500 block">{t.contactAddress}:</span>
-                    <span className="text-white text-xs">{COMPLEX_INFO.headquarters}</span>
+                    <span className="text-[10px] text-[#80887D] block">{t.contactAddress}:</span>
+                    <span className="text-[#E5DCCB] text-xs">{COMPLEX_INFO.headquarters}</span>
                   </div>
                 </div>
               </div>
@@ -275,13 +306,13 @@ function MainAppContent() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-slate-900 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-right text-[11px] text-slate-500">
+          <div className="border-t border-[#464D43] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-right text-[11px] text-[#9EA89A]">
             <div>
               {lang === 'ar' 
                 ? `جميع الحقوق محفوظة © ${new Date().getFullYear()} مجمع النور الإسلامي • صرحٌ وقفي لله تعالى`
                 : `All Rights Reserved © ${new Date().getFullYear()} Al-Noor Islamic Complex • Charitable Waqf`}
             </div>
-            <div className="flex items-center gap-4 text-amber-400/80 font-amiri text-xs">
+            <div className="flex items-center gap-4 text-[#B9A477] font-amiri text-xs">
               <span>« وَقُل رَّبِّ زِدْنِي عِلْمًا »</span>
               <span>•</span>
               <span>« إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ »</span>

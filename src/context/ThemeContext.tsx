@@ -14,7 +14,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [theme, setThemeState] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem('alnoor_theme');
     if (saved === 'light' || saved === 'dark') return saved;
-    return 'dark'; // High-end obsidian luxury default
+    return 'light'; // Warm Ivory & Soft Cream default institutional aesthetic
   });
 
   useEffect(() => {

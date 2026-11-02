@@ -9,12 +9,28 @@ export type NavigationPage =
   | 'aiScholar'
   | 'newMuslims'
   | 'radio' 
+  | 'audioStudio'
   | 'waqf' 
   | 'community'
   | 'dashboard'
   | 'admin'
+  | 'apiGateway'
   | 'about' 
   | 'register';
+
+export interface SudaneseVoiceAd {
+  id: string;
+  titleAr: string;
+  titleEn: string;
+  category: 'general' | 'memorization' | 'sanad' | 'radio' | 'waqf';
+  durationSeconds: number;
+  pitch: number;
+  rate: number;
+  tone: string;
+  scriptSudanese: string;
+  scriptFormalSummary: string;
+  keyPhrases: string[];
+}
 
 export type Language = 
   | 'ar' 
@@ -32,7 +48,7 @@ export type Language =
 
 export type ThemeMode = 'dark' | 'light';
 
-export type UserRole = 'student' | 'teacher' | 'scholar' | 'admin' | 'visitor' | 'hafiz';
+export type UserRole = 'student' | 'teacher' | 'scholar' | 'admin' | 'visitor' | 'hafiz' | 'api_developer';
 
 export interface QuranAyah {
   number: number;
@@ -65,10 +81,37 @@ export interface LiveRadioStation {
   nameEn: string;
   origin: string;
   streamUrl: string;
+  backupUrls?: string[];
   frequency: string;
   description: string;
   badge: string;
   featuredImam?: string;
+}
+
+export interface QuranTranslationEdition {
+  id: string;
+  languageCode: string;
+  languageNameAr: string;
+  languageNameNative: string;
+  flagEmoji: string;
+  titleAr: string;
+  titleNative: string;
+  translator: string;
+  accreditation: string;
+  publisher: string;
+  yearPublished: string;
+  pagesCount: number;
+  fileSizeBytes: string;
+  pdfDownloadUrl: string;
+  archiveOrgUrl?: string;
+  sampleAyahs: {
+    surahNameAr: string;
+    surahNameNative: string;
+    ayahNumber: number;
+    arabicText: string;
+    translationText: string;
+  }[];
+  verifiedBadge: string;
 }
 
 export interface QuranReciter {
@@ -277,4 +320,106 @@ export interface CommunityQuestion {
   verifiedAnswerBy?: string;
   verifiedAnswerText?: string;
   tags: string[];
+}
+
+// ==========================================
+// API INTEGRATION ARCHITECTURE TYPES
+// ==========================================
+
+export interface PrayerTimesData {
+  city: string;
+  country: string;
+  timezone: string;
+  method: string;
+  date: string;
+  timings: {
+    Fajr: string;
+    Sunrise: string;
+    Dhuhr: string;
+    Asr: string;
+    Maghrib: string;
+    Isha: string;
+    Qiyam?: string;
+  };
+  nextPrayer: {
+    nameAr: string;
+    nameEn: string;
+    time: string;
+    timeRemainingFormatted: string;
+    minutesRemaining: number;
+  };
+  qiblaDirection: number; // degrees from North
+}
+
+export interface HijriDateData {
+  day: number;
+  dayNameAr: string;
+  dayNameEn: string;
+  month: number;
+  monthNameAr: string;
+  monthNameEn: string;
+  year: number;
+  formattedAr: string;
+  formattedEn: string;
+  isSacredMonth: boolean;
+  sacredMonthName?: string;
+  eventDescription?: string;
+}
+
+export interface ApiHealthStatus {
+  serviceId: string;
+  serviceName: string;
+  status: 'healthy' | 'degraded' | 'down';
+  latencyMs: number;
+  uptimePercentage: number;
+  lastChecked: string;
+  endpoint: string;
+  primaryProvider: string;
+  fallbackProvider: string;
+}
+
+export interface ApiKeyRecord {
+  id: string;
+  keyPrefix: string;
+  maskedKey: string;
+  name: string;
+  platform: 'web' | 'android' | 'ios' | 'partner' | 'scholar_portal';
+  scopes: string[];
+  createdAt: string;
+  lastUsedAt: string;
+  status: 'active' | 'revoked';
+  rateLimitPerMin: number;
+}
+
+export interface ApiTelemetryMetric {
+  totalRequestsToday: number;
+  avgLatencyMs: number;
+  cacheHitRatio: number;
+  errorRatePercentage: number;
+  requestsPerSecond: number;
+  activeClientTokens: number;
+}
+
+export interface DonationIntentRequest {
+  projectId: string;
+  amount: number;
+  currency: string;
+  donorName?: string;
+  donorEmail?: string;
+  isAnonymous?: boolean;
+  paymentMethod: 'card' | 'apple_pay' | 'google_pay' | 'stc_pay' | 'mada';
+}
+
+export interface DonationReceipt {
+  receiptId: string;
+  transactionRef: string;
+  projectId: string;
+  projectTitle: string;
+  amount: number;
+  currency: string;
+  donorName: string;
+  date: string;
+  status: 'succeeded' | 'processing';
+  verificationHash: string;
+  waqfCertificateUrl?: string;
 }

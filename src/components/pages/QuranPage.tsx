@@ -2,7 +2,8 @@ import React, { useState, useRef } from 'react';
 import { 
   BookOpen, Play, Pause, Volume2, Search, Check, 
   Award, Sparkles, ChevronRight, BookCheck, ShieldCheck, 
-  ArrowLeft, Globe, Radio, CheckCircle2, Languages, HelpCircle 
+  ArrowLeft, Globe, Radio, CheckCircle2, Languages, HelpCircle,
+  Download
 } from 'lucide-react';
 import { NavigationPage, QuranSurah, Language } from '../../types';
 import { FEATURED_SURAHS, RECITERS, QURAN_TRANSLATION_AUTHORITIES } from '../../data/islamicData';
@@ -82,9 +83,16 @@ export const QuranPage: React.FC<QuranPageProps> = ({ onNavigate }) => {
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button
               onClick={() => onNavigate('register')}
-              className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-lg shadow-amber-500/25 transition-all"
+              className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-lg shadow-amber-500/25 transition-all cursor-pointer"
             >
               سجل الآن في الحلقات القرآنية والإجازات
+            </button>
+            <button
+              onClick={() => onNavigate('library')}
+              className="bg-[#394E43] hover:bg-[#2D3E35] text-[#F7F5EF] font-bold text-xs sm:text-sm px-5 py-2.5 rounded-xl border border-[#B9A477]/40 shadow-xs transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Download className="w-4 h-4 text-[#B9A477]" />
+              <span>تحميل ترجمات معاني القرآن الأصلية (PDF لـ 18+ لغة)</span>
             </button>
           </div>
         </div>
