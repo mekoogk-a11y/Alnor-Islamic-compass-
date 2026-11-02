@@ -884,6 +884,32 @@ export const SudaneseAudioStudioPage: React.FC<SudaneseAudioStudioPageProps> = (
         )}
       </section>
 
+      {/* Live Radio Integration Banner */}
+      <section className="rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-[#394E43] via-[#2F4238] to-[#25332C] text-[#F7F5EF] border border-[#B9A477]/40 shadow-lg flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-2 text-center md:text-right">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B9A477]/20 border border-[#B9A477]/40 text-[#B9A477] text-xs font-bold">
+            <Radio className="w-3.5 h-3.5 animate-pulse text-red-400" />
+            <span>بث إذاعي حي ومباشر على مدار الساعة</span>
+          </div>
+          <h3 className="text-xl sm:text-2xl font-black font-amiri text-[#F7F5EF]">
+            إذاعة القرآن الكريم مباشرة من قلب مكة المكرمة
+          </h3>
+          <p className="text-xs text-[#E5DCCB] max-w-xl">
+            صلة دائمة برحاب بيت الله الحرام؛ استمع للأذان وتلاوات أئمة الحرم المكي الشريف وتكبيرات الحرم بجودة عالية بدون انقطاع.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => onNavigate('radio')}
+            className="px-6 py-3.5 rounded-2xl bg-[#B9A477] hover:bg-[#A89264] text-[#343832] font-black text-xs sm:text-sm transition-all shadow-md flex items-center gap-2 cursor-pointer"
+          >
+            <Radio className="w-4 h-4 text-[#343832]" />
+            <span>تشغيل إذاعة مكة الآن 🕋</span>
+          </button>
+        </div>
+      </section>
+
       {/* Suggested Commercial Distribution Channels */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-5 rounded-2xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-2 shadow-sm">

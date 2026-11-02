@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { 
-  BookOpen, GraduationCap, Library, HeartHandshake, 
+  BookOpen, GraduationCap, Library, HeartHandshake, Heart,
   Sparkles, Globe, Users, Award, Play, Pause, Volume2, 
   ArrowLeft, CheckCircle2, Star, ShieldCheck, ChevronRight,
   Radio, Mic, MessageCircle, Phone, Search, Compass, BookCheck, 
@@ -190,6 +190,24 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
               <span>المكتبة الإسلامية الرقمية</span>
             </button>
 
+            {/* Multilingual Quran Translations Reader */}
+            <button
+              onClick={() => onNavigate('translationsReader')}
+              className="flex items-center gap-2 bg-[#FAF8F2] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A] text-[#394E43] dark:text-[#F7F5EF] font-bold px-5 py-3.5 rounded-2xl text-xs sm:text-sm border border-[#D8CEBB] dark:border-[#3A4237] transition-all cursor-pointer"
+            >
+              <Globe className="w-4 h-4 text-[#394E43] dark:text-[#B9A477]" />
+              <span>ترجمات القرآن الكريم 🌐</span>
+            </button>
+
+            {/* Orphans Care Program */}
+            <button
+              onClick={() => onNavigate('orphansCare')}
+              className="flex items-center gap-2 bg-[#FAF8F2] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A] text-[#394E43] dark:text-[#F7F5EF] font-bold px-5 py-3.5 rounded-2xl text-xs sm:text-sm border border-[#B9A477]/50 transition-all cursor-pointer ring-1 ring-[#B9A477]/30"
+            >
+              <Heart className="w-4 h-4 text-red-600 fill-current" />
+              <span>كفالة الأيتام 🤲</span>
+            </button>
+
             {/* Live Makkah Radio Shortcut */}
             <button
               onClick={() => onNavigate('radio')}
@@ -202,9 +220,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
             {/* Sudanese Voice Ad Studio Shortcut */}
             <button
               onClick={() => onNavigate('audioStudio')}
-              className="flex items-center gap-2 bg-[#FAF8F2] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A] text-[#5E655B] dark:text-[#D8CEBB] font-semibold px-5 py-3.5 rounded-2xl text-xs sm:text-sm border border-[#D8CEBB] dark:border-[#3A4237] transition-all cursor-pointer"
+              className="flex items-center gap-2 bg-[#394E43] hover:bg-[#2E3F36] text-[#F7F5EF] font-bold px-5 py-3.5 rounded-2xl text-xs sm:text-sm border border-[#B9A477]/40 transition-all cursor-pointer shadow-sm"
             >
-              <Mic className="w-4 h-4 text-[#657568]" />
+              <Mic className="w-4 h-4 text-[#B9A477]" />
               <span>استوديو الصوت الإعلاني 🇸🇩</span>
             </button>
 

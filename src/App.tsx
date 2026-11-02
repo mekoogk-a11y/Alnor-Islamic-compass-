@@ -29,6 +29,8 @@ import { RegisterPage } from './components/pages/RegisterPage';
 import { NewMuslimsPage } from './components/pages/NewMuslimsPage';
 import { LiveMakkahQuranRadio } from './components/LiveMakkahQuranRadio';
 import { SudaneseAudioStudioPage } from './components/pages/SudaneseAudioStudioPage';
+import { OrphansCarePage } from './components/pages/OrphansCarePage';
+import { QuranTranslationsReaderPage } from './components/pages/QuranTranslationsReaderPage';
 import { ApiGatewayPage } from './components/pages/ApiGatewayPage';
 import { PrayerTimesBar } from './components/PrayerTimesBar';
 
@@ -95,6 +97,8 @@ function MainAppContent() {
         {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
         {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
         {currentPage === 'audioStudio' && <SudaneseAudioStudioPage onNavigate={handleNavigate} />}
+        {currentPage === 'orphansCare' && <OrphansCarePage onNavigate={handleNavigate} />}
+        {currentPage === 'translationsReader' && <QuranTranslationsReaderPage onNavigate={handleNavigate} />}
         {currentPage === 'apiGateway' && <ApiGatewayPage onNavigate={handleNavigate} />}
         {currentPage === 'radio' && (
           <div className="space-y-8 animate-fade-in">

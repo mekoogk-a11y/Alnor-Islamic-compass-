@@ -39,6 +39,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onOpenS
   const navItems: { id: NavigationPage; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: 'home', label: t.navHome, icon: Globe },
     { id: 'quran', label: t.navQuran, icon: BookOpen },
+    { id: 'translationsReader', label: lang === 'ar' ? 'ترجمات القرآن 🌐' : 'Translations', icon: Globe },
+    { id: 'orphansCare', label: lang === 'ar' ? 'كفالة الأيتام 🤲' : 'Orphans Care', icon: HeartHandshake },
     { id: 'hadith', label: lang === 'ar' ? 'السنة النبوية' : 'Hadith', icon: Scroll },
     { id: 'academy', label: lang === 'ar' ? 'الأكاديمية' : 'Academy', icon: GraduationCap },
     { id: 'scholars', label: lang === 'ar' ? 'هيئة العلماء' : 'Scholars', icon: Users },

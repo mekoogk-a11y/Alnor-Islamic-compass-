@@ -226,6 +226,129 @@ app.post('/api/v1/ai/scholar', async (req: Request, res: Response) => {
   }
 });
 
+// POST /api/v1/ai/sudanese-script - Generate custom energetic Sudanese male voice ad scripts
+app.post('/api/v1/ai/sudanese-script', async (req: Request, res: Response) => {
+  try {
+    const { topic = 'التسجيل في مقرأة مجمع النور وحفظ القرآن', targetAudience = 'الشباب وعامة الناس' } = req.body;
+    const prompt = `أنت كاتب إعلانات إذاعية محترف وخبير في اللهجة العامية السودانية الأصيلة.
+المطلوب كتابة نص إعلاني إذاعي تجاري حماسي ناري، بصوت رجل سوداني جهوري فخم، لصالح:
+"مجمع النور الإسلامي العالمي الشامل".
+الموضوع: ${topic}
+الفئة المستهدفة: ${targetAudience}
+الضوابط:
+1. استخدم مفردات سودانية محببة وأصيلة (يا هلا والله وحبابكم عشرة، يا زول يا أصيل، أبشروا بالخير، صحي النوم وشد حيلك، هسع دي، وليداتك).
+2. اجعل النبرة حماسية جداً، مفعمة بالطاقة والنخوة والمروءة والمحبة الإيمانية.
+3. مدة الإلقاء التقديرية بين 40 إلى 50 ثانية.
+4. اذكر شعار المجمع: "نورٌ يهدي، وعلمٌ يبني".
+5. نسق النص بعناية وضع تعليمات الأداء الصوتي بين قوسين [مثال: بنبرة جهورية عالية].`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.8-flash',
+      contents: prompt,
+    });
+
+    const script = response.text || 'يا هلا والله وحبابكم في مجمع النور الإسلامي العالمي!';
+    return sendApiResponse(res, {
+      topic,
+      targetAudience,
+      script,
+      maleVoiceSettings: {
+        pitch: 0.85,
+        rate: 1.12,
+        recommendedDialect: 'ar-SA / Sudanese Timbre'
+      }
+    }, { provider: 'Gemini 3.8 Flash + Sudanese Voice Engine' });
+  } catch (error: any) {
+    return sendApiError(res, 500, 'SCRIPT_GEN_ERROR', error.message || 'حدث خطأ في توليد السيناريو');
+  }
+});
+
+// =========================================================================
+// ORPHANS CARE & SPONSORSHIP API (v1)
+// =========================================================================
+
+const orphansApplicationsList: any[] = [
+  {
+    id: 'APP-9901',
+    trackingNumber: 'ALNOOR-ORPHAN-841920',
+    applicantName: 'آمنة عبد الله البشير',
+    relation: 'أم اليتيم',
+    phone: '+249912169169',
+    nationalId: '1092837465',
+    address: 'الخرطوم بحري - الحلفايا',
+    assistanceType: 'full_sponsorship',
+    orphanName: 'عمر عثمان إبراهيم',
+    orphanBirthDate: '2016-04-12',
+    orphanGender: 'male',
+    academicLevel: 'الرابع الابتدائي',
+    healthNotes: 'لا يعاني من أمراض مزمنة',
+    hasDeathCert: true,
+    hasBirthCert: true,
+    hasResidenceProof: true,
+    status: 'field_visit',
+    fieldNotes: 'تمت زيارة الباحث الاجتماعي والتأكد من استحقاق الأسرة، الملف معروض للاعتماد النهائي.',
+    createdAt: '2025-02-10T10:30:00Z',
+    updatedAt: '2025-02-12T14:20:00Z'
+  }
+];
+
+// POST /api/v1/orphans/register - Submit new orphan registration
+app.post('/api/v1/orphans/register', (req: Request, res: Response) => {
+  const data = req.body;
+  if (!data.applicantName || !data.orphanName || !data.phone) {
+    return sendApiError(res, 400, 'MISSING_FIELDS', 'بيانات مقدم الطلب واسم اليتيم ورقم الهاتف مطلوبة');
+  }
+
+  const trackingNumber = data.trackingNumber || `ALNOOR-ORPHAN-${Math.floor(100000 + Math.random() * 900000)}`;
+  const record = {
+    ...data,
+    id: `APP-${Date.now().toString().slice(-6)}`,
+    trackingNumber,
+    status: 'in_review',
+    fieldNotes: 'تم استلام الطلب إلكترونياً، وجاري الفحص الأولي للوثائق.',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  orphansApplicationsList.unshift(record);
+  return sendApiResponse(res, record, { provider: 'Al-Noor Orphans Welfare Board' });
+});
+
+// GET /api/v1/orphans/track/:id - Track orphan application by trackingNumber or phone
+app.get('/api/v1/orphans/track/:id', (req: Request, res: Response) => {
+  const query = req.params.id.trim().toUpperCase();
+  const found = orphansApplicationsList.find(
+    (a) => a.trackingNumber.toUpperCase() === query || a.phone.includes(query) || a.nationalId === query
+  );
+
+  if (!found) {
+    return sendApiError(res, 404, 'NOT_FOUND', 'لم يتم العثور على طلب بهذا الرقم المرجعي أو الهاتف');
+  }
+  return sendApiResponse(res, found);
+});
+
+// GET /api/v1/orphans/applications - List all applications for admin
+app.get('/api/v1/orphans/applications', (_req: Request, res: Response) => {
+  return sendApiResponse(res, orphansApplicationsList);
+});
+
+// POST /api/v1/orphans/applications/:id/status - Update application status
+app.post('/api/v1/orphans/applications/:id/status', (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { status, notes } = req.body;
+  const appIndex = orphansApplicationsList.findIndex((a) => a.id === id || a.trackingNumber === id);
+
+  if (appIndex === -1) {
+    return sendApiError(res, 404, 'NOT_FOUND', 'الطلب غير موجود');
+  }
+
+  orphansApplicationsList[appIndex].status = status || orphansApplicationsList[appIndex].status;
+  if (notes) orphansApplicationsList[appIndex].fieldNotes = notes;
+  orphansApplicationsList[appIndex].updatedAt = new Date().toISOString();
+
+  return sendApiResponse(res, orphansApplicationsList[appIndex]);
+});
+
 // =========================================================================
 // WAQF & CHARITY DONATION GATEWAY API (v1)
 // =========================================================================

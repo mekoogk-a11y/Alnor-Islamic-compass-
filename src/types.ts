@@ -10,6 +10,8 @@ export type NavigationPage =
   | 'newMuslims'
   | 'radio' 
   | 'audioStudio'
+  | 'orphansCare'
+  | 'translationsReader'
   | 'waqf' 
   | 'community'
   | 'dashboard'
@@ -104,6 +106,10 @@ export interface QuranTranslationEdition {
   fileSizeBytes: string;
   pdfDownloadUrl: string;
   archiveOrgUrl?: string;
+  quranEncKey?: string;
+  languageAr?: string;
+  languageNative?: string;
+  verifiedBadge?: string;
   sampleAyahs: {
     surahNameAr: string;
     surahNameNative: string;
@@ -111,7 +117,6 @@ export interface QuranTranslationEdition {
     arabicText: string;
     translationText: string;
   }[];
-  verifiedBadge: string;
 }
 
 export interface QuranReciter {
@@ -422,4 +427,121 @@ export interface DonationReceipt {
   status: 'succeeded' | 'processing';
   verificationHash: string;
   waqfCertificateUrl?: string;
+}
+
+// ==========================================
+// ORPHAN CARE & SPONSORSHIP PLATFORM TYPES
+// ==========================================
+
+export interface OrphanApplication {
+  id: string; // e.g. APP-849201 or ALNOOR-ORPHAN-849201
+  trackingNumber: string;
+  applicantName: string;
+  relation: string;
+  phone: string;
+  nationalId: string;
+  address: string;
+  assistanceType: 'full_sponsorship' | 'monthly_stipend' | 'food_basket' | 'medical_aid' | 'education_aid' | 'other';
+  orphanName: string;
+  orphanBirthDate: string;
+  orphanGender: 'male' | 'female';
+  academicLevel: string;
+  healthNotes: string;
+  hasDeathCert: boolean;
+  hasBirthCert: boolean;
+  hasResidenceProof: boolean;
+  status: 'pending' | 'in_review' | 'field_visit' | 'field_verified' | 'approved' | 'sponsored' | 'rejected';
+  fieldNotes?: string;
+  createdAt: string;
+  updatedAt: string;
+
+  // Optional nested structures for backwards compatibility
+  requestType?: string;
+  priorityLevel?: string;
+  applicant?: any;
+  orphan?: any;
+  family?: any;
+  documents?: any[];
+  adminNotes?: any[];
+}
+
+export interface OrphanProfile {
+  id: string;
+  code?: string;
+  fullName: string;
+  firstName?: string;
+  age: number;
+  gender: 'male' | 'female';
+  governorate?: string;
+  city?: string;
+  country?: string;
+  academicStage?: string;
+  educationStage?: string;
+  quranProgress?: string;
+  healthStatus: string;
+  guardianRelation?: string;
+  familyMembersCount?: number;
+  monthlyRequiredUsd?: number;
+  monthlySponsorshipCostUsd?: number;
+  isSponsored: boolean;
+  sponsorName?: string;
+  storySummary: string;
+  avatarSeed?: string;
+  urgentNeed?: string;
+  registeredDate?: string;
+}
+
+export interface SponsorshipProgram {
+  id: string;
+  title?: string;
+  titleAr?: string;
+  titleEn: string;
+  description?: string;
+  descriptionAr?: string;
+  monthlyAmountUsd: number;
+  yearlyAmountUsd?: number;
+  coveredItems?: string[];
+  coveragePoints?: string[];
+  popular?: boolean;
+  badgeText?: string;
+  badge?: string;
+  icon?: string;
+}
+
+// ==========================================
+// QURAN TRANSLATIONS ENGINE TYPES
+// ==========================================
+
+export interface QuranEncTranslationMeta {
+  key: string;
+  languageIso: string;
+  languageNameAr: string;
+  languageNameNative: string;
+  title: string;
+  description: string;
+  translator: string;
+  publisher: string;
+  version: string;
+  lastUpdate: string;
+  direction: 'rtl' | 'ltr';
+  hasAudio: boolean;
+  audioReciterName?: string;
+  audioBaseUrl?: string;
+  pdfUrl?: string | null;
+  epubUrl?: string | null;
+  enabled: boolean;
+}
+
+export interface QuranTranslationAyah {
+  id?: string;
+  ayahNumber?: number;
+  surahNumber?: number;
+  aya?: number;
+  sura?: number;
+  arabicTextUthmani?: string;
+  arabic_text?: string;
+  translationText?: string;
+  translation?: string;
+  footnotes?: string;
+  audioUrl?: string | null;
 }
