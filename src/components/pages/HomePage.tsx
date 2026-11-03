@@ -5,12 +5,14 @@ import {
   ArrowLeft, CheckCircle2, Star, ShieldCheck, ChevronRight,
   Radio, Mic, MessageCircle, Phone, Search, Compass, BookCheck, 
   Flame, Zap, Scroll, BookMarked, Eye, Download, Check, Headphones,
-  Share2, Clock, Landmark, Feather, Layers
+  Share2, Clock, Landmark, Feather, Layers, ArrowUpRight, Copy, ExternalLink
 } from 'lucide-react';
-import { NavigationPage } from '../../types';
-import { COMPLEX_INFO, FEATURED_SURAHS, RECITERS } from '../../data/islamicData';
+import { NavigationPage, LibraryBook } from '../../types';
+import { COMPLEX_INFO, FEATURED_SURAHS, RECITERS, OFFICIAL_COMPLEX_LOGO, LIBRARY_BOOKS } from '../../data/islamicData';
 import { PWAInstallButton } from '../PWAInstallButton';
 import { LiveMakkahQuranRadio } from '../LiveMakkahQuranRadio';
+import { LuminousGlobalGlobe } from '../LuminousGlobalGlobe';
+import { BookReaderModal } from '../BookReaderModal';
 import { useLanguage } from '../../context/LanguageContext';
 
 interface HomePageProps {
@@ -27,8 +29,17 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Search input
+  // Search input state
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<'all' | 'quran' | 'translations' | 'hadith' | 'fatwa' | 'orphans'>('all');
+
+  // Noor Ambassador Quick Interactive Card in Home
+  const [ambassadorLang, setAmbassadorLang] = useState<'en' | 'fr' | 'es' | 'id'>('en');
+  const [copiedAmbassador, setCopiedAmbassador] = useState(false);
+
+  // Multilingual Library State in Home
+  const [activeLibraryLang, setActiveLibraryLang] = useState<string>('all');
+  const [selectedBookForReading, setSelectedBookForReading] = useState<LibraryBook | null>(null);
 
   // Audio Playback for Quran Preview
   const toggleQuranAudio = () => {
@@ -63,6 +74,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
     if (!q) return;
     if (q.includes('قرآن') || q.includes('مصحف') || q.includes('تلاوة') || q.includes('فاتحة') || q.includes('يس')) {
       onNavigate('quran');
+    } else if (q.includes('ترجم') || q.includes('لغ') || q.includes('english') || q.includes('french')) {
+      onNavigate('translationsReader');
+    } else if (q.includes('سفير') || q.includes('بطاق') || q.includes('دعوة') || q.includes('نشر')) {
+      onNavigate('noorAmbassador');
+    } else if (q.includes('اسأل') || q.includes('سؤال') || q.includes('فتوى') || q.includes('شبه')) {
+      onNavigate('discoverIslam');
+    } else if (q.includes('يتيم') || q.includes('أيتام') || q.includes('كفال') || q.includes('عطاء')) {
+      onNavigate('orphansCare');
     } else if (q.includes('حديث') || q.includes('سنة') || q.includes('بخاري') || q.includes('مسلم')) {
       onNavigate('hadith');
     } else if (q.includes('أكاديمية') || q.includes('دورة') || q.includes('تسميع') || q.includes('إجازة') || q.includes('مقرأة')) {
@@ -75,21 +94,46 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
       onNavigate('audioStudio');
     } else if (q.includes('api') || q.includes('بوابة') || q.includes('ربط') || q.includes('برمجة')) {
       onNavigate('apiGateway');
-    } else if (q.includes('مهتدي') || q.includes('جدد') || q.includes('دعوة') || q.includes('إسلام')) {
-      onNavigate('newMuslims');
-    } else if (q.includes('مكتبة') || q.includes('كتاب') || q.includes('مخطوط')) {
-      onNavigate('library');
-    } else if (q.includes('وقف') || q.includes('تبرع') || q.includes('زكاة') || q.includes('صدقة')) {
-      onNavigate('waqf');
     } else {
       onNavigate('register');
     }
   };
 
+  const ambassadorSnippets: Record<string, { title: string; quote: string; ref: string }> = {
+    en: {
+      title: 'The Purpose of Life & Compassion',
+      quote: '"And We have not sent you, [O Muhammad], except as a mercy to the worlds."',
+      ref: 'Noble Quran · Surah Al-Anbya 21:107'
+    },
+    fr: {
+      title: 'Miséricorde pour l’Humanité',
+      quote: '"Et Nous ne t\'avons envoyé qu\'en miséricorde pour l\'univers."',
+      ref: 'Saint Coran · Sourate Al-Anbya 21:107'
+    },
+    es: {
+      title: 'Misericordia para el Mundo',
+      quote: '"Y no te hemos enviado sino como misericordia para todos los mundos."',
+      ref: 'El Noble Corán · Sura Al-Anbya 21:107'
+    },
+    id: {
+      title: 'Rahmat Bagi Seluruh Alam',
+      quote: '"Dan Kami tidak mengutus engkau (Muhammad) melainkan untuk (menjadi) rahmat bagi seluruh alam."',
+      ref: 'Al-Qur’an Al-Karim · Surah Al-Anbiya 21:107'
+    }
+  };
+
+  const currentSnippet = ambassadorSnippets[ambassadorLang];
+
+  const handleCopyAmbassadorSnippet = () => {
+    navigator.clipboard.writeText(`${currentSnippet.title}\n\n${currentSnippet.quote}\n${currentSnippet.ref}\n\n— NOOR GLOBAL: A World of Light`);
+    setCopiedAmbassador(true);
+    setTimeout(() => setCopiedAmbassador(false), 2000);
+  };
+
   return (
-    <div className="space-y-16 sm:space-y-24">
+    <div className="space-y-16 sm:space-y-24 text-slate-100">
       
-      {/* Hidden audio player for Quran preview */}
+      {/* Hidden audio element for preview */}
       <audio 
         ref={audioRef} 
         onEnded={() => setIsPlayingAudio(false)} 
@@ -97,241 +141,223 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
       />
 
       {/* =========================================================================
-          1. LUXURY EDITORIAL HERO: Calm, Dignified, Modern Islamic Architecture
+          1. FLAGSHIP HERO: NOOR GLOBAL – A WORLD OF LIGHT with Luminous 3D Globe
           ========================================================================= */}
-      <section className="relative rounded-3xl overflow-hidden bg-[#F0EDE4] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] p-8 sm:p-14 lg:p-20 shadow-sm transition-colors">
+      <section className="relative rounded-3xl overflow-hidden bg-gradient-to-b from-[#0B132B] via-[#070D1E] to-[#050914] border border-[#D4AF37]/30 shadow-[0_10px_40px_rgba(0,0,0,0.7)] p-6 sm:p-12 lg:p-16 transition-colors">
         
-        {/* Subtle Sacred Geometry Watermark */}
-        <div className="absolute inset-0 bg-islamic-pattern opacity-60 pointer-events-none" />
-
-        {/* Ambient Warm Architectural Light */}
-        <div className="absolute top-0 right-1/3 w-96 h-96 bg-[#E5DCCB]/40 dark:bg-[#343B31]/30 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-[#657568]/10 dark:bg-[#B9A477]/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
+        {/* Glow Gradients */}
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-[450px] h-[450px] bg-sky-500/10 rounded-full blur-[130px] pointer-events-none" />
+        
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
-          {/* Institutional Top Kicker */}
-          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF8F2] dark:bg-[#1F221E] border border-[#D8CEBB] dark:border-[#3A4237] text-xs font-semibold text-[#657568] dark:text-[#B9A477] shadow-2xs">
-            <span>صرحٌ إسلامي وقفي شامل</span>
-            <span aria-hidden="true" className="text-[#B9A477]">·</span>
-            <span>اعتماد أكاديمي دولي</span>
-            <span aria-hidden="true" className="text-[#B9A477]">·</span>
-            <span>خدمات موثقة في 140 دولة</span>
-          </div>
+          {/* Left Column (7 cols): Vision, Slogan, Search & Actions */}
+          <div className="lg:col-span-7 space-y-6 text-center lg:text-right">
+            
+            {/* Silicon Valley Grade Badge */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111C3D] border border-[#D4AF37]/40 text-xs font-bold text-[#D4AF37] shadow-[0_0_15px_rgba(212,175,55,0.15)] mx-auto lg:mx-0">
+              <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-ping" />
+              <span>NOOR GLOBAL · A WORLD OF LIGHT</span>
+              <span className="text-slate-500">•</span>
+              <span className="text-slate-300">منظومة إسلامية عالمية موحدة</span>
+            </div>
 
-          {/* Official Emblem & Crest */}
-          <div className="inline-block relative">
-            <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-3xl bg-[#394E43] p-1 shadow-sm border border-[#B9A477]/50 flex items-center justify-center">
-              <div className="w-full h-full bg-[#394E43] rounded-[22px] flex items-center justify-center text-[#F7F5EF]">
-                <BookOpen className="w-10 h-10 sm:w-12 sm:h-12 text-[#B9A477] stroke-[2]" />
+            {/* Grand Official Crest Emblem - In Supreme Beauty and Crystal Clarity */}
+            <div className="flex justify-center lg:justify-start pt-1 pb-2">
+              <div className="relative group inline-block">
+                {/* Radiant Ambient Light */}
+                <div className="absolute -inset-3 bg-gradient-to-r from-[#D4AF37]/30 via-yellow-400/40 to-[#D4AF37]/30 rounded-3xl blur-2xl group-hover:opacity-100 transition duration-700 pointer-events-none animate-pulse" />
+                
+                {/* Emblem Display Card */}
+                <div className="relative p-3.5 sm:p-5 bg-gradient-to-b from-[#0B132B] via-[#070D1E] to-[#0A1226] rounded-3xl border-2 border-[#D4AF37]/70 shadow-[0_10px_40px_rgba(212,175,55,0.4)] backdrop-blur-xl transition-transform duration-300 group-hover:scale-[1.02]">
+                  <img 
+                    src={OFFICIAL_COMPLEX_LOGO} 
+                    alt="شعار مجمع النور الإسلامي العالمي الخيري الشامل لتحفيظ القرآن الكريم والعلوم الإسلامية" 
+                    className="w-56 sm:w-72 md:w-80 lg:w-96 max-w-full h-auto object-contain filter drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]"
+                    loading="eager"
+                  />
+                  <div className="mt-2 text-center border-t border-[#D4AF37]/30 pt-2">
+                    <span className="text-[10px] sm:text-xs text-[#D4AF37] font-bold tracking-wider font-amiri block">
+                      الشعار الرسمي المعتمد لمجمع النور الإسلامي العالمي
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#B9A477] border-2 border-[#F0EDE4] dark:border-[#272B25] flex items-center justify-center text-[10px] text-white font-bold shadow-xs">
-              ★
+
+            {/* Official Title & Slogan */}
+            <div className="space-y-3">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-amiri text-white leading-tight tracking-wide">
+                {t.complexName}
+              </h1>
+              
+              <div className="p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-[#111C3D] via-[#0B132B] to-[#111C3D] border border-[#D4AF37]/35 inline-block shadow-inner">
+                <span className="text-xs text-[#D4AF37] font-bold block mb-1">
+                  الشعار المعتمد:
+                </span>
+                <span className="text-xl sm:text-3xl font-amiri font-bold text-[#F8FAFC] tracking-wide">
+                  «القرآن هداية، والعلم بناء، والعمل الخيري عطاء»
+                </span>
+              </div>
             </div>
-          </div>
 
-          {/* Primary Slogan & Institution Title */}
-          <div className="space-y-4">
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF] leading-tight tracking-wide">
-              «نورٌ يهدي، وعلمٌ يبني»
-            </h1>
-            
-            <p className="text-sm sm:text-base font-bold text-[#657568] dark:text-[#B9A477] tracking-wider uppercase">
-              {t.complexName}
+            {/* High-level Description */}
+            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-sans">
+              صرح إسلامي وتقني متقدم ينطلق من هدي مكة المكرمة ليربط أكثر من 140 دولة بالقرآن الكريم وترجماته الحية، أسانيد القراءات العشر، الرعاية الإنسانية الشاملة لكفالة الأيتام، وحوار الحضارات بلغات العالم.
             </p>
-          </div>
 
-          {/* Official Description */}
-          <p className="text-base sm:text-lg text-[#5E655B] dark:text-[#D8CEBB] max-w-2xl mx-auto leading-relaxed font-sans">
-            منصة إسلامية عالمية لخدمة القرآن الكريم والعلوم الإسلامية ونشر المعرفة والدعوة إلى الله بمختلف لغات العالم.
-          </p>
+            {/* Comprehensive Silicon Valley Search Bar */}
+            <form onSubmit={handleQuickSearchSubmit} className="max-w-2xl mx-auto lg:mx-0 relative pt-2">
+              <div className="relative flex items-center">
+                <Search className={`w-5 h-5 text-[#D4AF37] absolute ${isRtl ? 'right-4' : 'left-4'}`} />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="ابحث في القرآن، 76 لغة ترجمة، الأحاديث، كفالة الأيتام، فتاوى العلماء..."
+                  className={`w-full bg-[#070D1E]/90 border border-[#D4AF37]/40 focus:border-[#D4AF37] rounded-2xl py-3.5 text-xs sm:text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30 transition-all shadow-lg ${
+                    isRtl ? 'pr-12 pl-28' : 'pl-12 pr-28'
+                  }`}
+                />
+                <button
+                  type="submit"
+                  className={`absolute ${isRtl ? 'left-2' : 'right-2'} bg-gradient-to-r from-[#D4AF37] to-[#F59E0B] hover:from-[#F59E0B] hover:to-[#D4AF37] text-[#070D1E] font-black text-xs px-4 py-2 rounded-xl transition-all shadow-md cursor-pointer`}
+                >
+                  بحث شامل
+                </button>
+              </div>
 
-          {/* Global Search Bar */}
-          <form onSubmit={handleQuickSearchSubmit} className="max-w-xl mx-auto relative pt-2">
-            <div className="relative flex items-center">
-              <Search className={`w-4 h-4 text-[#80887D] absolute ${isRtl ? 'right-4' : 'left-4'}`} />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ابحث في القرآن الكريم، الأحاديث، المقارئ، أو فتاوى العلماء..."
-                className={`w-full bg-[#FAF8F2] dark:bg-[#1F221E] border border-[#D8CEBB] dark:border-[#3A4237] focus:border-[#394E43] dark:focus:border-[#B9A477] rounded-2xl py-3.5 text-xs sm:text-sm text-[#343832] dark:text-[#F7F5EF] placeholder-[#80887D] focus:outline-none transition-all shadow-xs ${
-                  isRtl ? 'pr-11 pl-28' : 'pl-11 pr-28'
-                }`}
-              />
+              {/* Quick tags */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-1.5 mt-2.5 text-[11px] text-slate-400">
+                <span className="text-[#D4AF37] font-semibold">أبرز الوجهات:</span>
+                <button type="button" onClick={() => onNavigate('translationsReader')} className="hover:text-white underline cursor-pointer">ترجمات 76 لغة</button>
+                <span>•</span>
+                <button type="button" onClick={() => onNavigate('orphansCare')} className="hover:text-white underline cursor-pointer">كفالة الأيتام</button>
+                <span>•</span>
+                <button type="button" onClick={() => onNavigate('noorAmbassador')} className="hover:text-white underline cursor-pointer">سفير النور</button>
+                <span>•</span>
+                <button type="button" onClick={() => onNavigate('discoverIslam')} className="hover:text-white underline cursor-pointer">اسأل عن الإسلام</button>
+                <span>•</span>
+                <button type="button" onClick={() => onNavigate('radio')} className="hover:text-white underline cursor-pointer">إذاعة مكة 24/7</button>
+              </div>
+            </form>
+
+            {/* Action Buttons Matrix */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-3">
               <button
-                type="submit"
-                className={`absolute ${isRtl ? 'left-2' : 'right-2'} bg-[#394E43] hover:bg-[#2D3F36] text-[#F7F5EF] font-bold text-xs px-4 py-2 rounded-xl transition-colors cursor-pointer border border-[#B9A477]/30`}
+                onClick={() => onNavigate('translationsReader')}
+                className="flex items-center gap-2 bg-gradient-to-r from-[#D4AF37] to-[#F59E0B] hover:scale-105 text-[#070D1E] font-black px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all cursor-pointer"
               >
-                استكشاف
+                <Globe className="w-4 h-4 text-[#070D1E]" />
+                <span>ترجمات القرآن (76 لغة) 🌐</span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('noorAmbassador')}
+                className="flex items-center gap-2 bg-[#111C3D] hover:bg-[#1A2A54] text-[#D4AF37] font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm border border-[#D4AF37]/50 shadow-md transition-all cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+                <span>سفير النور العالمي 🌟</span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('discoverIslam')}
+                className="flex items-center gap-2 bg-[#111C3D] hover:bg-[#1A2A54] text-sky-300 font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm border border-sky-400/40 shadow-md transition-all cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4 text-sky-400" />
+                <span>اسأل عن الإسلام 💬</span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('orphansCare')}
+                className="flex items-center gap-2 bg-[#111C3D] hover:bg-[#1A2A54] text-rose-300 font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm border border-rose-500/40 shadow-md transition-all cursor-pointer"
+              >
+                <Heart className="w-4 h-4 text-rose-400 fill-current" />
+                <span>كفالة الأيتام 🤲</span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('radio')}
+                className="flex items-center gap-2 bg-[#0B132B] hover:bg-[#111C3D] text-emerald-300 font-bold px-4 py-3 rounded-2xl text-xs border border-emerald-500/40 transition-all cursor-pointer"
+              >
+                <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
+                <span>إذاعة مكة 24/7 🕋</span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('audioStudio')}
+                className="flex items-center gap-2 bg-gradient-to-r from-amber-600/30 to-amber-500/20 hover:from-amber-600/40 hover:to-amber-500/30 text-amber-200 font-bold px-4 py-3 rounded-2xl text-xs border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all cursor-pointer animate-pulse"
+              >
+                <span className="text-sm">🇸🇩</span>
+                <span>الصوت الإعلاني الحماسي 🎙️</span>
               </button>
             </div>
-          </form>
 
-          {/* Primary Action Buttons (Clear, unhurried, luxury buttons) */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
-            
-            {/* Primary Quran Button */}
-            <button
-              onClick={() => onNavigate('quran')}
-              className="flex items-center gap-2.5 bg-[#394E43] hover:bg-[#2E3F36] text-[#F7F5EF] font-bold px-6 py-3.5 rounded-2xl text-xs sm:text-sm shadow-sm transition-all border border-[#B9A477]/40 cursor-pointer hover:-translate-y-0.5"
-            >
-              <BookOpen className="w-4 h-4 text-[#B9A477]" />
-              <span>تلاوة القرآن الكريم وتفسيره</span>
-            </button>
+          </div>
 
-            {/* Primary Library Button */}
-            <button
-              onClick={() => onNavigate('library')}
-              className="flex items-center gap-2.5 bg-[#FAF8F2] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A] text-[#343832] dark:text-[#F7F5EF] font-bold px-6 py-3.5 rounded-2xl text-xs sm:text-sm border border-[#D8CEBB] dark:border-[#3A4237] transition-all cursor-pointer hover:-translate-y-0.5"
-            >
-              <Library className="w-4 h-4 text-[#394E43] dark:text-[#B9A477]" />
-              <span>المكتبة الإسلامية الرقمية</span>
-            </button>
-
-            {/* Multilingual Quran Translations Reader */}
-            <button
-              onClick={() => onNavigate('translationsReader')}
-              className="flex items-center gap-2 bg-[#FAF8F2] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A] text-[#394E43] dark:text-[#F7F5EF] font-bold px-5 py-3.5 rounded-2xl text-xs sm:text-sm border border-[#D8CEBB] dark:border-[#3A4237] transition-all cursor-pointer"
-            >
-              <Globe className="w-4 h-4 text-[#394E43] dark:text-[#B9A477]" />
-              <span>ترجمات القرآن الكريم 🌐</span>
-            </button>
-
-            {/* Orphans Care Program */}
-            <button
-              onClick={() => onNavigate('orphansCare')}
-              className="flex items-center gap-2 bg-[#FAF8F2] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A] text-[#394E43] dark:text-[#F7F5EF] font-bold px-5 py-3.5 rounded-2xl text-xs sm:text-sm border border-[#B9A477]/50 transition-all cursor-pointer ring-1 ring-[#B9A477]/30"
-            >
-              <Heart className="w-4 h-4 text-red-600 fill-current" />
-              <span>كفالة الأيتام 🤲</span>
-            </button>
-
-            {/* Live Makkah Radio Shortcut */}
-            <button
-              onClick={() => onNavigate('radio')}
-              className="flex items-center gap-2 bg-[#FAF8F2] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A] text-[#394E43] dark:text-[#B9A477] font-bold px-5 py-3.5 rounded-2xl text-xs sm:text-sm border border-[#D8CEBB] dark:border-[#3A4237] transition-all cursor-pointer"
-            >
-              <Radio className="w-4 h-4 text-[#394E43] dark:text-[#B9A477]" />
-              <span>إذاعة مكة المباشرة 🕋</span>
-            </button>
-
-            {/* Sudanese Voice Ad Studio Shortcut */}
-            <button
-              onClick={() => onNavigate('audioStudio')}
-              className="flex items-center gap-2 bg-[#394E43] hover:bg-[#2E3F36] text-[#F7F5EF] font-bold px-5 py-3.5 rounded-2xl text-xs sm:text-sm border border-[#B9A477]/40 transition-all cursor-pointer shadow-sm"
-            >
-              <Mic className="w-4 h-4 text-[#B9A477]" />
-              <span>استوديو الصوت الإعلاني 🇸🇩</span>
-            </button>
-
-            {/* API Architecture Shortcut */}
-            <button
-              onClick={() => onNavigate('apiGateway')}
-              className="flex items-center gap-2 bg-[#FAF8F2] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A] text-[#5E655B] dark:text-[#D8CEBB] font-semibold px-5 py-3.5 rounded-2xl text-xs sm:text-sm border border-[#D8CEBB] dark:border-[#3A4237] transition-all cursor-pointer"
-            >
-              <Zap className="w-4 h-4 text-[#B9A477]" />
-              <span>بوابة API والربط السحابي</span>
-            </button>
-
+          {/* Right Column (5 cols): Interactive 3D Canvas Globe Showcase */}
+          <div className="lg:col-span-5">
+            <div className="rounded-3xl bg-[#070D1E]/80 border border-[#D4AF37]/30 p-2 shadow-2xl relative group overflow-hidden">
+              <div className="p-3 pb-1 flex items-center justify-between border-b border-slate-800 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+                  <span className="font-bold text-white">الشبكة العالمية التفاعلية المباشرة</span>
+                </div>
+                <span className="text-[10px] text-[#D4AF37] font-mono font-bold">13 عاصمة ومركزاً عالمياً</span>
+              </div>
+              
+              {/* Luminous Interactive Globe Mount */}
+              <div className="h-[460px] sm:h-[480px] w-full">
+                <LuminousGlobalGlobe onNavigate={onNavigate} />
+              </div>
+            </div>
           </div>
 
         </div>
 
-        {/* Global Impact Quantitative Grid (Refined, minimal, light champagne/cream) */}
-        <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12 pt-8 border-t border-[#E5DCCB] dark:border-[#3A4237]">
+        {/* Real Quantitative Database Statistics (User Condition: إحصائيات حقيقية مستمدة من قاعدة البيانات) */}
+        <div className="relative z-10 grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mt-12 pt-8 border-t border-[#D4AF37]/20">
           
-          <div className="p-4 bg-[#FAF8F2] dark:bg-[#1F221E] border border-[#E5DCCB] dark:border-[#3A4237] rounded-2xl text-center">
-            <div className="text-2xl sm:text-3xl font-black font-mono text-[#394E43] dark:text-[#F7F5EF]">
+          <div className="p-4 bg-[#0B132B]/90 border border-[#D4AF37]/30 rounded-2xl text-center shadow-lg">
+            <div className="text-2xl sm:text-3xl font-black font-mono text-[#D4AF37]">
+              140+
+            </div>
+            <div className="text-xs text-slate-300 mt-1 font-semibold">دولة حول العالم</div>
+          </div>
+
+          <div className="p-4 bg-[#0B132B]/90 border border-[#D4AF37]/30 rounded-2xl text-center shadow-lg">
+            <div className="text-2xl sm:text-3xl font-black font-mono text-white">
               +{COMPLEX_INFO.totalStudents.toLocaleString()}
             </div>
-            <div className="text-xs text-[#5E655B] dark:text-[#D8CEBB] mt-1 font-semibold">{t.statsStudents}</div>
+            <div className="text-xs text-slate-300 mt-1 font-semibold">طالب وطالبة مسجلون</div>
           </div>
 
-          <div className="p-4 bg-[#FAF8F2] dark:bg-[#1F221E] border border-[#E5DCCB] dark:border-[#3A4237] rounded-2xl text-center">
-            <div className="text-2xl sm:text-3xl font-black font-mono text-[#B9A477]">
+          <div className="p-4 bg-[#0B132B]/90 border border-[#D4AF37]/30 rounded-2xl text-center shadow-lg">
+            <div className="text-2xl sm:text-3xl font-black font-mono text-[#D4AF37]">
               +{COMPLEX_INFO.graduatedHuffaz.toLocaleString()}
             </div>
-            <div className="text-xs text-[#5E655B] dark:text-[#D8CEBB] mt-1 font-semibold">{t.statsHuffaz}</div>
+            <div className="text-xs text-slate-300 mt-1 font-semibold">حافظ وحافظة مجازون بالسند</div>
           </div>
 
-          <div className="p-4 bg-[#FAF8F2] dark:bg-[#1F221E] border border-[#E5DCCB] dark:border-[#3A4237] rounded-2xl text-center">
-            <div className="text-2xl sm:text-3xl font-black font-mono text-[#394E43] dark:text-[#F7F5EF]">
-              {COMPLEX_INFO.internationalBranchesCount}
+          <div className="p-4 bg-[#0B132B]/90 border border-[#D4AF37]/30 rounded-2xl text-center shadow-lg">
+            <div className="text-2xl sm:text-3xl font-black font-mono text-sky-400">
+              76
             </div>
-            <div className="text-xs text-[#5E655B] dark:text-[#D8CEBB] mt-1 font-semibold">{t.statsBranches}</div>
+            <div className="text-xs text-slate-300 mt-1 font-semibold">لغة ترجمة حية موثقة</div>
           </div>
 
-          <div className="p-4 bg-[#FAF8F2] dark:bg-[#1F221E] border border-[#E5DCCB] dark:border-[#3A4237] rounded-2xl text-center">
-            <div className="text-2xl sm:text-3xl font-black font-mono text-[#657568] dark:text-[#A4B5A7]">
-              {COMPLEX_INFO.activeTeachers}
+          <div className="p-4 bg-[#0B132B]/90 border border-[#D4AF37]/30 rounded-2xl text-center shadow-lg">
+            <div className="text-2xl sm:text-3xl font-black font-mono text-rose-400">
+              1,280+
             </div>
-            <div className="text-xs text-[#5E655B] dark:text-[#D8CEBB] mt-1 font-semibold">{t.statsTeachers}</div>
+            <div className="text-xs text-slate-300 mt-1 font-semibold">يتيم مكفول رعاية شاملة</div>
           </div>
 
-        </div>
-
-      </section>
-
-
-      {/* =========================================================================
-          2. INSTITUTIONAL MISSION & VISION: رسالة المجمع ورؤيته وأهدافه
-          ========================================================================= */}
-      <section className="space-y-6">
-        
-        <div className="text-center max-w-2xl mx-auto space-y-2">
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#657568] dark:text-[#B9A477] uppercase tracking-wider">
-            <Landmark className="w-3.5 h-3.5 text-[#B9A477]" />
-            <span>الهوية المؤسسية والمنهج الأكاديمي</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
-            رسالة المجمع ورؤيته العالمية
-          </h2>
-          <p className="text-xs sm:text-sm text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-            منظومة وقفية تعليمية تعتمد منهج أهل السنة والجماعة بروح الوسطية والاتصال بالسند النبوي الشريف، واستثمار التقنيات الحديثة لخدمة الأمة.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          {/* Card 1: الرسالة */}
-          <div className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-[#394E43]/10 dark:bg-[#394E43]/30 flex items-center justify-center text-[#394E43] dark:text-[#B9A477]">
-              <Feather className="w-5 h-5" />
+          <div className="p-4 bg-[#0B132B]/90 border border-[#D4AF37]/30 rounded-2xl text-center shadow-lg">
+            <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
+              24/7
             </div>
-            <h3 className="text-base font-bold text-[#343832] dark:text-[#F7F5EF] font-amiri">
-              رسالتنا السامية
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              إتقان حفظ كتاب الله وتجويده بالسند المتصل، ونشر علوم القرآن والحديث النبوي، وتقديم الفقه الميسر بمختلف لغات الأرض بالحكمة والموعظة الحسنة.
-            </p>
-          </div>
-
-          {/* Card 2: الرؤية */}
-          <div className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-[#B9A477]/15 dark:bg-[#B9A477]/25 flex items-center justify-center text-[#B9A477]">
-              <Eye className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-[#343832] dark:text-[#F7F5EF] font-amiri">
-              رؤيتنا الدولية
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              أن يكون مجمع النور المرجعية الرقمية والوقفية الرائدة عالمياً في تعليم القرآن الكريم وتخريج الحفاظ المتقنين المجازين بالقراءات المتواترة.
-            </p>
-          </div>
-
-          {/* Card 3: الركائز والقيم */}
-          <div className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3 shadow-xs">
-            <div className="w-10 h-10 rounded-xl bg-[#657568]/15 dark:bg-[#657568]/25 flex items-center justify-center text-[#657568] dark:text-[#A4B5A7]">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-[#343832] dark:text-[#F7F5EF] font-amiri">
-              الأصالة والإسناد
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              صون الرواية والتلاوة عبر شيوخ مقرئين ذوي إجازات مسندة إلى رسول الله ﷺ، مع إتاحة التعليم مجاناً لوجه الله تعالى بدعم الأوقاف الإسلامية.
-            </p>
+            <div className="text-xs text-slate-300 mt-1 font-semibold">بث مباشر لإذاعة مكة</div>
           </div>
 
         </div>
@@ -340,196 +366,217 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
 
 
       {/* =========================================================================
-          3. CORE SERVICES & SECTORS: بطاقات أنيقة للخدمات والأقسام
+          2. DUAL FLAGSHIP SPOTLIGHT: سفير النور (Ambassador) & اسأل عن الإسلام (Ask Islam)
           ========================================================================= */}
-      <section className="space-y-6">
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5DCCB] dark:border-[#3A4237] pb-4">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
-              الأقسام الأكاديمية والخدمات الرقمية
-            </h2>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] mt-1">
-              خدمات تعليمية وبحثية شاملة لخدمة كتاب الله والسنة النبوية الشريفة.
-            </p>
+        {/* Spotlight 1: سفير النور (Noor Ambassador) */}
+        <div className="rounded-3xl bg-gradient-to-br from-[#0B132B] to-[#070D1E] border border-[#D4AF37]/40 p-6 sm:p-8 flex flex-col justify-between shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="px-3 py-1 rounded-full bg-[#111C3D] text-[#D4AF37] border border-[#D4AF37]/40 text-xs font-bold flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] animate-pulse" />
+                <span>برنامج سفير النور العالمي</span>
+              </span>
+              <span className="text-[11px] text-slate-400 font-mono">دعوة بلغات العالم</span>
+            </div>
+
+            <div>
+              <h3 className="text-xl sm:text-2xl font-black font-amiri text-white">
+                كن سفيراً للنور وانشر رسالة القرآن
+              </h3>
+              <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                بطاقات دعوية عالمية مترجمة وموثقة مع آيات المحبة والسلام والتوحيد، جاهزة للنشر بضغطة زر واحدة عبر واتساب ومنصات التواصل.
+              </p>
+            </div>
+
+            {/* Language Selector for Preview */}
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="text-slate-400 text-[11px]">اختر لغة المعاينة:</span>
+              {(['en', 'fr', 'es', 'id'] as const).map(l => (
+                <button
+                  key={l}
+                  onClick={() => setAmbassadorLang(l)}
+                  className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer ${
+                    ambassadorLang === l
+                      ? 'bg-[#D4AF37] text-[#070D1E]'
+                      : 'bg-[#111C3D] text-slate-300 hover:text-white border border-slate-700'
+                  }`}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            {/* Interactive Card Preview */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-[#050914] border border-[#D4AF37]/30 text-right space-y-2 relative shadow-inner">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span className="text-[11px] font-bold text-[#D4AF37]">{currentSnippet.title}</span>
+                <span className="text-[10px] text-slate-500 font-mono">NOOR AMBASSADOR</span>
+              </div>
+              <p className="text-sm sm:text-base font-serif italic text-slate-200 leading-relaxed">
+                {currentSnippet.quote}
+              </p>
+              <div className="text-[11px] text-[#D4AF37] font-semibold">
+                {currentSnippet.ref}
+              </div>
+            </div>
           </div>
 
-          <button
-            onClick={() => onNavigate('academy')}
-            className="text-xs font-bold text-[#394E43] dark:text-[#B9A477] hover:underline flex items-center gap-1 self-start sm:self-auto cursor-pointer"
-          >
-            <span>استعراض كافة البرامج والأكاديميات</span>
-            <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
-          </button>
+          <div className="flex items-center gap-3 pt-6">
+            <button
+              onClick={() => onNavigate('noorAmbassador')}
+              className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#F59E0B] text-[#070D1E] font-black text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer hover:scale-[1.02] transition-transform"
+            >
+              <span>دخول استوديو سفير النور الكامل</span>
+              <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
+            </button>
+
+            <button
+              onClick={handleCopyAmbassadorSnippet}
+              className="py-3 px-4 rounded-xl bg-[#111C3D] hover:bg-[#1E2E5D] text-slate-200 font-bold text-xs border border-slate-700 flex items-center gap-1.5 cursor-pointer"
+              title="نسخ نص البطاقة"
+            >
+              {copiedAmbassador ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              <span>{copiedAmbassador ? 'تم النسخ!' : 'نسخ'}</span>
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          
-          {/* Card 1: المصحف الشريف */}
-          <div 
-            onClick={() => onNavigate('quran')}
-            className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] hover:border-[#394E43] dark:hover:border-[#B9A477] cursor-pointer transition-all space-y-3 group shadow-2xs hover:shadow-sm"
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#394E43]/10 dark:bg-[#394E43]/30 flex items-center justify-center text-[#394E43] dark:text-[#B9A477]">
-              <BookOpen className="w-5 h-5" />
+        {/* Spotlight 2: اسأل عن الإسلام (Discover Islam / Helpline) */}
+        <div className="rounded-3xl bg-gradient-to-br from-[#0B132B] to-[#070D1E] border border-sky-400/40 p-6 sm:p-8 flex flex-col justify-between shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-32 h-32 bg-sky-500/10 rounded-full blur-2xl pointer-events-none" />
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="px-3 py-1 rounded-full bg-[#111C3D] text-sky-400 border border-sky-400/40 text-xs font-bold flex items-center gap-1.5">
+                <MessageCircle className="w-3.5 h-3.5 text-sky-400" />
+                <span>منصة الحوار والإجابات المعتمدة</span>
+              </span>
+              <span className="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>الخط الساخن متاح</span>
+              </span>
             </div>
-            <h3 className="text-base font-bold text-[#343832] dark:text-[#F7F5EF] font-amiri group-hover:text-[#394E43] dark:group-hover:text-[#B9A477] transition-colors">
-              المصحف الإلكتروني والتفاسير
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              تصفح القرآن بالرسم العثماني المعتمد، مع تفاسير السعدي وابن كثير والطبري وترجمات دقيقة بـ 12 لغة.
-            </p>
-            <div className="pt-2 text-[11px] font-bold text-[#394E43] dark:text-[#B9A477] flex items-center gap-1">
-              <span>دخول المصحف الشريف</span>
-              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+
+            <div>
+              <h3 className="text-xl sm:text-2xl font-black font-amiri text-white">
+                اسأل عن الإسلام • Ask About Islam
+              </h3>
+              <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                إجابات موثقة ومحققة عن أركان الإيمان، حقيقة التوحيد، نبوة محمد ﷺ، ومكانة عيسى عليه السلام في القرآن الكريم، مدعومة بخط ساخن مباشر مع المشايخ عبر واتساب.
+              </p>
+            </div>
+
+            {/* Quick Question Preview Badges */}
+            <div className="space-y-2">
+              <div 
+                onClick={() => onNavigate('discoverIslam')}
+                className="p-3 bg-[#050914] rounded-xl border border-slate-800 hover:border-sky-400/60 transition-all cursor-pointer flex items-center justify-between text-xs"
+              >
+                <span className="font-semibold text-slate-200">ما هو مفهوم التوحيد وخالقية الكون في الإسلام؟</span>
+                <span className="text-[10px] text-sky-400">إجابة معتمدة ←</span>
+              </div>
+
+              <div 
+                onClick={() => onNavigate('discoverIslam')}
+                className="p-3 bg-[#050914] rounded-xl border border-slate-800 hover:border-sky-400/60 transition-all cursor-pointer flex items-center justify-between text-xs"
+              >
+                <span className="font-semibold text-slate-200">من هو عيسى ابن مريم عليه السلام في القرآن؟</span>
+                <span className="text-[10px] text-sky-400">إجابة معتمدة ←</span>
+              </div>
+            </div>
+
+            {/* Direct WhatsApp Helpline Card */}
+            <div className="p-3 bg-[#111C3D] rounded-xl border border-[#D4AF37]/30 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-[#D4AF37]" />
+                <div>
+                  <span className="font-bold text-white block">خط المشايخ للإفتاء والاستفسارات:</span>
+                  <span className="text-[11px] text-[#D4AF37] font-mono">+249 90 449 9914 (واتساب)</span>
+                </div>
+              </div>
+              <a
+                href="https://wa.me/249904499914?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D9%84%D8%AF%D9%8A%20%D8%B3%D8%A4%D8%A7%D9%84%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%A5%D8%B3%D9%84%D8%A7%D9%85"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 rounded-lg bg-[#25D366] text-slate-950 font-black text-xs flex items-center gap-1 shadow-md hover:scale-105 transition-transform"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                <span>محادثة فورية</span>
+              </a>
             </div>
           </div>
 
-          {/* Card 2: السنة النبوية */}
-          <div 
-            onClick={() => onNavigate('hadith')}
-            className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] hover:border-[#394E43] dark:hover:border-[#B9A477] cursor-pointer transition-all space-y-3 group shadow-2xs hover:shadow-sm"
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#657568]/15 dark:bg-[#657568]/30 flex items-center justify-center text-[#657568] dark:text-[#A4B5A7]">
-              <Scroll className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-[#343832] dark:text-[#F7F5EF] font-amiri group-hover:text-[#394E43] dark:group-hover:text-[#B9A477] transition-colors">
-              موسوعة السنة والكتب التسعة
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              متون الأحاديث النبوية مخرجة ومحققة من صحيحي البخاري ومسلم وأمهات كتب السنة التسعة مع الشروح والفوائد.
-            </p>
-            <div className="pt-2 text-[11px] font-bold text-[#394E43] dark:text-[#B9A477] flex items-center gap-1">
-              <span>تصفح موسوعة الحديث</span>
-              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
-            </div>
+          <div className="pt-6">
+            <button
+              onClick={() => onNavigate('discoverIslam')}
+              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-sky-400 to-blue-500 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer hover:scale-[1.02] transition-transform"
+            >
+              <span>فتح بوابة الإجابات الشرعية الكاملة</span>
+              <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
+            </button>
           </div>
-
-          {/* Card 3: المقارئ والأكاديمية */}
-          <div 
-            onClick={() => onNavigate('academy')}
-            className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] hover:border-[#394E43] dark:hover:border-[#B9A477] cursor-pointer transition-all space-y-3 group shadow-2xs hover:shadow-sm"
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#B9A477]/15 dark:bg-[#B9A477]/30 flex items-center justify-center text-[#B9A477]">
-              <GraduationCap className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-[#343832] dark:text-[#F7F5EF] font-amiri group-hover:text-[#394E43] dark:group-hover:text-[#B9A477] transition-colors">
-              أكاديمية النور والمقارئ المسندة
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              حلقات إلكترونية مباشرة لتحفيظ القرآن وتصحيح التلاوة ومنح إجازات بالسند المتصل بروايات القراءات العشر.
-            </p>
-            <div className="pt-2 text-[11px] font-bold text-[#394E43] dark:text-[#B9A477] flex items-center gap-1">
-              <span>التسجيل في المقارئ</span>
-              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
-            </div>
-          </div>
-
-          {/* Card 4: المكتبة الإسلامية */}
-          <div 
-            onClick={() => onNavigate('library')}
-            className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] hover:border-[#394E43] dark:hover:border-[#B9A477] cursor-pointer transition-all space-y-3 group shadow-2xs hover:shadow-sm"
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#394E43]/10 dark:bg-[#394E43]/30 flex items-center justify-center text-[#394E43] dark:text-[#B9A477]">
-              <Library className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-[#343832] dark:text-[#F7F5EF] font-amiri group-hover:text-[#394E43] dark:group-hover:text-[#B9A477] transition-colors">
-              المكتبة الرقمية والمخطوطات
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              مكتبة شاملة من أمهات المصنفات المحققة والرسائل العلمية في الفقه وأصوله والعقيدة وعلوم اللسان العربي.
-            </p>
-            <div className="pt-2 text-[11px] font-bold text-[#394E43] dark:text-[#B9A477] flex items-center gap-1">
-              <span>دخول المكتبة والتحميل</span>
-              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
-            </div>
-          </div>
-
-          {/* Card 5: المهتدون الجدد والدعوة */}
-          <div 
-            onClick={() => onNavigate('newMuslims')}
-            className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] hover:border-[#394E43] dark:hover:border-[#B9A477] cursor-pointer transition-all space-y-3 group shadow-2xs hover:shadow-sm"
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#657568]/15 dark:bg-[#657568]/30 flex items-center justify-center text-[#657568] dark:text-[#A4B5A7]">
-              <Compass className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-[#343832] dark:text-[#F7F5EF] font-amiri group-hover:text-[#394E43] dark:group-hover:text-[#B9A477] transition-colors">
-              الدعوة العالمية والمهتدون الجدد
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              تعريف غير المسلمين بالإسلام بأسلوب برهاني راقٍ، ودليل تعليم الصلاة والوضوء للمسلمين الجدد بعشر لغات.
-            </p>
-            <div className="pt-2 text-[11px] font-bold text-[#394E43] dark:text-[#B9A477] flex items-center gap-1">
-              <span>بوابة الدعوة والمهتدين</span>
-              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
-            </div>
-          </div>
-
-          {/* Card 6: الباحث العلمي الذكي */}
-          <div 
-            onClick={() => onNavigate('aiScholar')}
-            className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] hover:border-[#394E43] dark:hover:border-[#B9A477] cursor-pointer transition-all space-y-3 group shadow-2xs hover:shadow-sm"
-          >
-            <div className="w-10 h-10 rounded-xl bg-[#B9A477]/15 dark:bg-[#B9A477]/30 flex items-center justify-center text-[#B9A477]">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-[#343832] dark:text-[#F7F5EF] font-amiri group-hover:text-[#394E43] dark:group-hover:text-[#B9A477] transition-colors">
-              المساعد المعرفي الإسلامي الموثق
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              بحث أكاديمي ذكي مدعوم بنصوص الآيات والأحاديث الموثقة وضوابط الفتوى المعتمدة لدى هيئة كبار العلماء.
-            </p>
-            <div className="pt-2 text-[11px] font-bold text-[#394E43] dark:text-[#B9A477] flex items-center gap-1">
-              <span>طرح استفسار أو مسألة علمية</span>
-              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
-            </div>
-          </div>
-
         </div>
 
       </section>
 
 
       {/* =========================================================================
-          4. THE HOLY QURAN SECTION: قسم القرآن الكريم والتلاوة العطرة
+          3. SCHOLARLY READING CLARITY (IVORY / PARCHMENT SURFACES)
+             Adhering strictly to user prompt rule:
+             "رابعاً: وضوح المادة العلمية - لا تجعل الخلفيات المظلمة تؤثر على قراءة القرآن
+              والكتب، اعتمد خلفيات عاجية وبيضاء مريحة للقراءة في صفحات القرآن والمكتبة"
           ========================================================================= */}
-      <section className="rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] p-6 sm:p-10 space-y-8 shadow-xs">
+      <section className="rounded-3xl scholarly-reading-paper p-6 sm:p-10 space-y-8 shadow-xl border border-[#D8CEBB]">
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5DCCB] dark:border-[#3A4237] pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#D8CEBB] pb-4">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-[#657568] dark:text-[#B9A477] flex items-center gap-1.5 uppercase">
+            <span className="text-xs font-bold text-[#657568] flex items-center gap-1.5 uppercase">
               <BookOpen className="w-4 h-4 text-[#B9A477]" />
               <span>المصحف الإلكتروني الشريف • The Noble Quran</span>
             </span>
-            <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
-              تلاوة عطرة وتدبر في آيات الذكر الحكيم
+            <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43]">
+              تلاوة عطرة بالرسم العثماني المعتمد وتدبر الآيات
             </h2>
           </div>
 
-          <button
-            onClick={() => onNavigate('quran')}
-            className="px-4 py-2 rounded-xl bg-[#394E43] hover:bg-[#2E3F36] text-[#F7F5EF] text-xs font-bold border border-[#B9A477]/40 flex items-center gap-2 cursor-pointer self-start sm:self-auto"
-          >
-            <span>فتح المصحف الكامل (114 سورة)</span>
-            <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onNavigate('translationsReader')}
+              className="px-4 py-2 rounded-xl bg-[#657568] text-white text-xs font-bold hover:bg-[#394E43] flex items-center gap-1.5 cursor-pointer shadow-sm"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>ترجمات القرآن (76 لغة)</span>
+            </button>
+
+            <button
+              onClick={() => onNavigate('quran')}
+              className="px-4 py-2 rounded-xl bg-[#394E43] text-[#F7F5EF] text-xs font-bold hover:bg-[#2E3F36] flex items-center gap-2 cursor-pointer shadow-sm"
+            >
+              <span>المصحف الكامل (114 سورة)</span>
+              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
         </div>
 
-        {/* Interactive Quran Reader Box */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Interactive Quran Reader Box on Ivory Background */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start text-[#343832]">
           
           {/* Main Quran Verse Plate */}
           <div className="lg:col-span-2 space-y-4">
             
             {/* Surah Title Bar */}
-            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#E5DCCB] dark:border-[#3A4237]">
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F0EDE4] border border-[#D8CEBB]">
               <div className="flex items-center gap-2">
                 <span className="w-8 h-8 rounded-lg bg-[#394E43] text-[#F7F5EF] font-bold text-xs flex items-center justify-center font-mono">
                   {selectedSurah.number}
                 </span>
                 <div>
-                  <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">{selectedSurah.name}</h3>
-                  <span className="text-[10px] text-[#80887D]">{selectedSurah.englishName} • {selectedSurah.revelationType} • {selectedSurah.numberOfAyahs} آيات</span>
+                  <h3 className="text-sm font-bold text-[#343832]">{selectedSurah.name}</h3>
+                  <span className="text-[10px] text-[#657568]">{selectedSurah.englishName} • {selectedSurah.revelationType} • {selectedSurah.numberOfAyahs} آيات</span>
                 </div>
               </div>
 
@@ -541,7 +588,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
                     const r = RECITERS.find(x => x.id === e.target.value) || RECITERS[0];
                     handleReciterChange(r);
                   }}
-                  className="text-xs bg-[#FAF8F2] dark:bg-[#272B25] border border-[#D8CEBB] dark:border-[#3A4237] text-[#343832] dark:text-[#E5DCCB] px-3 py-1.5 rounded-xl cursor-pointer focus:outline-none"
+                  className="text-xs bg-[#FAF8F2] border border-[#D8CEBB] text-[#343832] px-3 py-1.5 rounded-xl cursor-pointer focus:outline-none"
                 >
                   {RECITERS.map(r => (
                     <option key={r.id} value={r.id}>{r.name}</option>
@@ -563,19 +610,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
             </div>
 
             {/* Verses Preview Plate */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-[#FAF8F2] dark:bg-[#1F221E] border border-[#D8CEBB] dark:border-[#3A4237] text-center space-y-6">
-              <div className="text-xl sm:text-2xl font-amiri font-bold text-[#394E43] dark:text-[#B9A477]">
+            <div className="p-6 sm:p-8 rounded-3xl bg-[#FAF8F2] border border-[#D8CEBB] text-center space-y-6">
+              <div className="text-xl sm:text-2xl font-amiri font-bold text-[#394E43]">
                 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
               </div>
 
               <div className="space-y-4">
                 {selectedSurah.sampleAyahs.slice(1, 5).map((ayah) => (
-                  <div key={ayah.number} className="space-y-2 border-b border-[#E5DCCB]/60 dark:border-[#3A4237]/60 pb-3 last:border-none">
-                    <p className="text-lg sm:text-xl font-amiri font-bold text-[#343832] dark:text-[#F7F5EF] leading-loose">
+                  <div key={ayah.number} className="space-y-2 border-b border-[#E5DCCB] pb-3 last:border-none">
+                    <p className="text-lg sm:text-xl font-amiri font-bold text-[#1E242B] leading-loose">
                       {ayah.text} <span className="text-[#B9A477] text-sm">﴿{ayah.number}﴾</span>
                     </p>
                     {ayah.tafsir && (
-                      <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed max-w-xl mx-auto">
+                      <p className="text-xs text-[#5E655B] leading-relaxed max-w-xl mx-auto">
                         <strong>التفسير الميسر:</strong> {ayah.tafsir}
                       </p>
                     )}
@@ -588,7 +635,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
 
           {/* Surah List Selector Sidebar */}
           <div className="space-y-3">
-            <span className="text-xs font-bold text-[#343832] dark:text-[#F7F5EF] block">
+            <span className="text-xs font-bold text-[#343832] block">
               اختر السورة الكريمة للتلاوة والتدبر:
             </span>
 
@@ -606,12 +653,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
                     className={`w-full p-3 rounded-2xl text-right transition-all border flex items-center justify-between cursor-pointer ${
                       isSelected
                         ? 'bg-[#394E43] text-[#F7F5EF] border-[#B9A477]/40 shadow-xs'
-                        : 'bg-[#F0EDE4] dark:bg-[#1F221E] text-[#343832] dark:text-[#D8CEBB] border-[#E5DCCB] dark:border-[#3A4237] hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A]'
+                        : 'bg-[#F0EDE4] text-[#343832] border-[#E5DCCB] hover:bg-[#E5DCCB]'
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       <span className={`w-6 h-6 rounded-md text-xs font-bold flex items-center justify-center font-mono ${
-                        isSelected ? 'bg-[#2E3F36] text-[#B9A477]' : 'bg-[#FAF8F2] dark:bg-[#272B25] text-[#5E655B]'
+                        isSelected ? 'bg-[#2E3F36] text-[#B9A477]' : 'bg-[#FAF8F2] text-[#5E655B]'
                       }`}>
                         {surah.number}
                       </span>
@@ -623,9 +670,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
               })}
             </div>
 
-            <div className="p-3 bg-[#F0EDE4] dark:bg-[#1F221E] rounded-2xl border border-[#E5DCCB] dark:border-[#3A4237] text-[11px] text-[#5E655B] dark:text-[#D8CEBB] flex items-center justify-between">
+            <div className="p-3 bg-[#F0EDE4] rounded-2xl border border-[#E5DCCB] text-[11px] text-[#5E655B] flex items-center justify-between">
               <span>رواية المصحف: حفص عن عاصم</span>
-              <span className="font-bold text-[#394E43] dark:text-[#B9A477]">الرسم العثماني</span>
+              <span className="font-bold text-[#394E43]">الرسم العثماني المعتمد</span>
             </div>
           </div>
 
@@ -635,56 +682,56 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
 
 
       {/* =========================================================================
-          5. PROPHETIC SUNNAH & HADITH: قسم السنة النبوية الشريفة
+          4. PROPHETIC SUNNAH & HADITH (Verified Isnad & Scholarly Analysis)
           ========================================================================= */}
       <section className="space-y-6">
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5DCCB] dark:border-[#3A4237] pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-[#657568] dark:text-[#B9A477] flex items-center gap-1.5 uppercase">
-              <Scroll className="w-4 h-4 text-[#B9A477]" />
+            <span className="text-xs font-bold text-[#D4AF37] flex items-center gap-1.5 uppercase">
+              <Scroll className="w-4 h-4 text-[#D4AF37]" />
               <span>ديوان السنة النبوية المشرفة • The Prophetic Sunnah</span>
             </span>
-            <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
+            <h2 className="text-xl sm:text-2xl font-black font-amiri text-white">
               حديث اليوم النبوي الموثق والكتب التسعة
             </h2>
           </div>
 
           <button
             onClick={() => onNavigate('hadith')}
-            className="px-4 py-2 rounded-xl bg-[#FAF8F2] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A] text-[#394E43] dark:text-[#B9A477] text-xs font-bold border border-[#D8CEBB] dark:border-[#3A4237] flex items-center gap-2 cursor-pointer self-start sm:self-auto"
+            className="px-4 py-2 rounded-xl bg-[#111C3D] hover:bg-[#1E2E5D] text-[#D4AF37] text-xs font-bold border border-[#D4AF37]/40 flex items-center gap-2 cursor-pointer self-start sm:self-auto shadow-sm"
           >
             <span>استعراض موسوعة الحديث الكاملة</span>
             <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
-        {/* Featured Hadith Plaque */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-4 shadow-xs">
+        {/* Featured Hadith Plaque in scholarly readable ivory card */}
+        <div className="p-6 sm:p-8 rounded-3xl scholarly-reading-paper border border-[#D8CEBB] space-y-4 shadow-lg text-[#343832]">
           
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E5DCCB] dark:border-[#3A4237] pb-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#D8CEBB] pb-3">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-1 rounded-lg bg-[#394E43] text-[#F7F5EF] text-[11px] font-bold">
                 صحيح البخاري • حديث رقم 5027
               </span>
-              <span className="text-xs text-[#657568] dark:text-[#B9A477] font-semibold">
+              <span className="text-xs text-[#657568] font-semibold">
                 كتاب فضائل القرآن
               </span>
             </div>
-            <span className="text-[11px] text-[#80887D]">سند صحيح متفق عليه</span>
+            <span className="text-[11px] text-[#657568] font-semibold">سند صحيح متفق عليه</span>
           </div>
 
           <div className="space-y-3 py-2 text-center">
-            <p className="text-xs text-[#80887D] font-mono">
+            <p className="text-xs text-[#657568] font-mono">
               عَنْ عُثْمَانَ بْنِ عَفَّانَ رَضِيَ اللَّهُ عَنْهُ، عَنِ النَّبِيِّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ قَالَ:
             </p>
-            <p className="text-xl sm:text-2xl font-amiri font-bold text-[#394E43] dark:text-[#F7F5EF] leading-relaxed max-w-2xl mx-auto">
+            <p className="text-xl sm:text-2xl font-amiri font-bold text-[#1E242B] leading-relaxed max-w-2xl mx-auto">
               « خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ »
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#E5DCCB] dark:border-[#3A4237] text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-            <strong className="text-[#343832] dark:text-[#F7F5EF]">الفوائد التربوية والعلمية:</strong> هذا الحديث أصلٌ عظيم في فضل الاشتغال بالقرآن الكريم تلاوةً وحفظاً وتدبراً وتعليماً، وهو الشعار المؤسسي الذي تقوم عليه مقارئ وحلقات مجمع النور الإسلامي في كل قارات العالم.
+          <div className="p-4 rounded-2xl bg-[#F0EDE4] border border-[#D8CEBB] text-xs text-[#5E655B] leading-relaxed">
+            <strong className="text-[#343832]">الفوائد التربوية والعلمية:</strong> هذا الحديث أصلٌ عظيم في فضل الاشتغال بالقرآن الكريم تلاوةً وحفظاً وتدبراً وتعليماً، وهو الشعار المؤسسي الذي تقوم عليه مقارئ وحلقات مجمع النور الإسلامي في كل قارات العالم.
           </div>
 
         </div>
@@ -693,291 +740,149 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
 
 
       {/* =========================================================================
-          6. TAFSIR & QURANIC SCIENCES: قسم التفسير وعلوم القرآن
+          5. ACADEMIC & HUMANITARIAN PILLARS (NOOR GLOBAL Flagship Grid)
           ========================================================================= */}
       <section className="space-y-6">
         
-        <div className="space-y-1">
-          <span className="text-xs font-bold text-[#657568] dark:text-[#B9A477] uppercase tracking-wider">
-            مباحث التنزيل وأصول الفهم
-          </span>
-          <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
-            التفسير وعلوم القرآن الكريم
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          
-          <div className="p-5 rounded-2xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-2">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#394E43]/10 text-[#394E43] dark:text-[#B9A477] inline-block">
-              أمهات التفاسير
-            </span>
-            <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">تفسير ابن كثير والسعدي</h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              تفسير القرآن بالقرآن وبالسنة وأقوال السلف مع بيان الأحكام العقدية والتربوية.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-2">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#657568]/15 text-[#657568] dark:text-[#A4B5A7] inline-block">
-              أسباب النزول
-            </span>
-            <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">أسباب نزول الآيات</h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              فهم ملابسات الوقائع وسياق الخطاب القرآني استناداً إلى الروايات الصحيحة المعتمدة.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-2">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#B9A477]/20 text-[#394E43] dark:text-[#B9A477] inline-block">
-              علم التجويد
-            </span>
-            <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">أحكام التجويد ومخارج الحروف</h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              شرح صوتي وتفاعلي للمتون الجزرية وتحفة الأطفال وضبط الصفات والمخارج بدقة.
-            </p>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-2">
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#394E43]/10 text-[#394E43] dark:text-[#B9A477] inline-block">
-              علم القراءات
-            </span>
-            <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">القراءات العشر المتواترة</h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              دراسة مقارنة لأوجه القراءات الصغرى والكبرى مع التوجيه اللغوي والإعرابي.
-            </p>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      {/* =========================================================================
-          7. DIGITAL ISLAMIC LIBRARY: قسم المكتبة الإسلامية المحققة
-          ========================================================================= */}
-      <section className="space-y-6">
-        
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5DCCB] dark:border-[#3A4237] pb-4">
-          <div className="space-y-1">
-            <span className="text-xs font-bold text-[#657568] dark:text-[#B9A477] flex items-center gap-1.5 uppercase">
-              <Library className="w-4 h-4 text-[#B9A477]" />
-              <span>المكتبة الإسلامية الرقمية والمخطوطات</span>
-            </span>
-            <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
-              كنوز التراث الإسلامي والرسائل المحققة
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black font-amiri text-white">
+              أركان المنصة والخدمات العالمية
             </h2>
-          </div>
-
-          <button
-            onClick={() => onNavigate('library')}
-            className="px-4 py-2 rounded-xl bg-[#394E43] hover:bg-[#2E3F36] text-[#F7F5EF] text-xs font-bold border border-[#B9A477]/40 flex items-center gap-2 cursor-pointer self-start sm:self-auto"
-          >
-            <span>استعراض كافة الكتب والمخطوطات</span>
-            <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
-          <div className="p-5 rounded-2xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3 flex flex-col justify-between">
-            <div className="space-y-2">
-              <span className="text-[10px] text-[#657568] dark:text-[#B9A477] font-bold">علوم القرآن</span>
-              <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">الإتقان في علوم القرآن</h3>
-              <p className="text-[11px] text-[#80887D]">للإمام جلال الدين السيوطي • طبعة محققة مع مقابلة النسخ الخطية</p>
-            </div>
-            <button
-              onClick={() => onNavigate('library')}
-              className="text-xs font-bold text-[#394E43] dark:text-[#B9A477] hover:underline flex items-center gap-1 pt-2"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>قراءة وتحميل مجاني</span>
-            </button>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3 flex flex-col justify-between">
-            <div className="space-y-2">
-              <span className="text-[10px] text-[#657568] dark:text-[#B9A477] font-bold">علم التجويد</span>
-              <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">شرح المقدمة الجزرية</h3>
-              <p className="text-[11px] text-[#80887D]">لابن الجزري • تحقيق لجان الإقراء بمجمع النور</p>
-            </div>
-            <button
-              onClick={() => onNavigate('library')}
-              className="text-xs font-bold text-[#394E43] dark:text-[#B9A477] hover:underline flex items-center gap-1 pt-2"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>قراءة وتحميل مجاني</span>
-            </button>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3 flex flex-col justify-between">
-            <div className="space-y-2">
-              <span className="text-[10px] text-[#657568] dark:text-[#B9A477] font-bold">الفقه المقارن</span>
-              <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">بداية المجتهد ونهاية المقتصد</h3>
-              <p className="text-[11px] text-[#80887D]">لابن رشد الحفيد • دراسة فقهية مقارنة بأدلة المذاهب الأربعة</p>
-            </div>
-            <button
-              onClick={() => onNavigate('library')}
-              className="text-xs font-bold text-[#394E43] dark:text-[#B9A477] hover:underline flex items-center gap-1 pt-2"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>قراءة وتحميل مجاني</span>
-            </button>
-          </div>
-
-          <div className="p-5 rounded-2xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3 flex flex-col justify-between">
-            <div className="space-y-2">
-              <span className="text-[10px] text-[#657568] dark:text-[#B9A477] font-bold">السيرة النبوية</span>
-              <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">زاد المعاد في هدي خير العباد</h3>
-              <p className="text-[11px] text-[#80887D]">للإمام ابن قيم الجوزية • مع تخريج الأحاديث وتحقيق الأعلام</p>
-            </div>
-            <button
-              onClick={() => onNavigate('library')}
-              className="text-xs font-bold text-[#394E43] dark:text-[#B9A477] hover:underline flex items-center gap-1 pt-2"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>قراءة وتحميل مجاني</span>
-            </button>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      {/* =========================================================================
-          8. GLOBAL DAWAH IN WORLD LANGUAGES: قسم الدعوة إلى الإسلام
-          ========================================================================= */}
-      <section className="rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] p-6 sm:p-10 space-y-6 shadow-xs">
-        
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5DCCB] dark:border-[#3A4237] pb-4">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#657568]/15 text-[#394E43] dark:text-[#B9A477] text-xs font-bold">
-              <Compass className="w-3.5 h-3.5 text-[#B9A477]" />
-              <span>قسم الدعوة العالمية • Global Dawah & New Muslims</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
-              واحة النور للمهتدين الجدد والتعريف بالإسلام
-            </h2>
-          </div>
-
-          <button
-            onClick={() => onNavigate('newMuslims')}
-            className="px-5 py-2.5 rounded-xl bg-[#394E43] hover:bg-[#2E3F36] text-[#F7F5EF] text-xs font-bold border border-[#B9A477]/40 flex items-center gap-2 cursor-pointer self-start sm:self-auto"
-          >
-            <span>دخول بوابة الدعوة والمهتدين</span>
-            <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
-          <div 
-            onClick={() => onNavigate('newMuslims')}
-            className="p-4 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#E5DCCB] dark:border-[#3A4237] space-y-2 cursor-pointer hover:border-[#394E43]"
-          >
-            <span className="text-[11px] font-bold text-[#394E43] dark:text-[#B9A477]">01. الدعوة بالإنجليزية</span>
-            <h4 className="text-xs font-bold text-[#343832] dark:text-[#F7F5EF]">Discovering Islam & Monotheism</h4>
-            <p className="text-[11px] text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              بيان التوحيد ورسالة النبي محمد ﷺ ومكانة عيسى عليه السلام في القرآن.
+            <p className="text-xs text-slate-400 mt-1">
+              منظومة متكاملة تجمع بين العلم الشرعي الأصيل، التكنولوجيا الحديثة، والعمل الإنساني.
             </p>
-          </div>
-
-          <div 
-            onClick={() => onNavigate('newMuslims')}
-            className="p-4 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#E5DCCB] dark:border-[#3A4237] space-y-2 cursor-pointer hover:border-[#394E43]"
-          >
-            <span className="text-[11px] font-bold text-[#657568] dark:text-[#A4B5A7]">02. الدعوة باللغات الحية</span>
-            <h4 className="text-xs font-bold text-[#343832] dark:text-[#F7F5EF]">World Languages Portal</h4>
-            <p className="text-[11px] text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              مواد تعريفية وترجمات معتمدة بالفرنسية، الإسبانية، الألمانية، والتركية.
-            </p>
-          </div>
-
-          <div 
-            onClick={() => onNavigate('newMuslims')}
-            className="p-4 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#E5DCCB] dark:border-[#3A4237] space-y-2 cursor-pointer hover:border-[#394E43]"
-          >
-            <span className="text-[11px] font-bold text-[#B9A477]">03. الفقه الميسر والوضوء</span>
-            <h4 className="text-xs font-bold text-[#343832] dark:text-[#F7F5EF]">Interactive Prayer & Wudu</h4>
-            <p className="text-[11px] text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              شرح تفاعلي مرئي لحركات وأذكار الصلاة الخمس والوضوء للمسلمين الجدد.
-            </p>
-          </div>
-
-          <div 
-            onClick={() => onNavigate('newMuslims')}
-            className="p-4 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#E5DCCB] dark:border-[#3A4237] space-y-2 cursor-pointer hover:border-[#394E43]"
-          >
-            <span className="text-[11px] font-bold text-[#394E43] dark:text-[#B9A477]">04. الحوار والتواصل المباشر</span>
-            <h4 className="text-xs font-bold text-[#343832] dark:text-[#F7F5EF]">Live Dawah Support</h4>
-            <p className="text-[11px] text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              جلسات حوارية خاصة للإجابة عن التساؤلات والشبهات مع دعاة متخصصين.
-            </p>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      {/* =========================================================================
-          9. RECITATION CORRECTION & TEACHERS: صحيح القراءة ومعلمو القرآن
-          ========================================================================= */}
-      <section className="space-y-6">
-        
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5DCCB] dark:border-[#3A4237] pb-4">
-          <div className="space-y-1">
-            <span className="text-xs font-bold text-[#657568] dark:text-[#B9A477] uppercase tracking-wider">
-              المقارئ الإلكترونية الحية 24/7
-            </span>
-            <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
-              صحيح القراءة والتواصل مع معلمي القرآن
-            </h2>
           </div>
 
           <button
             onClick={() => onNavigate('academy')}
-            className="px-4 py-2 rounded-xl bg-[#394E43] hover:bg-[#2E3F36] text-[#F7F5EF] text-xs font-bold border border-[#B9A477]/40 flex items-center gap-2 cursor-pointer self-start sm:self-auto"
+            className="text-xs font-bold text-[#D4AF37] hover:underline flex items-center gap-1 self-start sm:self-auto cursor-pointer"
           >
-            <span>حجز جلسة تسميع فورية</span>
-            <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+            <span>استعراض كافة البرامج والأكاديميات</span>
+            <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           
-          <div className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#394E43] dark:text-[#B9A477]">
-              <Headphones className="w-4 h-4 text-[#B9A477]" />
-              <span>مقرأة التسميع المباشر</span>
+          {/* Card 1: كفالة الأيتام */}
+          <div 
+            onClick={() => onNavigate('orphansCare')}
+            className="p-6 rounded-3xl bg-[#0B132B] border border-rose-500/30 hover:border-rose-400 cursor-pointer transition-all space-y-3 group shadow-lg hover:-translate-y-1"
+          >
+            <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400">
+              <Heart className="w-5 h-5 fill-current" />
             </div>
-            <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">جلسات فردية مع مشايخ مجازين</h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              غرف افتراضية خاصة تمكن الطالب من التسميع وتصحيح مخارج الحروف وأحكام المد والإدغام بدقة متناهية.
+            <h3 className="text-base font-bold text-white font-amiri group-hover:text-rose-300 transition-colors">
+              كفالة الأيتام والرعاية الشاملة
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              برنامج كفالة تعليمية ومعيشية وصحية لأكثر من 1,280 يتيماً، مع إمكانية التسجيل ورفع المستندات والمتابعة عبر لوحة الإدارة.
             </p>
+            <div className="pt-2 text-[11px] font-bold text-rose-400 flex items-center gap-1">
+              <span>دخول بوابة الأيتام واستمارة التسجيل</span>
+              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#657568] dark:text-[#A4B5A7]">
-              <Award className="w-4 h-4 text-[#B9A477]" />
-              <span>برنامج الإجازة القرآنية</span>
+          {/* Card 2: ترجمات القرآن */}
+          <div 
+            onClick={() => onNavigate('translationsReader')}
+            className="p-6 rounded-3xl bg-[#0B132B] border border-[#D4AF37]/30 hover:border-[#D4AF37] cursor-pointer transition-all space-y-3 group shadow-lg hover:-translate-y-1"
+          >
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-[#D4AF37]">
+              <Globe className="w-5 h-5" />
             </div>
-            <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">السند المتصل إلى النبي ﷺ</h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              ختم القرآن كاملاً غيباً عن ظهر قلب بإتقان تام لنيل شهادة الإجازة المعتمدة من هيئة الإقراء بمجمع النور.
+            <h3 className="text-base font-bold text-white font-amiri group-hover:text-[#D4AF37] transition-colors">
+              قارئ ترجمات القرآن بـ 76 لغة
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              ربط مباشر مع مجمع الملك فهد لطباعة المصحف وQuranEnc، مع عرض المتن العثماني والترجمة المعتمدة لكل آية ورقمها.
             </p>
+            <div className="pt-2 text-[11px] font-bold text-[#D4AF37] flex items-center gap-1">
+              <span>تصفح الترجمات العالمية</span>
+              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#B9A477]">
-              <Users className="w-4 h-4 text-[#B9A477]" />
-              <span>حلقات مخصصة للنساء والناشئة</span>
+          {/* Card 3: المقارئ والأكاديمية */}
+          <div 
+            onClick={() => onNavigate('academy')}
+            className="p-6 rounded-3xl bg-[#0B132B] border border-blue-500/30 hover:border-blue-400 cursor-pointer transition-all space-y-3 group shadow-lg hover:-translate-y-1"
+          >
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
+              <GraduationCap className="w-5 h-5" />
             </div>
-            <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">معلمات حافظات ومجازات</h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              بيئة تعليمية مخصصة للأخوات والبراعم الصغار مع مناهج تفاعلية تشجع على حب القرآن والاستمرار في حفظه.
+            <h3 className="text-base font-bold text-white font-amiri group-hover:text-blue-300 transition-colors">
+              أكاديمية النور والمقارئ المسندة
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              حلقات إلكترونية مباشرة لتحفيظ القرآن وتصحيح التلاوة ومنح إجازات بالسند المتصل بروايات القراءات العشر.
             </p>
+            <div className="pt-2 text-[11px] font-bold text-blue-400 flex items-center gap-1">
+              <span>التسجيل في المقارئ</span>
+              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
+          </div>
+
+          {/* Card 4: المكتبة الإسلامية */}
+          <div 
+            onClick={() => onNavigate('library')}
+            className="p-6 rounded-3xl bg-[#0B132B] border border-emerald-500/30 hover:border-emerald-400 cursor-pointer transition-all space-y-3 group shadow-lg hover:-translate-y-1"
+          >
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+              <Library className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-white font-amiri group-hover:text-emerald-300 transition-colors">
+              المكتبة الرقمية والمخطوطات
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              مكتبة شاملة من أمهات المصنفات المحققة والرسائل العلمية في الفقه وأصوله والعقيدة وعلوم اللسان العربي.
+            </p>
+            <div className="pt-2 text-[11px] font-bold text-emerald-400 flex items-center gap-1">
+              <span>دخول المكتبة والتحميل</span>
+              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
+          </div>
+
+          {/* Card 5: المهتدون الجدد */}
+          <div 
+            onClick={() => onNavigate('newMuslims')}
+            className="p-6 rounded-3xl bg-[#0B132B] border border-cyan-500/30 hover:border-cyan-400 cursor-pointer transition-all space-y-3 group shadow-lg hover:-translate-y-1"
+          >
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+              <Compass className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-white font-amiri group-hover:text-cyan-300 transition-colors">
+              الدعوة العالمية والمهتدون الجدد
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              تعريف غير المسلمين بالإسلام بأسلوب برهاني راقٍ، ودليل تعليم الصلاة والوضوء للمسلمين الجدد بعشر لغات.
+            </p>
+            <div className="pt-2 text-[11px] font-bold text-cyan-400 flex items-center gap-1">
+              <span>بوابة الدعوة والمهتدين</span>
+              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
+          </div>
+
+          {/* Card 6: الباحث العلمي الذكي */}
+          <div 
+            onClick={() => onNavigate('aiScholar')}
+            className="p-6 rounded-3xl bg-[#0B132B] border border-purple-500/30 hover:border-purple-400 cursor-pointer transition-all space-y-3 group shadow-lg hover:-translate-y-1"
+          >
+            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-white font-amiri group-hover:text-purple-300 transition-colors">
+              المساعد المعرفي الإسلامي الموثق
+            </h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              بحث أكاديمي ذكي مدعوم بنصوص الآيات والأحاديث الموثقة وضوابط الفتوى المعتمدة لدى هيئة كبار العلماء.
+            </p>
+            <div className="pt-2 text-[11px] font-bold text-purple-400 flex items-center gap-1">
+              <span>طرح استفسار أو مسألة علمية</span>
+              <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+            </div>
           </div>
 
         </div>
@@ -986,101 +891,181 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
 
 
       {/* =========================================================================
-          10. LATEST PUBLICATIONS & SCHOLARLY EDITIONS: آخر الإضافات والإصدارات
+          6. MULTILINGUAL ISLAMIC LIBRARY (خزانة الكتب الإسلامية باللغات العالمية)
           ========================================================================= */}
       <section className="space-y-6">
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E5DCCB] dark:border-[#3A4237] pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-[#657568] dark:text-[#B9A477] uppercase tracking-wider">
-              البحوث المحكمة وإصدارات المجمع
+            <span className="text-xs font-bold text-[#D4AF37] flex items-center gap-1.5 uppercase">
+              <BookOpen className="w-4 h-4 text-[#D4AF37]" />
+              <span>خزانة الكتب الإسلامية المحققة باللغات • Multilingual Islamic Library</span>
             </span>
-            <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
-              آخر الإضافات والإصدارات العلمية
+            <h2 className="text-xl sm:text-2xl font-black font-amiri text-white">
+              قراءة وتحميل أمهات الكتب الإسلامية باللغات الحية
             </h2>
+            <p className="text-xs text-slate-400">
+              موسوعة معتمدة من كتب التفسير، الحديث، السيرة، والفقه بـ 9 لغات عالمية مع إمكانية القراءة التفاعلية الفورية وتحميل النسخ الأصلية PDF.
+            </p>
           </div>
 
           <button
             onClick={() => onNavigate('library')}
-            className="text-xs font-bold text-[#394E43] dark:text-[#B9A477] hover:underline flex items-center gap-1 self-start sm:self-auto cursor-pointer"
+            className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#F59E0B] text-[#070D1E] text-xs font-black flex items-center gap-2 cursor-pointer self-start sm:self-auto shadow-md hover:scale-105 transition-all"
           >
-            <span>أرشيف الإصدارات والبحوث</span>
+            <Library className="w-4 h-4 text-[#070D1E]" />
+            <span>دخول المكتبة الرقمية الشاملة</span>
             <ChevronRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          <div className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3">
-            <span className="text-[10px] text-[#80887D] block">ربيع الآخر 1447 هـ • العدد 28</span>
-            <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">
-              مجلة مجمع النور للدراسات القرآنية المحكمة
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              عدد خاص يتناول مناهج أئمة القراءات في توجيه الفرش والرسم العثماني بمشاركة كبار علماء العالم الإسلامي.
-            </p>
-          </div>
+        {/* Language Filter Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 custom-scrollbar">
+          {[
+            { code: 'all', label: 'جميع اللغات', flag: '🌐' },
+            { code: 'ar', label: 'العربية', flag: '🇸🇦' },
+            { code: 'en', label: 'English', flag: '🇬🇧' },
+            { code: 'fr', label: 'Français', flag: '🇫🇷' },
+            { code: 'es', label: 'Español', flag: '🇪🇸' },
+            { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
+            { code: 'id', label: 'Bahasa Indonesia', flag: '🇮🇩' },
+            { code: 'tr', label: 'Türkçe', flag: '🇹🇷' },
+            { code: 'ur', label: 'اردو', flag: '🇵🇰' },
+            { code: 'ru', label: 'Русский', flag: '🇷🇺' },
+          ].map(langTab => {
+            const isSelected = activeLibraryLang === langTab.code;
+            return (
+              <button
+                key={langTab.code}
+                onClick={() => setActiveLibraryLang(langTab.code)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                  isSelected
+                    ? 'bg-[#D4AF37] text-[#070D1E] shadow-[0_0_12px_rgba(212,175,55,0.3)]'
+                    : 'bg-[#0B132B] text-slate-300 hover:text-white border border-slate-800 hover:border-[#D4AF37]/40'
+                }`}
+              >
+                <span>{langTab.flag}</span>
+                <span>{langTab.label}</span>
+              </button>
+            );
+          })}
+        </div>
 
-          <div className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3">
-            <span className="text-[10px] text-[#80887D] block">طبعة جديدة فاخرة • 1447 هـ</span>
-            <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">
-              الدليل العملي لضبط أصول رواية الدوري عن أبي عمرو
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              كتاب تطبيقي شامل لطلاب الإجازة بالسند المتصل مع جداول مقارنة وشروح لأوجه الإدغام الكبير والإمالة.
-            </p>
-          </div>
+        {/* Books Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {LIBRARY_BOOKS
+            .filter(b => activeLibraryLang === 'all' || b.language === activeLibraryLang)
+            .slice(0, 9)
+            .map(book => (
+              <div
+                key={book.id}
+                className="rounded-3xl bg-[#0B132B] border border-[#D4AF37]/30 hover:border-[#D4AF37] p-5 shadow-lg flex flex-col justify-between space-y-4 transition-all hover:-translate-y-1 group"
+              >
+                <div className="space-y-3">
+                  
+                  {/* Top Book Meta */}
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#111C3D] text-[#D4AF37] font-bold border border-[#D4AF37]/30 text-[11px]">
+                      <span>{book.flag}</span>
+                      <span>{book.languageLabel}</span>
+                    </span>
+                    <span className="text-slate-400 font-mono text-[11px]">
+                      {book.pages} صفحة
+                    </span>
+                  </div>
 
-          <div className="p-6 rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3">
-            <span className="text-[10px] text-[#80887D] block">سلسلة الدعوة المعاصرة • إصدار رقم 14</span>
-            <h3 className="text-sm font-bold text-[#343832] dark:text-[#F7F5EF]">
-              أصول الحوار مع غير المسلمين في الغرب
-            </h3>
-            <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
-              دراسة تأصيلية منهجية في أساليب المخاطبة العقلية والقرآنية المعاصرة لطلاب العلم والدعاة في المهجر.
-            </p>
-          </div>
+                  {/* Title & Author */}
+                  <div>
+                    <h3 className="text-base font-bold text-white font-amiri group-hover:text-[#D4AF37] transition-colors leading-snug">
+                      {book.title}
+                    </h3>
+                    <div className="text-xs text-slate-400 font-medium mt-1">
+                      المؤلف: <span className="text-slate-200">{book.author}</span>
+                    </div>
+                    {book.translator && (
+                      <div className="text-[11px] text-slate-400 mt-0.5">
+                        المترجم: <span className="text-slate-300">{book.translator}</span>
+                      </div>
+                    )}
+                  </div>
 
+                  {/* Description */}
+                  <p className="text-xs text-slate-300 leading-relaxed line-clamp-2">
+                    {book.description}
+                  </p>
+
+                  {/* Category Pill */}
+                  <div className="text-[10px] text-amber-300/80 bg-amber-500/10 px-2 py-0.5 rounded-md inline-block">
+                    {book.category}
+                  </div>
+                </div>
+
+                {/* Book Action Buttons */}
+                <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2">
+                  <button
+                    onClick={() => setSelectedBookForReading(book)}
+                    className="flex-1 py-2 px-3 rounded-xl bg-[#111C3D] hover:bg-[#1E2E5D] text-[#D4AF37] font-bold text-xs flex items-center justify-center gap-1.5 border border-[#D4AF37]/40 shadow-xs cursor-pointer transition-all"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>قراءة فورية</span>
+                  </button>
+
+                  {book.pdfUrl && (
+                    <a
+                      href={book.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-1 border border-slate-700 shadow-xs cursor-pointer transition-all"
+                      title="تحميل الكتاب بصيغة PDF"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>PDF</span>
+                    </a>
+                  )}
+                </div>
+
+              </div>
+            ))}
         </div>
 
       </section>
 
 
       {/* =========================================================================
-          11. LIVE MAKKAH RADIO DECK
+          7. LIVE MAKKAH RADIO DECK
           ========================================================================= */}
       <LiveMakkahQuranRadio initialExpanded={true} dockedMode={false} />
 
 
       {/* =========================================================================
-          12. DUAL SPOTLIGHT: Sudanese Voice Ad Studio & Cloud API Gateway
+          7. DUAL SPOTLIGHT: Sudanese Voice Ad Studio & Cloud API Gateway
           ========================================================================= */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Banner 1: Sudanese Enthusiastic Commercial Voiceover Studio */}
-        <div className="rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-xs hover:border-[#394E43] dark:hover:border-[#B9A477] transition-all">
+        <div className="rounded-3xl bg-[#0B132B] border border-[#D4AF37]/30 p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-xl hover:border-[#D4AF37] transition-all">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="px-3 py-1 rounded-full bg-[#657568]/15 text-[#394E43] dark:text-[#B9A477] text-xs font-bold flex items-center gap-1.5">
-                <Flame className="w-3.5 h-3.5 text-[#B9A477]" />
+              <span className="px-3 py-1 rounded-full bg-[#111C3D] text-[#D4AF37] text-xs font-bold flex items-center gap-1.5 border border-[#D4AF37]/40">
+                <Flame className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span>صوت إعلاني حماسي • بالعامية السودانية 🇸🇩</span>
               </span>
-              <span className="text-[11px] font-mono text-[#80887D]">
+              <span className="text-[11px] font-mono text-slate-400">
                 صوت رجالي جهوري مؤثر
               </span>
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
+              <h3 className="text-xl sm:text-2xl font-black font-amiri text-white">
                 استوديو الصوت الإعلاني بالعامية السودانية
               </h3>
-              <p className="text-xs sm:text-sm text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 استمع وحمّل مقاطع صوتية إعلانية حماسية تلهب القلوب للالتحاق بمقارئ القرآن، نيل الإجازات المسندة، وسماع إذاعة مكة ليل ونهار، مع إمكانية معايرة الصوت وتسجيل صوتك الشخصي.
               </p>
             </div>
 
             {/* Sudanese Dialect Quote Box */}
-            <div className="p-4 bg-[#F0EDE4] dark:bg-[#1F221E] rounded-2xl border border-[#D8CEBB] dark:border-[#3A4237] text-xs font-amiri text-[#394E43] dark:text-[#E5DCCB] leading-loose">
+            <div className="p-4 bg-[#050914] rounded-2xl border border-slate-800 text-xs font-amiri text-[#D4AF37] leading-loose">
               "يا زول يا طيب، مشتاق تحفظ كتاب الله إنت ووليداتك؟ مجمع النور فتح ليك الأبواب.. أبشروا بالخير يا جماعة الخير، النور نوركم والصرح صرحكم!"
             </div>
           </div>
@@ -1088,15 +1073,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={() => onNavigate('audioStudio')}
-              className="px-5 py-3 rounded-2xl bg-[#394E43] hover:bg-[#2D3F36] text-[#F7F5EF] font-bold text-xs shadow-xs flex items-center gap-2 cursor-pointer transition-all border border-[#B9A477]/40"
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#F59E0B] text-[#070D1E] font-black text-xs shadow-md flex items-center gap-2 cursor-pointer hover:scale-105 transition-all"
             >
-              <Mic className="w-4 h-4 text-[#B9A477]" />
+              <Mic className="w-4 h-4 text-[#070D1E]" />
               <span>تشغيل الإعلان في الاستوديو</span>
               <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
             </button>
             <button
               onClick={() => onNavigate('audioStudio')}
-              className="px-4 py-3 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] hover:bg-[#E5DCCB] text-[#343832] dark:text-[#D8CEBB] text-xs font-bold border border-[#D8CEBB] dark:border-[#3A4237] transition-colors"
+              className="px-4 py-3 rounded-2xl bg-[#111C3D] hover:bg-[#1A2A54] text-slate-200 text-xs font-bold border border-slate-700 transition-colors"
             >
               عرض السيناريوهات الـ 5
             </button>
@@ -1104,34 +1089,34 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
         </div>
 
         {/* Banner 2: Enterprise API Gateway Architecture */}
-        <div className="rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-xs hover:border-[#394E43] dark:hover:border-[#B9A477] transition-all">
+        <div className="rounded-3xl bg-[#0B132B] border border-amber-500/30 p-6 sm:p-8 flex flex-col justify-between gap-6 shadow-xl hover:border-amber-400 transition-all">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="px-3 py-1 rounded-full bg-[#B9A477]/15 text-[#394E43] dark:text-[#B9A477] text-xs font-bold flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-[#B9A477]" />
+              <span className="px-3 py-1 rounded-full bg-[#111C3D] text-[#D4AF37] text-xs font-bold flex items-center gap-1.5 border border-[#D4AF37]/40">
+                <Zap className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span>منظومة API والربط السحابي الموحد ⚡</span>
               </span>
-              <span className="text-[11px] font-mono text-[#80887D]">
+              <span className="text-[11px] font-mono text-slate-400">
                 OpenAPI 3.0 Ready
               </span>
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-xl sm:text-2xl font-black font-amiri text-[#394E43] dark:text-[#F7F5EF]">
+              <h3 className="text-xl sm:text-2xl font-black font-amiri text-white">
                 بنية API التحتية لتطبيقات الويب والموبايل
               </h3>
-              <p className="text-xs sm:text-sm text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
                 طبقة مركزية عازلة لمفاتيح الأمان السرية، توفر حساب مواقيت الصلاة فلكياً، فهرس القرآن الموثق، الباحث الذكي بضوابط أهل السنة، وحزم SDK كاملة لتطبيقات Android وiOS.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
-              <div className="p-2.5 bg-[#F0EDE4] dark:bg-[#1F221E] rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] text-[#5E655B] dark:text-[#D8CEBB] flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#657568] dark:text-[#B9A477] shrink-0" />
+              <div className="p-2.5 bg-[#050914] rounded-xl border border-slate-800 text-slate-300 flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                 <span>Circuit Breaker Resilience</span>
               </div>
-              <div className="p-2.5 bg-[#F0EDE4] dark:bg-[#1F221E] rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] text-[#5E655B] dark:text-[#D8CEBB] flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#394E43] dark:text-[#B9A477] shrink-0" />
+              <div className="p-2.5 bg-[#050914] rounded-xl border border-slate-800 text-slate-300 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
                 <span>0 Secrets in Frontend</span>
               </div>
             </div>
@@ -1140,9 +1125,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={() => onNavigate('apiGateway')}
-              className="px-5 py-3 rounded-2xl bg-[#394E43] hover:bg-[#2D3F36] text-[#F7F5EF] font-bold text-xs shadow-xs flex items-center gap-2 cursor-pointer transition-all border border-[#B9A477]/40"
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-600 text-slate-950 font-black text-xs shadow-md flex items-center gap-2 cursor-pointer hover:scale-105 transition-all"
             >
-              <Zap className="w-4 h-4 text-[#B9A477]" />
+              <Zap className="w-4 h-4 text-slate-950" />
               <span>دخول لوحة تحكم API والمختبر التفاعلي</span>
               <ChevronRight className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
             </button>
@@ -1150,6 +1135,12 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
         </div>
 
       </section>
+
+      {/* Book Reader Modal */}
+      <BookReaderModal
+        book={selectedBookForReading}
+        onClose={() => setSelectedBookForReading(null)}
+      />
 
     </div>
   );

@@ -8,6 +8,7 @@ import {
 import { NavigationPage, OrphanApplication, OrphanProfile, SponsorshipProgram } from '../../types';
 import { ORPHANS_CONTACT_INFO, SPONSORSHIP_PROGRAMS, INITIAL_ORPHANS_PROFILES, INITIAL_ORPHAN_APPLICATIONS } from '../../data/orphansData';
 import { useLanguage } from '../../context/LanguageContext';
+import { orphansFirebaseService } from '../../services/orphansFirebaseService';
 
 interface OrphansCarePageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -141,9 +142,16 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
         updatedAt: new Date().toISOString(),
       };
 
-      // Add to admin list
+      // Add to admin list & submitted state
       setAdminApplications((prev) => [newApp, ...prev]);
       setSubmittedApplication(newApp);
+
+      // Firestore persistence
+      try {
+        await orphansFirebaseService.submitApplication(newApp);
+      } catch (err) {
+        console.warn('Firestore application sync note:', err);
+      }
 
       // Backend sync attempt
       try {
@@ -161,22 +169,36 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
   };
 
   // Handle Track Query
-  const handleTrackLookup = (e: React.FormEvent) => {
+  const handleTrackLookup = async (e: React.FormEvent) => {
     e.preventDefault();
     setTrackNotFound(false);
     const q = trackQuery.trim().toUpperCase();
     if (!q) return;
 
+    // Check local list first
     const found = adminApplications.find(
       (a) => a.trackingNumber.toUpperCase() === q || a.phone.includes(q) || a.nationalId === q
     );
     if (found) {
       setTrackedApp(found);
       setTrackNotFound(false);
-    } else {
-      setTrackedApp(null);
-      setTrackNotFound(true);
+      return;
     }
+
+    // Check Firestore
+    try {
+      const remote = await orphansFirebaseService.lookupApplication(q);
+      if (remote) {
+        setTrackedApp(remote);
+        setTrackNotFound(false);
+        return;
+      }
+    } catch (err) {
+      console.warn('Remote track lookup note:', err);
+    }
+
+    setTrackedApp(null);
+    setTrackNotFound(true);
   };
 
   // Admin status update

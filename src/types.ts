@@ -8,6 +8,8 @@ export type NavigationPage =
   | 'library' 
   | 'aiScholar'
   | 'newMuslims'
+  | 'noorAmbassador'
+  | 'discoverIslam'
   | 'radio' 
   | 'audioStudio'
   | 'orphansCare'
@@ -206,15 +208,29 @@ export interface IslamicCourse {
 export interface LibraryBook {
   id: string;
   title: string;
+  titleNative?: string;
   author: string;
+  translator?: string;
   category: string;
+  language: string; // 'ar' | 'en' | 'fr' | 'es' | 'de' | 'id' | 'tr' | 'ur' | 'ru';
+  languageLabel: string;
+  flag: string;
   pages: number;
   era?: string;
   year?: string | number;
+  publisher?: string;
   description: string;
   tableOfContents?: string[];
   downloadable?: boolean;
+  pdfUrl?: string;
+  archiveUrl?: string;
+  sampleChapterTitle?: string;
   sampleChapterText?: string;
+  chapters?: {
+    id: string;
+    title: string;
+    content: string;
+  }[];
   rightsStatus?: string;
 }
 

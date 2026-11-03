@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile containing authentication details, roles, and learning progress.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique user ID matching Firebase Auth UID." },
+        "email": { "type": "string", "format": "email", "description": "User email address." },
+        "displayName": { "type": "string", "description": "Display name of the user or student." },
+        "role": { "type": "string", "enum": ["student", "teacher", "scholar", "admin", "visitor"], "description": "Role of the user." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp." }
+      },
+      "required": ["uid", "email", "role", "createdAt"]
+    },
+    "OrphanApplication": {
+      "title": "OrphanApplication",
+      "description": "Application submitted for orphan care, sponsorship, or relief support.",
+      "type": "object",
+      "properties": {
+        "trackingNumber": { "type": "string", "description": "Public tracking reference number (e.g. ALNOOR-ORPHAN-XXXXXX)." },
+        "applicantName": { "type": "string", "description": "Guardian or applicant full name." },
+        "relation": { "type": "string", "description": "Guardian relationship to the orphan." },
+        "phone": { "type": "string", "description": "Contact telephone or WhatsApp number." },
+        "nationalId": { "type": "string", "description": "National identification number." },
+        "address": { "type": "string", "description": "Current address of the family." },
+        "assistanceType": { "type": "string", "description": "Type of aid or sponsorship requested." },
+        "orphanName": { "type": "string", "description": "Full name of the orphan child." },
+        "orphanBirthDate": { "type": "string", "description": "Birth date of the orphan." },
+        "orphanGender": { "type": "string", "enum": ["male", "female"], "description": "Gender of the orphan." },
+        "academicLevel": { "type": "string", "description": "Current educational stage." },
+        "healthNotes": { "type": "string", "description": "Health status and special notes." },
+        "status": { "type": "string", "enum": ["pending", "in_review", "field_visit", "field_verified", "approved", "sponsored", "rejected"], "description": "Current workflow status." },
+        "fieldNotes": { "type": "string", "description": "Notes from social worker or admin verification." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Submission timestamp." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp." }
+      },
+      "required": ["trackingNumber", "applicantName", "phone", "orphanName", "status", "createdAt"]
+    },
+    "AcademyEnrollment": {
+      "title": "AcademyEnrollment",
+      "description": "Student enrollment in Quran memorization or Islamic science academy courses.",
+      "type": "object",
+      "properties": {
+        "studentName": { "type": "string", "description": "Enrolled student full name." },
+        "email": { "type": "string", "format": "email", "description": "Student contact email." },
+        "country": { "type": "string", "description": "Student country of residence." },
+        "track": { "type": "string", "description": "Chosen study track (e.g. Quran Memorization, Hadith, Fiqh)." },
+        "level": { "type": "string", "description": "Proficiency level." },
+        "preferredTime": { "type": "string", "description": "Preferred study session time." },
+        "status": { "type": "string", "enum": ["enrolled", "active", "graduated", "cancelled"], "description": "Enrollment status." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Enrollment timestamp." }
+      },
+      "required": ["studentName", "email", "track", "status", "createdAt"]
+    },
+    "WaqfDonation": {
+      "title": "WaqfDonation",
+      "description": "Charitable Waqf contribution or sponsorship pledge record.",
+      "type": "object",
+      "properties": {
+        "donorName": { "type": "string", "description": "Donor name or Anonymous." },
+        "amount": { "type": "number", "description": "Donation amount in USD." },
+        "currency": { "type": "string", "description": "Currency code (default USD)." },
+        "programId": { "type": "string", "description": "Target Waqf program or project." },
+        "paymentMethod": { "type": "string", "description": "Payment channel used." },
+        "status": { "type": "string", "enum": ["intent", "processing", "completed", "failed"], "description": "Payment status." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp." }
+      },
+      "required": ["amount", "programId", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Stores individual user profile and preferences keyed by user ID."
+    },
+    "/orphan_applications/{applicationId}": {
+      "schema": "OrphanApplication",
+      "description": "Stores orphan sponsorship and assistance applications with status workflow."
+    },
+    "/enrollments/{enrollmentId}": {
+      "schema": "AcademyEnrollment",
+      "description": "Stores academy registrations and course enrollments."
+    },
+    "/donations/{donationId}": {
+      "schema": "WaqfDonation",
+      "description": "Stores Waqf shares and donation intent records."
+    }
+  }
+}

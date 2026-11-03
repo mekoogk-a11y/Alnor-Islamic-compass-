@@ -1,5 +1,7 @@
 import { ComplexGlobalInfo, QuranSurah, QuranReciter, IslamicCourse, LibraryBook, WaqfProject, LiveRadioStation } from '../types';
 
+export const OFFICIAL_COMPLEX_LOGO = '/assets/aistudio/file_000000009a4881f6b7cda641a69db169_7990c4c0.png';
+
 export const COMPLEX_INFO: ComplexGlobalInfo = {
   name: 'مجمع النور الإسلامي العالمي الخيري الشامل لتحفيظ القرآن الكريم والعلوم الإسلامية',
   slogan: 'نورٌ يهدي.. وصرحٌ يبني أجيال القرآن',
@@ -887,42 +889,523 @@ export const ISLAMIC_COURSES: IslamicCourse[] = [
 ];
 
 export const LIBRARY_BOOKS: LibraryBook[] = [
+  // --- اللغة العربية (Arabic) ---
   {
-    id: 'book-1',
-    title: 'الجامع الميسر في قواعد التجويد ورسم المصحف',
-    author: 'هيئة كبار المقرئين بمجمع النور',
-    category: 'علوم القرآن والتجويد',
-    pages: 340,
-    year: '1445 هـ',
-    description: 'مرجع منهجي شامل يجمع بين التأصيل النظري للأحكام والتطبيق العملي لجميع الروايات المعتمدة مع جداول مقارنة ملونة.',
+    id: 'bukhari-ar',
+    title: 'صحيح البخاري (الجامع المسند الصحيح المختصر)',
+    titleNative: 'صحيح البخاري',
+    author: 'الإمام محمد بن إسماعيل البخاري (ت 256 هـ)',
+    category: 'السنة النبوية والحديث',
+    language: 'ar',
+    languageLabel: 'العربية',
+    flag: '🇸🇦',
+    pages: 1820,
+    year: '1445 هـ (طبعة محققة مقابلة على اليونينية)',
+    publisher: 'دار التأصيل ومركز بحوث مجمع النور',
+    description: 'أصح كتاب بعد كتاب الله عز وجل، يشتمل على أحاديث رسول الله ﷺ المسندة الصحيحة مع أبواب الفقه والتفسير والرقائق.',
+    tableOfContents: ['كتاب بدء الوحي', 'كتاب الإيمان', 'كتاب العلم', 'كتاب الوضوء', 'كتاب الصلاة', 'كتاب الزكاة', 'كتاب فضائل القرآن'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/waq61726/01_61726.pdf',
+    sampleChapterTitle: 'باب: كَيْفَ كَانَ بَدْءُ الوَحْيِ إِلَى رَسُولِ اللَّهِ ﷺ',
+    sampleChapterText: 'حَدَّثَنَا الحُمَيْدِيُّ عَبْدُ اللَّهِ بْنُ الزُّبَيْرِ، قَالَ: حَدَّثَنَا سُفْيَانُ، قَالَ: حَدَّثَنَا يَحْيَى بْنُ سَعِيدٍ الأَنْصَارِيُّ، قَالَ: أَخْبَرَنِي مُحَمَّدُ بْنُ إِبْرَاهِيمَ التَّيْمِيُّ، أَنَّهُ سَمِعَ عَلْقَمَةَ بْنَ وَقَّاصٍ اللَّيْثِيَّ، يَقُولُ: سَمِعْتُ عُمَرَ بْنَ الخَطَّابِ رَضِيَ اللَّهُ عَنْهُ عَلَى المِنْبَرِ قَالَ: سَمِعْتُ رَسُولَ اللَّهِ ﷺ يَقُولُ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى، فَمَنْ كَانَتْ هِجْرَتُهُ إِلَى دُنْيَا يُصِيبُهَا، أَوْ إِلَى امْرَأَةٍ يَنْكِحُهَا، فَهِجْرَتُهُ إِلَى مَا هَاجَرَ إِلَيْهِ».',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'الحديث الأول: إنما الأعمال بالنيات',
+        content: 'عَنْ أَمِيرِ المُؤْمِنِينَ أَبِي حَفْصٍ عُمَرَ بْنِ الخَطَّابِ رَضِيَ اللَّهُ عَنْهُ قَالَ: سَمِعْتُ رَسُولَ اللَّهِ ﷺ يَقُولُ: «إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى، فَمَنْ كَانَتْ هِجْرَتُهُ إِلَى دُنْيَا يُصِيبُهَا، أَوْ إِلَى امْرَأَةٍ يَنْكِحُهَا، فَهِجْرَتُهُ إِلَى مَا هَاجَرَ إِلَيْهِ».'
+      },
+      {
+        id: 'c2',
+        title: 'الحديث الثاني: نزول الوحي بغار حراء',
+        content: 'عَنْ عَائِشَةَ أُمِّ المُؤْمِنِينَ رَضِيَ اللَّهُ عَنْهَا أَنَّهَا قَالَتْ: أَوَّلُ مَا بُدِئَ بِهِ رَسُولُ اللَّهِ ﷺ مِنَ الوَحْيِ الرُّؤْيَا الصَّالِحَةُ فِي النَّوْمِ، فَكَانَ لاَ يَرَى رُؤْيَا إِلَّا جَاءَتْ مِثْلَ فَلَقِ الصُّبْحِ، ثُمَّ حُبِّبَ إِلَيْهِ الخَلاَءُ، وَكَانَ يَخْلُو بِغَارِ حِرَاءٍ فَيَتَحَنَّثُ فِيهِ... حَتَّى جَاءَهُ الحَقُّ وَهُوَ فِي غَارِ حِرَاءٍ، فَجَاءَهُ المَلَكُ فَقَالَ: اقْرَأْ، قُلْتُ: «مَا أَنَا بِقَارِئٍ»...'
+      }
+    ]
   },
   {
-    id: 'book-2',
-    title: 'فقه الوقف والعمل الخيري في الشريعة الإسلامية',
-    author: 'أ.د. محمد نور الدين الشريف',
-    category: 'الفقه الإسلامي والوقف',
-    pages: 420,
+    id: 'saadi-tafsir-ar',
+    title: 'تيسير الكريم الرحمن في تفسير كلام المنان',
+    titleNative: 'تفسير السعدي',
+    author: 'الشيخ عبد الرحمن بن ناصر السعدي (ت 1376 هـ)',
+    category: 'علوم القرآن والتفاسير',
+    language: 'ar',
+    languageLabel: 'العربية',
+    flag: '🇸🇦',
+    pages: 1040,
+    year: 'طبعة مجمع الملك فهد',
+    publisher: 'مجمع الملك فهد لطباعة المصحف الشريف',
+    description: 'تفسير سلفي ميسر يعتني بإبراز مقاصد الآيات والمعاني الإيمانية والتربوية والفوائد الاستنباطية بعبارة واضحة وجلية.',
+    tableOfContents: ['مقدمة المؤلف في قواعد التفسير', 'تفسير سورة الفاتحة', 'تفسير سورة البقرة', 'تفسير سور جزء عم'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/Tafseer-Al-Saadi/Tafseer-Al-Saadi.pdf',
+    sampleChapterTitle: 'تفسير سورة الفاتحة أم الكتاب',
+    sampleChapterText: 'سورة الفاتحة سميت بذلك لافتتاح كتاب الله بها، وهي أم القرآن لاشتمالها على جميع معاني القرآن ومقاصده العظيمة من التوحيد والعبادة والجزاء وسلوك الصراط المستقيم. قوله: (الْحَمْدُ لِلَّهِ) هو الثناء على الله بصفات كماله، وبأفعاله الدائرة بين الفضل والعدل، فله الحمد الكامل بجميع الوجوه. (رَبِّ الْعَالَمِينَ) الرب: هو المربي كافة خلقه بتدبيره وتصريفه وإنعامه.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'تفسير سورة الفاتحة',
+        content: 'سورة الفاتحة مكية، وهي سبع آيات. ابتدأها الله تعالى بـ (بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ) تبركاً واستعانة، و(الْحَمْدُ لِلَّهِ) استغراق لجميع المحامد، و(إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ) جمعت الدين كله، فالعبادة غاية والاستعانة وسيلة.'
+      }
+    ]
+  },
+  {
+    id: 'raheeq-ar',
+    title: 'الرحيق المختوم: بحث في السيرة النبوية على صاحبها أفضل الصلاة والسلام',
+    titleNative: 'الرحيق المختوم',
+    author: 'الشيخ صفي الرحمن المباركفوري',
+    category: 'السيرة النبوية',
+    language: 'ar',
+    languageLabel: 'العربية',
+    flag: '🇸🇦',
+    pages: 520,
     year: '1444 هـ',
-    description: 'دراسة فقهية واقتصادية رائدة حول دور الأوقاف الإسلامية في بناء الحضارة وتطوير التعليم والرعاية الصحية.',
+    publisher: 'رابطة العالم الإسلامي ومجمع النور',
+    description: 'الكتاب الفائز بالمركز الأول في مسابقة رابطة العالم الإسلامي للسيرة النبوية الشريفة؛ يمتاز بحسن الترتيب وتوثيق الروايات.',
+    tableOfContents: ['موقع العرب وأقوامهم قبل الإسلام', 'المولد النبوي الشريف والأربعون عاماً', 'في ظلال النبوة والرسالة', 'الهجرة النبوية المباركة', 'غزوات النبي ﷺ وحج الوداع'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/waq46313/46313.pdf',
+    sampleChapterTitle: 'فصل: المولد والنشأة الشريفة',
+    sampleChapterText: 'ولد سيد المرسلين ﷺ بشعب بني هاشم بمكة في صبيحة يوم الاثنين التاسع من شهر ربيع الأول، لأول عام من حادثة الفيل، ولأربعين سنة خلت من ملك كسرى أنوشروان، ويوافق ذلك العشرين أو الثاني والعشرين من شهر أبريل سنة 571 م. وكانت قابلة النبي ﷺ الشفاء أم عبد الرحمن بن عوف رضي الله عنهما.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'المولد والرضاع والنشأة',
+        content: 'ولد رسول الله ﷺ يتيماً، فمات أبوه عبد الله وهو حمل في بطن أمه، واسترضع له في بني سعد فأرضعته حليمة السعدية، فحلّت البركة في ديارها ومواشيها، حتى ردته إلى أمه آمنة بنت وهب وهو في أتم عافية وقوة.'
+      }
+    ]
   },
   {
-    id: 'book-3',
-    title: 'زاد الحافظ: منظومة تثبيت المتشابهات اللفظية في القرآن',
-    author: 'فضيلة الشيخ المقرئ عبد الله الراسخ',
-    category: 'تحفيظ القرآن ومراجعة الحفظ',
-    pages: 280,
-    year: '1446 هـ',
-    description: 'دليل عملي لحفظة كتاب الله لضبط الآيات المتشابهة في سور القرآن الكريم بقواعد ذهبية وجداول بصرية مساعدة.',
-  },
-  {
-    id: 'book-4',
-    title: 'شرح العقيدة الواسطية وتثبيت أصول الإيمان',
-    author: 'فضيلة د. إبراهيم بن صالح العلي',
-    category: 'العقيدة والتزكية',
-    pages: 310,
+    id: 'riyad-salihin-ar',
+    title: 'رياض الصالحين من كلام سيد المرسلين',
+    titleNative: 'رياض الصالحين',
+    author: 'الإمام يحيى بن شرف النووي (ت 676 هـ)',
+    category: 'السنة النبوية والحديث',
+    language: 'ar',
+    languageLabel: 'العربية',
+    flag: '🇸🇦',
+    pages: 680,
     year: '1445 هـ',
-    description: 'شرح ميسر لأصول العقيدة الإسلامية الصافية كما فهمها سلف الأمة الصالح، مع الرد على الشبهات الفكرية المعاصرة.',
+    publisher: 'دار المنهاج ومجمع النور',
+    description: 'أشهر مصنفات التربية والتزكية والآداب والأخلاق النبوية، مرتب على الأبواب الفقهية والمسالك الإيمانية.',
+    tableOfContents: ['باب الإخلاص وإحضار النية', 'باب التوبة', 'باب الصبر', 'باب الصدق', 'باب المراقبة', 'باب التقوى'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/Riyad-Al-Saliheen/Riyad-Al-Saliheen.pdf',
+    sampleChapterTitle: 'باب الإخلاص وإحضار النية في جميع الأعمال والأقوال',
+    sampleChapterText: 'قال الله تعالى: {وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ حُنَفَاءَ وَيُقِيمُوا الصَّلَاةَ وَيُؤْتُوا الزَّكَاةَ وَذَلِكَ دِينُ الْقَيِّمَةِ}. وعن أبي هريرة رضي الله عنه قال: قال رسول الله ﷺ: «إِنَّ اللَّهَ لاَ يَنْظُرُ إِلَى أَجْسَامِكُمْ، وَلاَ إِلَى صُوَرِكُمْ، وَلَكِنْ يَنْظُرُ إِلَى قُلُوبِكُمْ وَأَعْمَالِكُمْ» رواه مسلم.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'باب الصبر وفضيلته',
+        content: 'قال تعالى: {يَا أَيُّهَا الَّذِينَ آمَنُوا اسْتَعِينُوا بِالصَّبْرِ وَالصَّلَاةِ إِنَّ اللَّهَ مَعَ الصَّابِرِينَ}. وعن أبي مالك الحارث بن عاصم الأشعري رضي الله عنه قال: قال رسول الله ﷺ: «الطَّهُورُ شَطْرُ الإِيمَانِ، وَالحَمْدُ لِلَّهِ تَمْلأُ المِيزَانَ... وَالصَّبْرُ ضِيَاءٌ، وَالقُرْآنُ حُجَّةٌ لَكَ أَوْ عَلَيْكَ» رواه مسلم.'
+      }
+    ]
   },
+  {
+    id: 'arbaeen-ar',
+    title: 'الأربعون النووية مع الشرح الفقهي والتربوي',
+    titleNative: 'الأربعون النووية',
+    author: 'الإمام محيي الدين النووي',
+    category: 'السنة النبوية والحديث',
+    language: 'ar',
+    languageLabel: 'العربية',
+    flag: '🇸🇦',
+    pages: 160,
+    year: '1446 هـ',
+    publisher: 'مجمع النور للطباعة والنشر',
+    description: 'اثنين وأربعون حديثاً نبوياً تدور عليها قواعد الإسلام وأصول الشريعة الغراء في الاعتقاد والعمل والآداب.',
+    tableOfContents: ['حديث إنما الأعمال بالنيات', 'حديث جبريل في مراتب الدين', 'حديث بني الإسلام على خمس', 'حديث الحلال بين والحرام بين'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/40-nawawi-ar/40-nawawi-ar.pdf',
+    sampleChapterTitle: 'الحديث الثاني: حديث جبريل عليه السلام المشهور',
+    sampleChapterText: 'عَنْ عُمَرَ رَضِيَ اللَّهُ عَنْهُ أَيْضاً قَالَ: بَيْنَمَا نَحْنُ جُلُوسٌ عِنْدَ رَسُولِ اللَّهِ ﷺ ذَاتَ يَوْمٍ إِذْ طَلَعَ عَلَيْنَا رَجُلٌ شَدِيدُ بَيَاضِ الثِّيَابِ شَدِيدُ سَوَادِ الشَّعْرِ، لاَ يُرَى عَلَيْهِ أَثَرُ السَّفَرِ، وَلاَ يَعْرِفُهُ مِنَّا أَحَدٌ، حَتَّى جَلَسَ إِلَى النَّبِيِّ ﷺ... فَقَالَ: يَا مُحَمَّدُ أَخْبِرْنِي عَنِ الإِسْلاَمِ؟ فَقَالَ رَسُولُ اللَّهِ ﷺ: «الإِسْلاَمُ أَنْ تَشْهَدَ أَنْ لاَ إِلَهَ إِلاَّ اللَّهُ وَأَنَّ مُحَمَّداً رَسُولُ اللَّهِ...»',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'مراتب الدين: الإسلام والإيمان والإحسان',
+        content: 'بين الحديث مراتب الدين الثلاث: 1) الإسلام وأركانه الظاهرة، 2) الإيمان وأركانه الباطنة الستة، 3) الإحسان وهو أن تعبد الله كأنك تراه فإن لم تكن تراه فإنه يراك.'
+      }
+    ]
+  },
+
+  // --- اللغة الإنجليزية (English) ---
+  {
+    id: 'sealed-nectar-en',
+    title: 'The Sealed Nectar (Ar-Raheeq Al-Makhtum)',
+    titleNative: 'The Sealed Nectar',
+    author: 'Safi-ur-Rahman Al-Mubarakpuri',
+    category: 'السيرة النبوية',
+    language: 'en',
+    languageLabel: 'English',
+    flag: '🇬🇧',
+    pages: 588,
+    year: '2023 Edition',
+    publisher: 'Darussalam & Al-Noor Global Complex',
+    description: 'The award-winning complete authoritative biography of the Noble Prophet Muhammad ﷺ in clear contemporary English.',
+    tableOfContents: ['Location and Nature of Arab Tribes', 'The Lineage and Childhood of Muhammad ﷺ', 'In the Shade of Prophethood and Message', 'The Migration to Madinah', 'The Farewell Pilgrimage'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/TheSealedNectar_201602/The%20Sealed%20Nectar.pdf',
+    sampleChapterTitle: 'Chapter: The Early Years and Upbringing of the Prophet ﷺ',
+    sampleChapterText: 'Muhammad ﷺ, the Master of Prophets, was born in Bani Hashim lane in Makkah on Monday morning, the ninth of Rabi\' Al-Awwal, the same year of the Elephant Event, corresponding to twentieth or twenty-second of April, 571 A.D. His mother sent to his grandfather, Abdul-Muttalib, who took the baby into the Ka\'bah, prayed to Allah, and named him Muhammad, a name unfamiliar to the Arabs at that time.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'Childhood and Divine Protection',
+        content: 'The young Muhammad ﷺ grew up under Divine care, known among all Quraish as As-Sadiq (the Truthful) and Al-Amin (the Trustworthy) long before revelation descended upon him in Cave Hira.'
+      }
+    ]
+  },
+  {
+    id: 'forty-hadith-en',
+    title: 'An-Nawawi’s Forty Hadith (Arabic-English with Commentary)',
+    titleNative: 'An-Nawawi’s 40 Hadith',
+    author: 'Imam Yahya ibn Sharaf An-Nawawi',
+    translator: 'Ezzeddin Ibrahim & Denys Johnson-Davies',
+    category: 'السنة النبوية والحديث',
+    language: 'en',
+    languageLabel: 'English',
+    flag: '🇬🇧',
+    pages: 144,
+    year: '2022',
+    publisher: 'The Islamic Texts Society & Al-Noor Complex',
+    description: 'The celebrated collection of forty fundamental traditions embodying the essence of Islamic faith, jurisprudence, and character.',
+    tableOfContents: ['Hadith 1: Actions are by Intentions', 'Hadith 2: Islam, Iman, and Ihsan (Jibril)', 'Hadith 3: The Five Pillars of Islam', 'Hadith 4: Stages of Human Creation', 'Hadith 5: Rejecting Innovations'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/40HadithNawawiEnglishArabic/40_Hadith_Nawawi_English_Arabic.pdf',
+    sampleChapterTitle: 'Hadith 1: Actions are judged by Intentions',
+    sampleChapterText: 'On the authority of Ameer al-Mu\'mineen, Abu Hafs Umar ibn al-Khattab (may Allah be pleased with him), who said: I heard the Messenger of Allah ﷺ say: "Actions are but by intention and every man shall have but that which he intended. Thus he whose migration was for Allah and His Messenger, his migration was for Allah and His Messenger, and he whose migration was for worldly benefit or a woman to marry, his migration was for that which he migrated."',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'Hadith 2: The Hadith of Gabriel (Jibril)',
+        content: 'This profound tradition outlines the entire structure of the deen: Islam (external submission), Iman (internal conviction in the six articles of faith), and Ihsan (spiritual excellence: worshipping Allah as if you behold Him).'
+      }
+    ]
+  },
+  {
+    id: 'tawheed-en',
+    title: 'The Fundamentals of Tawheed (Islamic Monotheism)',
+    titleNative: 'The Fundamentals of Tawheed',
+    author: 'Dr. Abu Ameenah Bilal Philips',
+    category: 'العقيدة والتوحيد',
+    language: 'en',
+    languageLabel: 'English',
+    flag: '🇬🇧',
+    pages: 230,
+    year: '2021',
+    publisher: 'International Islamic Publishing House (IIPH)',
+    description: 'A structured, rigorous academic analysis of the three categories of Tawheed (Ruboobiyyah, Asmaa wa Sifaat, and Uloohiyyah) and the protection against Shirk.',
+    tableOfContents: ['The Categories of Tawheed', 'Tawheed ar-Ruboobiyyah', 'Tawheed al-Asmaa was-Sifaat', 'Tawheed al-Ibaadah', 'Forms of Polytheism (Shirk)', 'Grave Worship and Superstitions'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/TheFundamentalsOfTawheed/TheFundamentalsOfTawheed.pdf',
+    sampleChapterTitle: 'Chapter 1: The Three Pillars of Monotheism',
+    sampleChapterText: 'Literally, Tawheed means "unification" or "asserting oneness". In Islamic terminology, it signifies realizing and maintaining of Allah\'s unity in all man\'s actions which directly or indirectly relate to Him. It is the belief that Allah is One, without partner in His dominion and His actions (Ruboobiyyah), One without similitude in His essence and His attributes (Asmaa was-Sifaat), and One without rival in His divinity and worship (Uloohiyyah).',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'Purity of Worship (Tawheed al-Ibaadah)',
+        content: 'All acts of devotion—prayer, fasting, sacrificial offering, supplication, and hope—must be directed purely to the Creator alone, without intercessors or saintly intermediaries.'
+      }
+    ]
+  },
+  {
+    id: 'prayer-guide-en',
+    title: 'A Step-by-Step Guide to Prayer (Salah) & Purification for Reverts',
+    titleNative: 'The Beginner’s Guide to Salah',
+    author: 'Al-Noor Dawah & Education Directorate',
+    category: 'دعوة والمهتدون الجدد',
+    language: 'en',
+    languageLabel: 'English',
+    flag: '🇬🇧',
+    pages: 96,
+    year: '1446 AH',
+    publisher: 'Al-Noor Global Publishing',
+    description: 'Illustrated, practical, and verified instructional handbook teaching new Muslims ablution (Wudu) and the five daily prayers with phonetics and English translations.',
+    tableOfContents: ['The Meaning and Virtues of Salah', 'How to Perform Wudu (Ablution)', 'Facing the Qiblah and Conditions of Prayer', 'Detailed Movements from Takbeer to Tasleem', 'Essential Short Surahs with Transliteration'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/prayer-guide-en/prayer-guide-en.pdf',
+    sampleChapterTitle: 'Step-by-Step Practical Prayer Guide',
+    sampleChapterText: 'Stand upright facing the Qiblah (Makkah). Raise your hands to ear level and proclaim with humility: "Allahu Akbar" (Allah is the Greatest). Place your right hand over your left hand across your chest. Recite the opening supplication, followed by Surah Al-Fatihah and another short Quranic passage.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'Spiritual Meaning of Bowing and Prostration',
+        content: 'In Ruku (bowing), the believer lowers themselves saying "Subhana Rabbiyal Azeem" (Glory be to my Lord the Most Great). In Sujood (prostration), the servant attains the closest proximity to Allah saying "Subhana Rabbiyal A\'la".'
+      }
+    ]
+  },
+
+  // --- اللغة الفرنسية (Français) ---
+  {
+    id: 'nectar-cachete-fr',
+    title: 'Le Nectar Cacheté (Ar-Rahik Al-Makhtoum - Biographie du Prophète)',
+    titleNative: 'Le Nectar Cacheté',
+    author: 'Cheikh Safiyyu ar-Rahman al-Moubarakfouri',
+    category: 'السيرة النبوية',
+    language: 'fr',
+    languageLabel: 'Français',
+    flag: '🇫🇷',
+    pages: 624,
+    year: '2022',
+    publisher: 'Éditions Al-Noor & Darussalam France',
+    description: 'L’ouvrage de référence international sur la biographie complète et vérifiée du noble Prophète de l’Islam Mouhammad ﷺ.',
+    tableOfContents: ['L’Arabie avant l’Islam', 'Naissance et enfance bénie du Prophète', 'La révélation dans la grotte de Hira', 'L’Hégire vers Médine', 'Le pèlerinage d’adieu et le noble rappel à Dieu'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/LeNectarCachete-French/LeNectarCachete.pdf',
+    sampleChapterTitle: 'Chapitre: La Naissance Bénie et l\'Éducation',
+    sampleChapterText: 'Le Maître des Messagers ﷺ vit le jour dans le quartier des Bani Hachim à la Mecque, au matin du lundi 9 Rabi‘ Al-Awwal, correspondant à l’an de l’Éléphant (avril 571). Sa mère Amina envoya la bonne nouvelle à son grand-père ‘Abd Al-Mouttalib, qui l’accueillit dans la Kaaba en rendant grâce à Dieu et lui donna le prénom de Mouhammad.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'La Prophétie et le Message de Miséricorde',
+        content: 'Le Prophète ﷺ a enseigné la justice, la fraternité humaine et le monothéisme pur dans un monde alors dominé par l\'injustice et l\'idolâtrie.'
+      }
+    ]
+  },
+  {
+    id: 'jardins-vertueux-fr',
+    title: 'Les Jardins des Vertueux (Riyad As-Salihin - Traduction Française Complète)',
+    titleNative: 'Les Jardins des Vertueux',
+    author: 'Imam Mouhyiddine An-Nawawi',
+    category: 'السنة النبوية والحديث',
+    language: 'fr',
+    languageLabel: 'Français',
+    flag: '🇫🇷',
+    pages: 720,
+    year: '2023',
+    publisher: 'Maison d\'Ennour & Complexe Al-Noor',
+    description: 'Recueil fondamental de hadiths authentiques classés par thèmes éthiques, spirituels et juridiques.',
+    tableOfContents: ['De la sincérité et de l’intention', 'Du repentir sincère', 'De la patience face aux épreuves', 'De la véracité et de la droiture', 'Des droits du voisin et de la famille'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/riyad-as-salihin-francais/riyad-as-salihin-francais.pdf',
+    sampleChapterTitle: 'Chapitre 1: De la sincérité et de l\'intention',
+    sampleChapterText: 'Allah le Très-Haut a dit : {Il ne leur a été commandé, cependant, que d\'adorer Allah, Lui vouant un culte exclusif}. Et selon Omar ibn Al-Khattab (qu\'Allah l\'agrée), le Messager d\'Allah ﷺ a dit : « Les actions ne valent que par leurs intentions et chacun n\'a pour lui que ce qu\'il a eu l\'intention de faire... » Rapporté par Al-Boukhari et Mouslim.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'La Patience et la Confiance en Dieu',
+        content: 'La patience (As-Sabr) est une lumière pour le croyant. Elle se manifeste dans l\'obéissance aux commandements divins, l\'éloignement des péchés et l\'acceptation sereine du destin.'
+      }
+    ]
+  },
+
+  // --- اللغة الإسبانية (Español) ---
+  {
+    id: 'nectar-sellado-es',
+    title: 'El Néctar Sellado (Biografía Completa del Profeta Mahoma)',
+    titleNative: 'El Néctar Sellado',
+    author: 'Sheij Safiur Rahmán Al-Mubarakpuri',
+    category: 'السيرة النبوية',
+    language: 'es',
+    languageLabel: 'Español',
+    flag: '🇪🇸',
+    pages: 580,
+    year: '2022',
+    publisher: 'Centro Islámico de Ediciones & Complejo Al-Noor',
+    description: 'La biografía galardonada y más leída del Profeta Mahoma ﷺ traducida rigurosamente al castellano.',
+    tableOfContents: ['Arabia antes de la llegada del Islam', 'Nacimiento y juventud del Profeta', 'El comienzo de la Revelación en la cueva de Hira', 'La Hégira a Medina', 'La conquista pacífica de La Meca'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/ElNectarSelladoSpanish/El_Nectar_Sellado_Espanol.pdf',
+    sampleChapterTitle: 'Capítulo: El Nacimiento y la Noble Infancia',
+    sampleChapterText: 'El Líder de los Mensajeros ﷺ nació en La Meca en el clan de Banu Háshim en la mañana del lunes 9 de Rabi\' Al-Awwal. Su abuelo Abdul Muttalib lo llevó dentro de la Kaaba, agradeció a Dios y le dio el nombre de Muhammad (el Alabado), que no era común entre los árabes de su tiempo.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'El Mensaje Universal de la Paz y la Fe',
+        content: 'El Profeta ﷺ enseñó que el mejor ser humano es quien más beneficia a la creación y quien vive con sinceridad hacia el Creador Único.'
+      }
+    ]
+  },
+  {
+    id: 'cuarenta-hadices-es',
+    title: 'Los Cuarenta Hadices del Imam An-Nawawi (Texto Árabe-Español y Comentario)',
+    titleNative: 'Los 40 Hadices de An-Nawawi',
+    author: 'Imam An-Nawawi',
+    category: 'السنة النبوية والحديث',
+    language: 'es',
+    languageLabel: 'Español',
+    flag: '🇪🇸',
+    pages: 160,
+    year: '2023',
+    publisher: 'Editorial Al-Noor Internacional',
+    description: 'Las cuarenta tradiciones esenciales que condensan la jurisprudencia, la ética y la espiritualidad del Islam.',
+    tableOfContents: ['Hadiz 1: Las acciones dependen de las intenciones', 'Hadiz 2: El Islam, la Fe (Imán) y la Excelencia (Ihsán)', 'Hadiz 3: Los cinco pilares del Islam', 'Hadiz 4: La creación y el destino'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/40-hadices-an-nawawi-espanol/40_Hadices_Nawawi_Espanol.pdf',
+    sampleChapterTitle: 'Hadiz 1: Las acciones son según las intenciones',
+    sampleChapterText: 'Se transmitió que el Líder de los Creyentes, Omar ibn Al-Jattab (que Dios esté complacido con él), dijo: Escuché al Mensajero de Dios ﷺ decir: "Ciertamente las acciones son según las intenciones, y cada persona obtendrá únicamente lo que pretendió..." Registrado por Al-Bujari y Muslim.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'La Pureza del Corazón',
+        content: 'La intención es el espíritu de toda buena acción. Sin ella, los actos pierden su valor ante el Altísimo.'
+      }
+    ]
+  },
+
+  // --- اللغة الألمانية (Deutsch) ---
+  {
+    id: 'versiegelte-nektar-de',
+    title: 'Der versiegelte Nektar (Biographie des Propheten Muhammad ﷺ)',
+    titleNative: 'Der versiegelte Nektar',
+    author: 'Scheich Safiur-Rahman Al-Mubarakpuri',
+    category: 'السيرة النبوية',
+    language: 'de',
+    languageLabel: 'Deutsch',
+    flag: '🇩🇪',
+    pages: 610,
+    year: '2022',
+    publisher: 'Al-Noor Verlag & IB Verlag',
+    description: 'Das preisgekrönte Standardwerk über das Leben des Gesandten Allahs Muhammad ﷺ in authentischer deutscher Übersetzung.',
+    tableOfContents: ['Arabien vor dem Islam', 'Geburt und Kindheit des Propheten', 'Der Beginn der Offenbarung', 'Die Hidschra nach Medina', 'Die Abschiedspilgerfahrt'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/der-versiegelte-nektar-deutsch/der-versiegelte-nektar-deutsch.pdf',
+    sampleChapterTitle: 'Kapitel: Geburt und gesegnete Kindheit',
+    sampleChapterText: 'Der Gesandte Allahs ﷺ wurde in Mekka an einem Montagmorgen im Monat Rabi\' al-Awwal im Jahr des Elefanten geboren. Schon in seiner Jugend war er bei allen Quraisch als der Aufrichtige (As-Sadiq) und der Vertrauenswürdige (Al-Amin) bekannt.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'Der Prophet als Barmherzigkeit für alle Welten',
+        content: 'Der Koran beschreibt Muhammad ﷺ als Barmherzigkeit für die gesamte Menschheit, der die Menschen zur Wahrheit und zum Monotheismus rief.'
+      }
+    ]
+  },
+
+  // --- اللغة الإندونيسية (Bahasa Indonesia) ---
+  {
+    id: 'rahiq-makhtum-id',
+    title: 'Sirah Nabawiyah Ar-Rahiq Al-Makhtum (Sejarah Lengkap Nabi Muhammad ﷺ)',
+    titleNative: 'Ar-Rahiq Al-Makhtum',
+    author: 'Syaikh Shafiyyurrahman Al-Mubarakfuri',
+    category: 'السيرة النبوية',
+    language: 'id',
+    languageLabel: 'Bahasa Indonesia',
+    flag: '🇮🇩',
+    pages: 640,
+    year: '2023',
+    publisher: 'Pustaka Al-Kautsar & Kompleks Al-Noor',
+    description: 'Buku biografi Nabi Muhammad ﷺ terbaik pemenang juara pertama penulisan Sirah Nabawiyah tingkat dunia.',
+    tableOfContents: ['Kondisi Bangsa Arab Pra-Islam', 'Kelahiran dan Masa Kanak-Kanak Rasulullah ﷺ', 'Masa Kenabian di Gua Hira', 'Hijrah yang Bersejarah ke Madinah', 'Haji Wada\' dan Wafatnya Rasulullah ﷺ'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/ar-rahiq-al-makhtum-indonesia/ar-rahiq-al-makhtum-indonesia.pdf',
+    sampleChapterTitle: 'Bab: Kelahiran dan Masa Pertumbuhan yang Suci',
+    sampleChapterText: 'Pemimpin para Nabi dan Rasul ﷺ dilahirkan di Syi\'ib Bani Hasyim di Makkah pada hari Senin pagi, tanggal 9 Rabi\'ul Awwal Tahun Gajah (April 571 M). Kakeknya, Abdul Muthalib, membawa bayi mungil itu masuk ke dalam Ka\'bah, bersyukur kepada Allah, dan menamainya Muhammad.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'Akhlak Luhur dan Kejujuran',
+        content: 'Sejak masa muda, penduduk Makkah telah menggelarinya Al-Amin (orang yang sangat terpercaya) karena kejujuran dan kemuliaan budi pekertinya.'
+      }
+    ]
+  },
+  {
+    id: 'riyadhus-shalihin-id',
+    title: 'Terjemahan Lengkap Riyadhus Shalihin (Taman Orang-Orang Shalih)',
+    titleNative: 'Riyadhus Shalihin',
+    author: 'Imam Abu Zakaria Yahya bin Syaraf An-Nawawi',
+    category: 'السنة النبوية والحديث',
+    language: 'id',
+    languageLabel: 'Bahasa Indonesia',
+    flag: '🇮🇩',
+    pages: 780,
+    year: '2022',
+    publisher: 'Pustaka Imam Asy-Syafi\'i & Kompleks Al-Noor',
+    description: 'Kumpulan hadits-hadits shahih pedoman akhlak, ibadah, dan penyucian jiwa umat Islam karya monumental Imam An-Nawawi.',
+    tableOfContents: ['Bab Ikhlas dan Menghadirkan Niat', 'Bab Taubat Nasuha', 'Bab Kesabaran', 'Bab Kejujuran (Ash-Shidq)', 'Bab Muraqabah (Merasa Diawasi Allah)'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/riyadhus-shalihin-terjemah-lengkap/riyadhus-shalihin-terjemah-lengkap.pdf',
+    sampleChapterTitle: 'Bab Ikhlas dan Niat dalam Setiap Amalan',
+    sampleChapterText: 'Allah Ta\'ala berfirman: {Padahal mereka tidak disuruh kecuali supaya menyembah Allah dengan memurnikan ketaatan kepada-Nya dalam (menjalankan) agama yang lurus...}. Dari Amirul Mukminin Umar bin Khaththab radhiyallahu \'anhu berkata: Aku mendengar Rasulullah ﷺ bersabda: "Sesungguhnya setiap amal perbuatan itu bergantung pada niatnya..." (HR. Al-Bukhari & Muslim).',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'Keutamaan Sabar dan Tawakal',
+        content: 'Sabar adalah cahaya penuntun bagi seorang mukmin dalam menghadapi segala cobaan kehidupan dan ketaatan kepada Allah Ta\'ala.'
+      }
+    ]
+  },
+
+  // --- اللغة التركية (Türkçe) ---
+  {
+    id: 'raheeq-tr',
+    title: 'Er-Rahîku\'l-Mahtûm (Peygamber Efendimiz’in Hayatı ve Siyer-i Nebi)',
+    titleNative: 'Er-Rahîku\'l-Mahtûm',
+    author: 'Safiurrahman el-Mübarekfürî',
+    category: 'السيرة النبوية',
+    language: 'tr',
+    languageLabel: 'Türkçe',
+    flag: '🇹🇷',
+    pages: 600,
+    year: '2023',
+    publisher: 'Diyanet Vakfı Yayınları & Al-Noor Vakfı',
+    description: 'Dünya Siyer yarışması birincisi olan en muteber ve kapsamlı Hz. Muhammed\'in ﷺ hayatı.',
+    tableOfContents: ['İslamiyet\'ten Önce Arap Yarımadası', 'Kutlu Doğum ve Çocukluk Yılları', 'Hira Mağarasında İlk Vahiy', 'Medine\'ye Kutlu Hicret', 'Veda Haccı ve Vefatı'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/er-rahikul-mahtum-turkce/er-rahikul-mahtum-turkce.pdf',
+    sampleChapterTitle: 'Bölüm: Kutlu Doğum ve Peygamberimizin Çocukluğu',
+    sampleChapterText: 'Peygamber Efendimiz Hz. Muhammed ﷺ, Fil Olayı\'nın vuku bulduğu yıl, Rebiülevvel ayının 9. Pazartesi sabahı Mekke\'de Haşimoğulları mahallesinde dünyaya teşrif etti. Dedesi Abdülmuttalib torununu Kâbe\'ye götürerek Allah\'a şükretti ve ona "Muhammed" adını verdi.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'El-Emîn Olan Peygamber',
+        content: 'Mekkeliler, peygamberlik verilmeden önce dahi O\'nun yüksek ahlakı ve doğruluğu sebebiyle kendisine Muhammedü\'l-Emîn (Güvenilir Muhammed) lakabını vermişlerdi.'
+      }
+    ]
+  },
+
+  // --- اللغة الأردية (اردو) ---
+  {
+    id: 'raheeq-ur',
+    title: 'الرحیق المختوم (سیرتِ سرورِ کائنات محمد رسول اللہ ﷺ اردو مکمل)',
+    titleNative: 'الرحیق المختوم اردو',
+    author: 'مولانا صفی الرحمن مبارکپوری رحمہ اللہ',
+    category: 'السيرة النبوية',
+    language: 'ur',
+    languageLabel: 'اردو',
+    flag: '🇵🇰',
+    pages: 620,
+    year: '1445 ھ',
+    publisher: 'مکتبہ دارالسلام و مجمع النور العالمی',
+    description: 'رابطہ عالم اسلامی کے بین الاقوامی سیرت نگاری مقابلے میں اول انعام یافتہ شہرہ آفاق کتاب۔ مستند اور جامع سیرت نبوی۔',
+    tableOfContents: ['ظہور اسلام سے قبل جزیرۃ العرب کی حالت', 'ولادتِ باسعادت اور رضاعت و بچپن', 'غارِ حرا میں نزولِ وحی', 'مدینہ منورہ کی طرف ہجرت', 'حجۃ الوداع اور وصالِ مبارک'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/Ar-Raheeq-Al-Makhtoom-Urdu/Ar-Raheeq-Al-Makhtoom-Urdu.pdf',
+    sampleChapterTitle: 'باب: ولادتِ باسعادت اور بچپن کے مبارک ایام',
+    sampleChapterText: 'سید المرسلین حضرت محمد مصطفیٰ ﷺ کی ولادتِ با سعادت عام الفیل کے ربیع الاول کی ۹ تاریخ پیر کے دن صبح کے وقت مکہ مکرمہ میں ہوئی۔ دادا عبد المطلب نے نومولود کو کعبہ کے اندر لے جا کر اللہ کا شکر ادا کیا اور آپ کا نام مبارک "محمد" رکھا جو اس وقت عربوں میں عام نہ تھا۔',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'صادق اور امین کا لقب',
+        content: 'قریش مکہ نبوت سے پہلے بھی آپ ﷺ کے بے داغ کردار، سچائی اور دیانت داری کی بنا پر آپ کو "الصادق" اور "الامین" کہہ کر پکارتے تھے۔'
+      }
+    ]
+  },
+
+  // --- اللغة الروسية (Русский) ---
+  {
+    id: 'raheeq-ru',
+    title: 'Жизнь Пророка Мухаммада (Ар-Рахик аль-Махтум - Запечатанный Нектар)',
+    titleNative: 'Жизнь Пророка Мухаммада',
+    author: 'Сафи ар-Рахман аль-Мубаракфури',
+    category: 'السيرة النبوية',
+    language: 'ru',
+    languageLabel: 'Русский',
+    flag: '🇷🇺',
+    pages: 590,
+    year: '2023',
+    publisher: 'Издательство Аль-Нур & Умма',
+    description: 'Фундаментальный труд по жизнеописанию Пророка ислама Мухаммада ﷺ, удостоенный первой премии Всемирной исламской лиги.',
+    tableOfContents: ['Аравия до прихода ислама', 'Рождение и детство Пророка', 'Начало пророчества в пещере Хира', 'Хиджра в Медину', 'Прощальное паломничество'],
+    downloadable: true,
+    pdfUrl: 'https://archive.org/download/ar-rahik-al-mahtum-russian/ar-rahik-al-mahtum-russian.pdf',
+    sampleChapterTitle: 'Глава: Благословенное рождение и детство Пророка',
+    sampleChapterText: 'Посланник Аллаха ﷺ родился в квартале Бану Хашим в Мекке в понедельник утром, девятого числа месяца Раби аль-Авваль в год Слона. Его дед Абд аль-Мутталиб внес новорожденного в Каабу, возблагодарил Аллаха и нарек его именем Мухаммад.',
+    chapters: [
+      {
+        id: 'c1',
+        title: 'Правдивый и надежный (Аль-Амин)',
+        content: 'Еще задолго до ниспослания откровения жители Мекки уважали его за исключительную честность и называли его Аль-Амин (Верный).'
+      }
+    ]
+  }
 ];
 
 export const WAQF_PROJECTS: WaqfProject[] = [

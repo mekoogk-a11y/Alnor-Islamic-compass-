@@ -1,47 +1,62 @@
 @import "tailwindcss";
 
 :root {
-  /* Al-Noor Global Islamic Platform Design System */
-  --color-ivory: #F7F5EF;
-  --color-cream: #F0EDE4;
-  --color-champagne: #E5DCCB;
-  --color-beige: #D8CEBB;
-  --color-olive: #657568;
-  --color-deep-green: #394E43;
-  --color-charcoal: #343832;
-  --color-subtle-gold: #B9A477;
+  /* =========================================================================
+     NOOR GLOBAL – A WORLD OF LIGHT DESIGN SYSTEM
+     Silicon Valley Global Engineering & Deep Islamic Nobility
+     ========================================================================= */
 
-  /* Semantic Theme Tokens (Default: Light / Warm Ivory & Cream) */
-  --bg-main: #F7F5EF;
-  --bg-surface: #F0EDE4;
-  --bg-card: #FFFFFF;
-  --bg-subtle: #E5DCCB;
-  --border-fine: #E5DCCB;
-  --border-strong: #D8CEBB;
-  --border-gold: rgba(185, 164, 119, 0.4);
-  --text-main: #343832;
-  --text-muted: #5E655B;
-  --text-faint: #80887D;
-  --accent-primary: #394E43;
-  --accent-secondary: #657568;
-  --accent-gold: #B9A477;
+  /* Palette: Nocturnal Deep Navies */
+  --color-midnight: #070D1E;
+  --color-navy-deep: #0B132B;
+  --color-navy-card: #0F172A;
+  --color-navy-border: #1E293B;
+  --color-navy-hover: #162038;
+
+  /* Palette: Radiant Gold & Champagne */
+  --color-gold-bright: #F59E0B;
+  --color-gold-classic: #D4AF37;
+  --color-gold-champagne: #E5C07B;
+  --color-gold-light: #F3E8CB;
+  --color-gold-glow: rgba(212, 175, 55, 0.35);
+
+  /* Palette: Scholarly Ivory & Parchment (For Reading Clear Contrast) */
+  --color-ivory-page: #FBF9F4;
+  --color-ivory-surface: #F6F4EE;
+  --color-ivory-card: #FFFFFF;
+  --color-ivory-text: #1E242B;
+  --color-ivory-border: #E8E2D5;
+
+  /* Semantic Theme Tokens (Default: Nocturnal High-Tech Navy) */
+  --bg-main: #070D1E;
+  --bg-surface: #0B132B;
+  --bg-card: #0F172A;
+  --bg-subtle: #162038;
+  --border-fine: rgba(229, 192, 123, 0.18);
+  --border-strong: rgba(229, 192, 123, 0.35);
+  --border-gold: rgba(212, 175, 55, 0.45);
+  --text-main: #F8FAFC;
+  --text-muted: #CBD5E1;
+  --text-faint: #94A3B8;
+  --accent-primary: #D4AF37;
+  --accent-secondary: #38BDF8;
+  --accent-gold: #F59E0B;
 }
 
 .dark {
-  /* Warm Deep Charcoal Night Palette (Harmonious with Ivory Identity) */
-  --bg-main: #1F221E;
-  --bg-surface: #272B25;
-  --bg-card: #2C322A;
-  --bg-subtle: #363D34;
-  --border-fine: #3A4237;
-  --border-strong: #4A5447;
-  --border-gold: rgba(185, 164, 119, 0.35);
-  --text-main: #F7F5EF;
-  --text-muted: #D8CEBB;
-  --text-faint: #9EA89A;
-  --accent-primary: #4D6657;
-  --accent-secondary: #7A8C7E;
-  --accent-gold: #CBB991;
+  --bg-main: #040814;
+  --bg-surface: #070D1E;
+  --bg-card: #0B132B;
+  --bg-subtle: #121C38;
+  --border-fine: rgba(229, 192, 123, 0.15);
+  --border-strong: rgba(229, 192, 123, 0.3);
+  --border-gold: rgba(212, 175, 55, 0.4);
+  --text-main: #F8FAFC;
+  --text-muted: #CBD5E1;
+  --text-faint: #64748B;
+  --accent-primary: #E5C07B;
+  --accent-secondary: #0284C7;
+  --accent-gold: #D4AF37;
 }
 
 @layer base {
@@ -50,7 +65,7 @@
     background-color: var(--bg-main);
     color: var(--text-main);
     overflow-x: hidden;
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
@@ -62,61 +77,99 @@
   font-family: 'Cinzel', serif;
 }
 
-/* Subtle, sophisticated Islamic sacred geometric watermark */
+/* Luminous World of Light Network Grid */
+.bg-noor-grid {
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.12), transparent 45%),
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 48px 48px, 48px 48px;
+}
+
+/* Sacred Geometric Lattice Pattern Overlay */
 .bg-islamic-pattern {
-  background-image: radial-gradient(rgba(101, 117, 104, 0.12) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(212, 175, 55, 0.12) 1.2px, transparent 1.2px);
+  background-size: 28px 28px;
 }
 
-.dark .bg-islamic-pattern {
-  background-image: radial-gradient(rgba(185, 164, 119, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
+/* Silicon Valley Tech Glass Card */
+.noor-card {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(11, 19, 43, 0.85) 100%);
+  border: 1px solid rgba(229, 192, 123, 0.2);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Premium Minimalist Institutional Card */
-.institutional-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-fine);
-  box-shadow: 0 4px 20px -4px rgba(52, 56, 50, 0.05);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.noor-card:hover {
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 0 12px 40px -8px rgba(212, 175, 55, 0.2);
+  transform: translateY(-2px);
 }
 
-.institutional-card:hover {
-  border-color: var(--border-strong);
-  box-shadow: 0 10px 25px -5px rgba(52, 56, 50, 0.08);
+/* Scholarly Daylight Reading Surface (Comfortable, Pristine Ivory) */
+.scholarly-reading-paper {
+  background-color: var(--color-ivory-page);
+  color: var(--color-ivory-text);
+  border: 1px solid var(--color-ivory-border);
+  box-shadow: 0 4px 20px -2px rgba(30, 36, 43, 0.06);
 }
 
-.dark .institutional-card {
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.3);
+/* Radiant Gold Text Gradient */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FFF1CA 0%, #D4AF37 50%, #B98E2F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.dark .institutional-card:hover {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
+/* Cyan Guidance Light Gradient */
+.text-cyan-gradient {
+  background: linear-gradient(135deg, #E0F2FE 0%, #38BDF8 60%, #0284C7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Subtle Gold Luxury Border Plate */
-.gold-plate-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-gold);
-  box-shadow: 0 4px 15px -3px rgba(185, 164, 119, 0.08);
+/* Gold Glow Utility */
+.glow-gold {
+  box-shadow: 0 0 25px -3px rgba(212, 175, 55, 0.35);
 }
 
-/* Custom refined institutional scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.glow-cyan {
+  box-shadow: 0 0 25px -3px rgba(56, 189, 248, 0.35);
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--bg-surface);
-  border-radius: 9999px;
+/* Custom Scrollbar for Smooth Reading */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-  border-radius: 9999px;
+::-webkit-scrollbar-track {
+  background: #070D1E;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-secondary);
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 4px;
+  border: 1px solid rgba(229, 192, 123, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D4AF37;
+}
+
+/* Keyframes for Rotating Global Halo */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
 }

@@ -1,5 +1,19 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserAccount, UserRole } from '../types';
+import { 
+  auth, 
+  db, 
+  googleProvider, 
+  handleFirestoreError, 
+  OperationType 
+} from '../services/firebase';
+import { 
+  signInWithPopup, 
+  signOut as firebaseSignOut, 
+  onAuthStateChanged,
+  signInAnonymously 
+} from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface RegisterData {
   name: string;
@@ -13,6 +27,7 @@ interface AuthContextType {
   user: UserAccount | null;
   isAuthenticated: boolean;
   login: (email: string, name?: string, role?: UserRole) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
   toggleBookmark: (surahNumber: number, ayahNumber: number, surahName: string) => void;
@@ -110,22 +125,103 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('alnoor_user_session', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('alnoor_user_session');
+    // Listen to Firebase Auth state
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const isAdminEmail = firebaseUser.email === 'mekoogk@gmail.com' || firebaseUser.email?.includes('admin');
+        const role: UserRole = isAdminEmail ? 'admin' : 'student';
+        const userDocRef = doc(db, 'users', firebaseUser.uid);
+        
+        try {
+          const userSnap = await getDoc(userDocRef);
+          if (userSnap.exists()) {
+            const data = userSnap.data();
+            setUser((prev) => ({
+              ...(prev || defaultDemoUser),
+              id: firebaseUser.uid,
+              name: data.displayName || firebaseUser.displayName || 'مستخدم مجمع النور',
+              fullName: data.displayName || firebaseUser.displayName || 'مستخدم مجمع النور',
+              email: firebaseUser.email || '',
+              role: data.role || role,
+            }));
+          } else {
+            // Create user document in Firestore
+            const initialProfile = {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email || '',
+              displayName: firebaseUser.displayName || 'طالب مجمع النور',
+              role: role,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            };
+            await setDoc(userDocRef, initialProfile);
+            setUser((prev) => ({
+              ...(prev || defaultDemoUser),
+              id: firebaseUser.uid,
+              name: initialProfile.displayName,
+              fullName: initialProfile.displayName,
+              email: initialProfile.email,
+              role: role,
+            }));
+          }
+        } catch (err) {
+          console.warn('Firebase profile sync notice:', err);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const loginWithGoogle = async () => {
+    setError(null);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const firebaseUser = result.user;
+      const isAdminEmail = firebaseUser.email === 'mekoogk@gmail.com' || firebaseUser.email?.includes('admin');
+      const role: UserRole = isAdminEmail ? 'admin' : 'student';
+
+      const resolvedUser: UserAccount = {
+        ...defaultDemoUser,
+        id: firebaseUser.uid,
+        name: firebaseUser.displayName || 'مستخدم مجمع النور',
+        fullName: firebaseUser.displayName || 'مستخدم مجمع النور',
+        email: firebaseUser.email || '',
+        role: role,
+      };
+
+      setUser(resolvedUser);
+      setIsAuthModalOpen(false);
+
+      // Save to Firestore
+      try {
+        const userDocRef = doc(db, 'users', firebaseUser.uid);
+        await setDoc(userDocRef, {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email || '',
+          displayName: resolvedUser.name,
+          role: role,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }, { merge: true });
+      } catch (err) {
+        console.warn('Firestore profile save note:', err);
+      }
+    } catch (err: any) {
+      console.warn('Google sign-in popup note:', err);
+      setError(err?.message || 'تعذر تسجيل الدخول عبر Google، يمكنك استخدام الدخول التجريبي.');
     }
-  }, [user]);
+  };
 
   const login = async (email: string, name?: string, role: UserRole = 'student') => {
     setError(null);
-    const resolvedName = name || (email.includes('admin') ? 'أمانة مجمع النور' : 'طالب علم النور');
+    const resolvedName = name || (email.includes('admin') || email === 'mekoogk@gmail.com' ? 'أمانة مجمع النور' : 'طالب علم النور');
     const newUser: UserAccount = {
       id: `USR-${Math.floor(10000 + Math.random() * 90000)}`,
       fullName: resolvedName,
       name: resolvedName,
       email: email,
-      role: email.includes('admin') ? 'admin' : role,
+      role: (email.includes('admin') || email === 'mekoogk@gmail.com') ? 'admin' : role,
       country: 'المملكة العربية السعودية',
       memorizedJuzCount: role === 'hafiz' ? 30 : 5,
       registeredDate: new Date().toISOString().split('T')[0],
@@ -158,7 +254,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(newUser);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await firebaseSignOut(auth);
+    } catch (e) {}
     setUser(null);
   };
 
@@ -248,6 +347,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         isAuthenticated: !!user,
         login,
+        loginWithGoogle,
         register,
         logout,
         toggleBookmark,

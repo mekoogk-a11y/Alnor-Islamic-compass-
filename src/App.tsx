@@ -32,17 +32,19 @@ import { SudaneseAudioStudioPage } from './components/pages/SudaneseAudioStudioP
 import { OrphansCarePage } from './components/pages/OrphansCarePage';
 import { QuranTranslationsReaderPage } from './components/pages/QuranTranslationsReaderPage';
 import { ApiGatewayPage } from './components/pages/ApiGatewayPage';
+import { NoorAmbassadorPage } from './components/pages/NoorAmbassadorPage';
+import { DiscoverIslamPage } from './components/pages/DiscoverIslamPage';
 import { PrayerTimesBar } from './components/PrayerTimesBar';
 
 import { NavigationPage } from './types';
-import { COMPLEX_INFO } from './data/islamicData';
+import { COMPLEX_INFO, OFFICIAL_COMPLEX_LOGO } from './data/islamicData';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { 
   BookOpen, Globe, Mail, MapPin, Sparkles, ChevronLeft, 
-  WifiOff, Laptop, Phone, MessageCircle, Radio, Compass, Scroll, GraduationCap, Users, Mic, Zap 
+  WifiOff, Laptop, Phone, MessageCircle, Radio, Compass, Scroll, GraduationCap, Users, Mic, Zap, HeartHandshake, ShieldCheck 
 } from 'lucide-react';
 
 function MainAppContent() {
@@ -59,7 +61,7 @@ function MainAppContent() {
   };
 
   return (
-    <div className={`min-h-screen bg-[#F7F5EF] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] flex flex-col font-sans selection:bg-[#394E43] selection:text-[#F7F5EF] antialiased pb-36 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
+    <div className={`min-h-screen bg-[#070D1E] text-[#F8FAFC] flex flex-col font-sans selection:bg-[#D4AF37]/30 selection:text-[#F8FAFC] antialiased pb-36 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
       
       {/* Offline Alert Indicator if user loses connection */}
       {!isOnline && (
@@ -96,6 +98,8 @@ function MainAppContent() {
         {currentPage === 'waqf' && <WaqfPage onNavigate={handleNavigate} />}
         {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
         {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
+        {currentPage === 'noorAmbassador' && <NoorAmbassadorPage onNavigate={handleNavigate} />}
+        {currentPage === 'discoverIslam' && <DiscoverIslamPage onNavigate={handleNavigate} />}
         {currentPage === 'audioStudio' && <SudaneseAudioStudioPage onNavigate={handleNavigate} />}
         {currentPage === 'orphansCare' && <OrphansCarePage onNavigate={handleNavigate} />}
         {currentPage === 'translationsReader' && <QuranTranslationsReaderPage onNavigate={handleNavigate} />}
@@ -113,7 +117,7 @@ function MainAppContent() {
       </main>
 
       {/* Global Comprehensive Islamic Institutional Footer */}
-      <footer className="border-t border-[#D8CEBB] dark:border-[#3A4237] bg-[#343832] text-[#E5DCCB] pt-14 pb-12 xl:pb-8 px-4 text-xs transition-colors">
+      <footer className="border-t border-[#B9A477]/20 bg-[#070D1E] text-[#E2E8F0] pt-14 pb-12 xl:pb-8 px-4 text-xs transition-colors">
         <div className="max-w-7xl mx-auto space-y-12">
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
@@ -121,26 +125,28 @@ function MainAppContent() {
             {/* Column 1: Identity & Slogan (2 cols on lg) */}
             <div className="lg:col-span-2 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-[#282C26] p-0.5 flex items-center justify-center text-[#F7F5EF] border border-[#B9A477]/40 shrink-0">
-                  <div className="w-full h-full bg-[#394E43] rounded-[14px] flex items-center justify-center p-2 text-[#B9A477]">
-                    <BookOpen className="w-5 h-5 stroke-[2.2]" />
-                  </div>
+                <div className="relative shrink-0 flex items-center justify-center">
+                  <img 
+                    src={OFFICIAL_COMPLEX_LOGO} 
+                    alt="شعار مجمع النور الإسلامي العالمي" 
+                    className="h-16 w-auto max-w-[80px] object-contain filter drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]"
+                  />
                 </div>
                 <div>
-                  <h4 className="text-sm sm:text-base font-black text-[#F7F5EF] leading-tight">
+                  <h4 className="text-sm sm:text-base font-black text-[#F8FAFC] leading-tight">
                     {t.complexName}
                   </h4>
-                  <span className="text-xs text-[#B9A477] font-medium">{t.heroBadge}</span>
+                  <span className="text-xs text-[#D4AF37] font-medium tracking-wide">NOOR GLOBAL · A WORLD OF LIGHT</span>
                 </div>
               </div>
 
               {/* Official Slogan */}
-              <div className="p-3.5 bg-[#282C26] rounded-2xl border border-[#B9A477]/30 shadow-sm">
-                <span className="text-[11px] text-[#B9A477] font-bold block mb-0.5">
-                  {lang === 'ar' ? 'الشعار الرسمي المعتمد:' : 'Official Slogan:'}
+              <div className="p-3.5 bg-[#0B132B]/80 rounded-2xl border border-[#D4AF37]/30 shadow-inner">
+                <span className="text-[11px] text-[#D4AF37] font-bold block mb-1">
+                  {lang === 'ar' ? 'الشعار المؤسسي المعتمد:' : 'Official Slogan:'}
                 </span>
-                <span className="text-base sm:text-lg font-amiri font-bold text-[#F7F5EF]">
-                  «نورٌ يهدي، وعلمٌ يبني»
+                <span className="text-base sm:text-lg font-amiri font-bold text-[#F8FAFC] block">
+                  «القرآن هداية، والعلم بناء، والعمل الخيري عطاء»
                 </span>
               </div>
 
@@ -227,10 +233,28 @@ function MainAppContent() {
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => handleNavigate('apiGateway')} className="text-[#D8CEBB] hover:text-[#B9A477] font-bold transition-colors flex items-center gap-1.5">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                  <button onClick={() => handleNavigate('noorAmbassador')} className="text-[#D4AF37] hover:text-white font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#D4AF37] ${isRtl ? '' : 'rotate-180'}`} />
                     <span className="flex items-center gap-1">
-                      <Zap className="w-3.5 h-3.5 text-[#B9A477]" />
+                      <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] animate-pulse" />
+                      <span>{lang === 'ar' ? 'سفير النور العالمي 🌟' : 'Noor Ambassador'}</span>
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('discoverIslam')} className="text-[#38BDF8] hover:text-white font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#38BDF8] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span className="flex items-center gap-1">
+                      <MessageCircle className="w-3.5 h-3.5 text-[#38BDF8]" />
+                      <span>{lang === 'ar' ? 'اسأل عن الإسلام 💬' : 'Ask About Islam'}</span>
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('apiGateway')} className="text-[#94A3B8] hover:text-[#D4AF37] font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#D4AF37] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span className="flex items-center gap-1">
+                      <Zap className="w-3.5 h-3.5 text-[#D4AF37]" />
                       <span>{lang === 'ar' ? 'بوابة واجهات API السحابية ⚡' : 'API Gateway & Architecture'}</span>
                     </span>
                   </button>
