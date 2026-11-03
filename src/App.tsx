@@ -8,6 +8,7 @@ import { Navbar } from './components/Navbar';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
+import { FloatingDonationWidget } from './components/FloatingDonationWidget';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { AuthModal } from './components/AuthModal';
 
@@ -361,6 +362,9 @@ function MainAppContent() {
 
       {/* Floating Professional WhatsApp Widget */}
       <FloatingWhatsApp />
+
+      {/* Floating Wheat Sprout on Hand Donation Widget (Bank of Khartoum 1727654) */}
+      <FloatingDonationWidget />
 
       {/* Global Google-Style Central Search Modal */}
       <GlobalSearchModal

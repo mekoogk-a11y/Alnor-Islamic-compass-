@@ -155,14 +155,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               updatedAt: new Date().toISOString(),
             };
             await setDoc(userDocRef, initialProfile);
-            setUser((prev) => ({
-              ...(prev || defaultDemoUser),
-              id: firebaseUser.uid,
-              name: initialProfile.displayName,
-              fullName: initialProfile.displayName,
-              email: initialProfile.email,
-              role: role,
-            }));
+            // Sync user to Cloud SQL relational database
+            try {
+              const idToken = await firebaseUser.getIdToken();
+              fetch('/api/v1/auth/sync', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${idToken}`,
+                },
+                body: JSON.stringify({
+                  displayName: firebaseUser.displayName,
+                  photoUrl: firebaseUser.photoURL,
+                  preferredLanguage: 'ar',
+                }),
+              }).catch((e) => console.warn('Cloud SQL user sync note:', e));
+            } catch (e) {
+              // Ignore token errors
+            }
           }
         } catch (err) {
           console.warn('Firebase profile sync notice:', err);

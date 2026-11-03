@@ -3,10 +3,11 @@ import {
   Heart, Users, ShieldCheck, CheckCircle2, AlertCircle, Phone, 
   MessageCircle, Mail, Search, FileText, Upload, Sparkles, 
   ArrowRight, ArrowLeft, Calendar, User, MapPin, DollarSign,
-  Clock, Check, Filter, ExternalLink, Lock, Eye, RefreshCw
+  Clock, Check, Filter, ExternalLink, Lock, Eye, RefreshCw, Copy, Building2
 } from 'lucide-react';
 import { NavigationPage, OrphanApplication, OrphanProfile, SponsorshipProgram } from '../../types';
 import { ORPHANS_CONTACT_INFO, SPONSORSHIP_PROGRAMS, INITIAL_ORPHANS_PROFILES, INITIAL_ORPHAN_APPLICATIONS } from '../../data/orphansData';
+import { OFFICIAL_DONATION_INFO } from '../../data/islamicData';
 import { useLanguage } from '../../context/LanguageContext';
 import { orphansFirebaseService } from '../../services/orphansFirebaseService';
 
@@ -75,6 +76,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
   // Profiles list
   const [profiles] = useState<OrphanProfile[]>(INITIAL_ORPHANS_PROFILES);
   const [profilesFilter, setProfilesFilter] = useState<'all' | 'unsponsored' | 'sponsored'>('all');
+  const [copiedBankAcc, setCopiedBankAcc] = useState(false);
 
   // Handle Form Next
   const handleNextStep = () => {
@@ -395,6 +397,71 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
             <div className="flex items-center gap-2 text-xs font-bold text-[#394E43] dark:text-[#B9A477] bg-[#F0EDE4] dark:bg-[#272B25] p-2 px-3 rounded-xl">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>توثيق شرعي ورقابة دورية</span>
+            </div>
+          </div>
+
+          {/* Official Bank of Khartoum Account Direct Transfer Card */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#111C3D] via-[#0B132B] to-[#070D1E] border-2 border-amber-400/60 shadow-xl text-white">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-400/20 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-300 shrink-0">
+                  <Building2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-base sm:text-lg text-white">
+                      {OFFICIAL_DONATION_INFO.bankName}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-[10px] text-emerald-300 font-bold">
+                      حساب كفالة الأيتام والمجمع
+                    </span>
+                  </div>
+                  <span className="text-xs text-slate-300 mt-0.5 block font-medium">
+                    التحويل الفوري متاح عبر تطبيق (بنكك - Bankak) من داخل وخارج السودان
+                  </span>
+                </div>
+              </div>
+
+              {/* Account Box & 1-Click Copy */}
+              <div className="flex items-center gap-3 bg-[#070D1E] px-4 py-3 rounded-2xl border border-amber-400/40">
+                <div className="text-right">
+                  <span className="text-[10px] text-slate-400 block font-semibold">رقم الحساب:</span>
+                  <span className="text-2xl font-mono font-black text-amber-300 tracking-wider">
+                    {OFFICIAL_DONATION_INFO.accountNumber}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(OFFICIAL_DONATION_INFO.accountNumber);
+                    setCopiedBankAcc(true);
+                    setTimeout(() => setCopiedBankAcc(false), 2000);
+                  }}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                    copiedBankAcc 
+                      ? 'bg-emerald-600 text-white shadow-md' 
+                      : 'bg-amber-400 hover:bg-amber-300 text-slate-950 font-black'
+                  }`}
+                >
+                  {copiedBankAcc ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  <span>{copiedBankAcc ? 'تم النسخ!' : 'نسخ الحساب'}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div>
+                <span className="text-slate-400 block text-[11px]">اسم صاحب الحساب:</span>
+                <span className="text-amber-200 font-bold text-sm font-amiri block">
+                  {OFFICIAL_DONATION_INFO.accountHolder}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-400 block text-[11px]">الصفة المؤسسية:</span>
+                <span className="text-slate-300 font-medium text-xs block leading-relaxed">
+                  {OFFICIAL_DONATION_INFO.directorTitle}
+                </span>
+              </div>
             </div>
           </div>
 

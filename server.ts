@@ -16,6 +16,8 @@ import {
   SUPPORTED_CITIES 
 } from './server/api/prayerEngine.js';
 import { paymentAdapter } from './server/api/paymentAdapter.js';
+import { requireAuth, AuthRequest } from './src/middleware/auth.ts';
+import { getOrCreateUser, getUserByUid, getUserEnrollments, getUserOrphanSponsorships } from './src/db/users.ts';
 
 dotenv.config();
 
@@ -98,6 +100,57 @@ app.post('/api/v1/keys/:id/revoke', (req: Request, res: Response) => {
     return sendApiError(res, 404, 'KEY_NOT_FOUND', 'لم يتم العثور على مفتاح API بهذا المعرف');
   }
   return sendApiResponse(res, { message: 'تم إبطال مفتاح API بنجاح', keyId: id });
+});
+
+// =========================================================================
+// CLOUD SQL POSTGRESQL & FIREBASE AUTH SYNC (v1)
+// =========================================================================
+
+// POST /api/v1/auth/sync - Sync Firebase Auth user profile to Cloud SQL
+app.post('/api/v1/auth/sync', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user || !req.user.uid) {
+      return sendApiError(res, 401, 'UNAUTHORIZED', 'مستخدم غير موثق');
+    }
+    const { displayName, photoUrl, preferredLanguage } = req.body || {};
+    const syncedUser = await getOrCreateUser({
+      uid: req.user.uid,
+      email: req.user.email || `${req.user.uid}@alnoor.internal`,
+      displayName: displayName || (req.user as any).name || null,
+      photoUrl: photoUrl || (req.user as any).picture || null,
+      preferredLanguage: preferredLanguage || 'ar',
+    });
+    return sendApiResponse(res, syncedUser);
+  } catch (error: any) {
+    console.error('Failed to sync user with Cloud SQL:', error);
+    return sendApiError(res, 500, 'DB_ERROR', error.message || 'فشل مزامنة المستخدم مع قاعدة البيانات');
+  }
+});
+
+// GET /api/v1/user/profile - Fetch user profile and enrollments from Cloud SQL
+app.get('/api/v1/user/profile', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user || !req.user.uid) {
+      return sendApiError(res, 401, 'UNAUTHORIZED', 'مستخدم غير موثق');
+    }
+    let user = await getUserByUid(req.user.uid);
+    if (!user) {
+      user = await getOrCreateUser({
+        uid: req.user.uid,
+        email: req.user.email || `${req.user.uid}@alnoor.internal`,
+        displayName: (req.user as any).name || null,
+        photoUrl: (req.user as any).picture || null,
+      });
+    }
+    const [enrollments, orphanSponsorships] = await Promise.all([
+      getUserEnrollments(user.id),
+      getUserOrphanSponsorships(user.id),
+    ]);
+    return sendApiResponse(res, { user, enrollments, orphanSponsorships });
+  } catch (error: any) {
+    console.error('Failed to fetch user profile:', error);
+    return sendApiError(res, 500, 'DB_ERROR', error.message || 'فشل جلب بيانات المستخدم');
+  }
 });
 
 // =========================================================================

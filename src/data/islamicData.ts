@@ -17,6 +17,53 @@ export const COMPLEX_INFO: ComplexGlobalInfo = {
   activeTeachers: 920,
 };
 
+export const OFFICIAL_DONATION_INFO = {
+  bankName: 'بنك الخرطوم (Bank of Khartoum - بنكك)',
+  bankShort: 'بنك الخرطوم',
+  appService: 'تطبيق بنكك (Bankak)',
+  accountNumber: '1727654',
+  accountHolder: 'الشيخ الهادي سالم',
+  directorTitle: 'مدير مجمع النور الإسلامي العالمي الخيري الشامل لتحفيظ القرآن الكريم والعلوم الإسلامية',
+  whatsappNotify: '+249904499914',
+  sloganAyah: 'مَّثَلُ الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ كَمَثَلِ حَبَّةٍ أَنبَتَتْ سَبْعَ سَنَابِلَ فِي كُلِّ سُنبُلَةٍ مِّائَةُ حَبَّةٍ ۗ وَاللَّهُ يُضَاعِفُ لِمَن يَشَاءُ',
+  sloganAyahRef: 'سورة البقرة · الآية 261',
+  hadithOrphans: '«أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا» وَأَشَارَ بِالسَّبَّابَةِ وَالْوُسْطَى',
+  purposes: [
+    { 
+      id: 'orphans', 
+      titleAr: 'كفالة الأيتام والرعاية الشاملة', 
+      titleEn: 'Orphans Sponsorship & Comprehensive Care',
+      descAr: 'توفير الكفالة المعيشية، السلة الغذائية، الرعاية الصحية، وكسوة العيد لليتيم.',
+      suggestedAmountsSdg: [25000, 50000, 100000, 250000],
+      suggestedAmountsUsd: [25, 50, 100, 200]
+    },
+    { 
+      id: 'complex_quran', 
+      titleAr: 'دعم مجمع النور وتحفيظ القرآن الكريم', 
+      titleEn: 'Al-Noor Complex Support & Quran Circles',
+      descAr: 'تشغيل المقارئ العالمية 24 ساعة، كفالة المشايخ والمقرئين، وطباعة المصاحف.',
+      suggestedAmountsSdg: [20000, 50000, 100000, 200000],
+      suggestedAmountsUsd: [20, 50, 100, 250]
+    },
+    { 
+      id: 'waqf_share', 
+      titleAr: 'السهم الوقفي والصدقة الجارية', 
+      titleEn: 'Endowment Share (Waqf) & Ongoing Sadaqah',
+      descAr: 'سهم وقفي دائم يبقى أثره جارياً في ميزان حسناتك إلى يوم القيامة.',
+      suggestedAmountsSdg: [30000, 75000, 150000, 300000],
+      suggestedAmountsUsd: [30, 75, 150, 300]
+    },
+    { 
+      id: 'food_basket', 
+      titleAr: 'سلة الغذاء وكسوة الأيتام والمحتاجين', 
+      titleEn: 'Food Basket & Clothing Relief',
+      descAr: 'توفير السلال الغذائية للأسر المتعففة وأمهات الأيتام في المخيمات والقرى.',
+      suggestedAmountsSdg: [15000, 35000, 70000, 150000],
+      suggestedAmountsUsd: [15, 35, 70, 150]
+    },
+  ]
+};
+
 export const RECITERS: QuranReciter[] = [
   {
     id: 'alafasy',

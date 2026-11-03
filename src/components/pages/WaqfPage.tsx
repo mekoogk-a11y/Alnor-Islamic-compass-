@@ -4,7 +4,7 @@ import {
   ShieldCheck, Sparkles, Building, BookOpen, Users, FileText, ArrowLeft 
 } from 'lucide-react';
 import { NavigationPage, WaqfProject } from '../../types';
-import { COMPLEX_INFO, WAQF_PROJECTS } from '../../data/islamicData';
+import { COMPLEX_INFO, WAQF_PROJECTS, OFFICIAL_DONATION_INFO } from '../../data/islamicData';
 
 interface WaqfPageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -57,28 +57,67 @@ export const WaqfPage: React.FC<WaqfPageProps> = () => {
         </p>
       </div>
 
-      {/* Official Institutional Waqf Accounts Status (Without fake banks) */}
-      <div className="bg-slate-900/90 border border-emerald-900/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 text-center">
+      {/* Official Institutional Waqf Accounts Status (Bank of Khartoum 1727654) */}
+      <div className="bg-gradient-to-br from-[#111C3D] via-[#0B132B] to-[#070D1E] border-2 border-amber-400/60 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-center text-white">
         <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3.5 py-1 rounded-full text-xs font-bold text-amber-400">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>القنوات المصرفية والتحويلات الوقفية الرسمية</span>
+          <span>القنوات المصرفية والتحويلات الوقفية الرسمية المعتمدة</span>
         </div>
 
-        <h2 className="text-lg sm:text-2xl font-black text-white">
-          الحسابات البنكية المعتمدة لمجمع النور الإسلامي
+        <h2 className="text-xl sm:text-3xl font-black text-white font-amiri">
+          الحساب البنكي المعتمد لمجمع النور الإسلامي العالمي
         </h2>
 
-        <div className="max-w-2xl mx-auto p-6 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs sm:text-sm text-slate-300 leading-relaxed space-y-3">
-          <p>
-            تخضع جميع التبرعات والمساهمات الوقفية لمجمع النور الإسلامي لأعلى معايير الحوكمة المؤسسية والشفافية الشرعية.
-          </p>
-          <div className="p-4 bg-emerald-950/40 border border-emerald-800/60 rounded-xl text-emerald-300 font-medium text-xs sm:text-sm">
-            جاري تحديث وتوثيق بيانات الحسابات المصرفية الدولية من قِبل الإدارة العامة للشؤون المالية للمجمع، وسيتم رفعها ونشرها رسمياً في هذه الصفحة فور اكتمال الاعتماد المالي.
+        {/* Bank Highlight Card */}
+        <div className="max-w-2xl mx-auto p-5 sm:p-6 bg-[#070D1E] rounded-2xl border border-amber-400/40 shadow-inner space-y-4 text-right">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-400/20 pb-4">
+            <div>
+              <span className="text-xs text-amber-400 font-bold block">
+                {OFFICIAL_DONATION_INFO.bankName}
+              </span>
+              <span className="text-[11px] text-emerald-400 font-medium">
+                تطبيق بنكك (Bankak) متاح 24/7 من داخل وخارج السودان
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 bg-[#0B132B] px-3.5 py-2 rounded-xl border border-amber-400/30">
+              <span className="text-2xl font-mono font-black text-amber-300">
+                {OFFICIAL_DONATION_INFO.accountNumber}
+              </span>
+              <button
+                type="button"
+                onClick={() => handleCopy('bankak', OFFICIAL_DONATION_INFO.accountNumber)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-all cursor-pointer ${
+                  copiedKey === 'bankak'
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-amber-400 hover:bg-amber-300 text-slate-950 font-black'
+                }`}
+              >
+                {copiedKey === 'bankak' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedKey === 'bankak' ? 'تم النسخ' : 'نسخ'}</span>
+              </button>
+            </div>
           </div>
-          <p className="text-slate-400 text-xs">
-            للتواصل المباشر مع أمانة الوقف أو الاستفسار المؤسسي، يرجى المراسلة عبر البريد الإلكتروني الرسمي المعتمد:
-            <span className="font-mono text-amber-400 font-bold block mt-1.5">{COMPLEX_INFO.officialEmail}</span>
-          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-slate-400 block text-[11px]">اسم صاحب الحساب:</span>
+              <span className="text-amber-200 font-bold text-sm font-amiri block mt-0.5">
+                {OFFICIAL_DONATION_INFO.accountHolder}
+              </span>
+            </div>
+            <div>
+              <span className="text-slate-400 block text-[11px]">الصفة المؤسسية:</span>
+              <span className="text-slate-300 font-medium text-xs block mt-0.5 leading-relaxed">
+                {OFFICIAL_DONATION_INFO.directorTitle}
+              </span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <span>إشعار التحويل المباشر: {OFFICIAL_DONATION_INFO.whatsappNotify}</span>
+            <span>البريد المعتمد: {COMPLEX_INFO.officialEmail}</span>
+          </div>
         </div>
       </div>
 
