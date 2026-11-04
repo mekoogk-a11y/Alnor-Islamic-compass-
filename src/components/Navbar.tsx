@@ -3,7 +3,7 @@ import {
   BookOpen, Globe, HeartHandshake, GraduationCap, Library, 
   Info, Mail, Menu, X, Sparkles, MessageCircle, Radio, 
   ChevronDown, Check, Compass, Scroll, Users, Search, 
-  Sun, Moon, User, ShieldCheck, HelpCircle, Mic, Zap
+  Sun, Moon, User, ShieldCheck, HelpCircle, Mic, Zap, Video
 } from 'lucide-react';
 import { NavigationPage } from '../types';
 import { COMPLEX_INFO, OFFICIAL_COMPLEX_LOGO } from '../data/islamicData';
@@ -16,9 +16,10 @@ interface NavbarProps {
   currentPage: NavigationPage;
   onNavigate: (page: NavigationPage) => void;
   onOpenSearch?: () => void;
+  onReplayIntro?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onOpenSearch }) => {
+export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onOpenSearch, onReplayIntro }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const { lang, setLang, t, isRtl, currentLangInfo } = useLanguage();
@@ -42,6 +43,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onOpenS
     { id: 'translationsReader', label: lang === 'ar' ? 'ترجمات القرآن 🌐' : 'Translations', icon: Globe },
     { id: 'noorAmbassador', label: lang === 'ar' ? 'سفير النور 🌟' : 'Ambassador', icon: Sparkles },
     { id: 'discoverIslam', label: lang === 'ar' ? 'اسأل عن الإسلام 💬' : 'Ask Islam', icon: MessageCircle },
+    { id: 'dawahLibrary', label: lang === 'ar' ? 'المكتبة الدعوية 🎙️' : 'Dawah Library 🎙️', icon: Video },
     { id: 'orphansCare', label: lang === 'ar' ? 'كفالة الأيتام 🤲' : 'Orphans Care', icon: HeartHandshake },
     { id: 'hadith', label: lang === 'ar' ? 'السنة النبوية' : 'Hadith', icon: Scroll },
     { id: 'academy', label: lang === 'ar' ? 'الأكاديمية' : 'Academy', icon: GraduationCap },
@@ -95,6 +97,17 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onOpenS
           {/* Right Actions */}
           <div className="flex items-center gap-2">
             
+            {/* Cinematic 3D Sunrise Intro Replay */}
+            {onReplayIntro && (
+              <button
+                onClick={onReplayIntro}
+                className="flex items-center gap-1.5 bg-[#111C3D] hover:bg-[#1E2E5D] text-amber-300 border border-amber-400/40 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-sm"
+                title="مشاهدة مشهد شروق النور ثلاثي الأبعاد السينمائي"
+              >
+                <span>شروق النور 🌅</span>
+              </button>
+            )}
+
             {/* Live Quran Radio from Makkah */}
             <button
               onClick={() => handleNavClick('radio')}

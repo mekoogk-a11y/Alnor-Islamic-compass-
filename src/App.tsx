@@ -35,6 +35,8 @@ import { QuranTranslationsReaderPage } from './components/pages/QuranTranslation
 import { ApiGatewayPage } from './components/pages/ApiGatewayPage';
 import { NoorAmbassadorPage } from './components/pages/NoorAmbassadorPage';
 import { DiscoverIslamPage } from './components/pages/DiscoverIslamPage';
+import { DawahLibraryPage } from './components/pages/DawahLibraryPage';
+import { CinematicSunriseIntro } from './components/CinematicSunriseIntro';
 import { PrayerTimesBar } from './components/PrayerTimesBar';
 
 import { NavigationPage } from './types';
@@ -55,6 +57,20 @@ function MainAppContent() {
   const isOnline = useOnlineStatus();
   const { lang, t, isRtl } = useLanguage();
 
+  // Cinematic 3D Sunrise Intro (Runs once per session unless replayed)
+  const [showSunriseIntro, setShowSunriseIntro] = useState<boolean>(() => {
+    try {
+      const shown = sessionStorage.getItem('alnoor_sunrise_intro_shown');
+      return !shown;
+    } catch (_) {
+      return false;
+    }
+  });
+
+  const handleReplayIntro = () => {
+    setShowSunriseIntro(true);
+  };
+
   const handleNavigate = (page: NavigationPage, params?: any) => {
     setCurrentPage(page);
     setPageParams(params || null);
@@ -64,6 +80,14 @@ function MainAppContent() {
   return (
     <div className={`min-h-screen bg-[#070D1E] text-[#F8FAFC] flex flex-col font-sans selection:bg-[#D4AF37]/30 selection:text-[#F8FAFC] antialiased pb-36 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
       
+      {/* Cinematic 3D Sunrise Experience (WebGL & Three.js) */}
+      {showSunriseIntro && (
+        <CinematicSunriseIntro 
+          onComplete={() => setShowSunriseIntro(false)} 
+          forceShow={true}
+        />
+      )}
+
       {/* Offline Alert Indicator if user loses connection */}
       {!isOnline && (
         <div className="bg-[#B9A477] text-[#343832] text-xs font-bold py-2 px-4 text-center flex items-center justify-center gap-2 sticky top-0 z-50 shadow-sm border-b border-[#D8CEBB]">
@@ -77,6 +101,7 @@ function MainAppContent() {
         currentPage={currentPage}
         onNavigate={handleNavigate}
         onOpenSearch={() => setIsSearchOpen(true)}
+        onReplayIntro={handleReplayIntro}
       />
 
       {/* Real-time Astronomical Prayer Times & Hijri Calendar Bar */}
@@ -101,6 +126,7 @@ function MainAppContent() {
         {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
         {currentPage === 'noorAmbassador' && <NoorAmbassadorPage onNavigate={handleNavigate} />}
         {currentPage === 'discoverIslam' && <DiscoverIslamPage onNavigate={handleNavigate} />}
+        {currentPage === 'dawahLibrary' && <DawahLibraryPage onNavigate={handleNavigate} />}
         {currentPage === 'audioStudio' && <SudaneseAudioStudioPage onNavigate={handleNavigate} />}
         {currentPage === 'orphansCare' && <OrphansCarePage onNavigate={handleNavigate} />}
         {currentPage === 'translationsReader' && <QuranTranslationsReaderPage onNavigate={handleNavigate} />}

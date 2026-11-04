@@ -19,6 +19,7 @@ export type NavigationPage =
   | 'dashboard'
   | 'admin'
   | 'apiGateway'
+  | 'dawahLibrary'
   | 'about' 
   | 'register';
 
@@ -560,4 +561,59 @@ export interface QuranTranslationAyah {
   translation?: string;
   footnotes?: string;
   audioUrl?: string | null;
+}
+
+// ==========================================
+// GLOBAL DAWAH LIBRARY TYPES
+// ==========================================
+
+export type DawahCategory = 
+  | 'comparative_religion'
+  | 'intro_to_islam'
+  | 'aqeedah'
+  | 'quran_science'
+  | 'misconceptions'
+  | 'new_muslims'
+  | 'quran_reflections'
+  | 'lectures';
+
+export interface DawahScholar {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  titleAr: string;
+  titleEn: string;
+  bioAr: string;
+  bioEn: string;
+  imageUrl: string;
+  country: string;
+  isEnglishSpeaker: boolean;
+  specialties: string[];
+  totalLecturesCount: number;
+  accentColor: string;
+  featured?: boolean;
+}
+
+export interface DawahLecture {
+  id: string;
+  scholarId: string;
+  scholarNameAr: string;
+  scholarNameEn: string;
+  titleAr: string;
+  titleEn: string;
+  youtubeId: string;
+  youtubeUrl: string;
+  category: DawahCategory;
+  durationMinutes: number;
+  language: 'ar' | 'en' | 'both';
+  hasSubtitles: boolean;
+  subtitlesLanguages: string[];
+  dateRecorded?: string;
+  descriptionAr: string;
+  descriptionEn: string;
+  isDebate?: boolean;
+  opponentName?: string;
+  featured?: boolean;
+  viewsCount?: string;
+  topics: string[];
 }

@@ -5,7 +5,7 @@ import {
   ArrowLeft, CheckCircle2, Star, ShieldCheck, ChevronRight,
   Radio, Mic, MessageCircle, Phone, Search, Compass, BookCheck, 
   Flame, Zap, Scroll, BookMarked, Eye, Download, Check, Headphones,
-  Share2, Clock, Landmark, Feather, Layers, ArrowUpRight, Copy, ExternalLink
+  Share2, Clock, Landmark, Feather, Layers, ArrowUpRight, Copy, ExternalLink, Video
 } from 'lucide-react';
 import { NavigationPage, LibraryBook } from '../../types';
 import { COMPLEX_INFO, FEATURED_SURAHS, RECITERS, OFFICIAL_COMPLEX_LOGO, LIBRARY_BOOKS } from '../../data/islamicData';
@@ -266,6 +266,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
               >
                 <MessageCircle className="w-4 h-4 text-sky-400" />
                 <span>اسأل عن الإسلام 💬</span>
+              </button>
+
+              <button
+                onClick={() => onNavigate('dawahLibrary')}
+                className="flex items-center gap-2 bg-gradient-to-r from-amber-500/20 via-[#111C3D] to-amber-500/20 hover:from-amber-500/30 hover:to-[#1A2A54] text-amber-300 font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm border border-amber-400/60 shadow-[0_0_15px_rgba(212,175,55,0.25)] transition-all cursor-pointer"
+              >
+                <Video className="w-4 h-4 text-amber-400" />
+                <span>المكتبة الدعوية العالمية 🎙️</span>
               </button>
 
               <button
