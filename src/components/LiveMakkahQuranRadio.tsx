@@ -184,10 +184,10 @@ export const LiveMakkahQuranRadio: React.FC<LiveMakkahQuranRadioProps> = ({
         }}
       />
 
-      {/* Floating Sticky Docked Bar (Visible if dockedMode is active) */}
-      {dockedMode && (
-        <div className="fixed bottom-16 sm:bottom-4 left-2 right-2 sm:left-auto sm:right-4 z-40 max-w-md w-auto animate-fade-in">
-          <div className="bg-[#FAF8F2]/95 dark:bg-[#272B25]/95 backdrop-blur-md border border-[#E5DCCB] dark:border-[#3A4237] rounded-2xl shadow-xl p-2.5 sm:p-3 text-xs flex items-center justify-between gap-3 text-[#343832] dark:text-[#F7F5EF]">
+      {/* Floating Sticky Docked Bar (Visible if dockedMode is active and radio is playing) */}
+      {dockedMode && isPlaying && (
+        <div className="fixed bottom-20 xl:bottom-6 left-1/2 -translate-x-1/2 z-40 max-w-xs sm:max-w-sm w-[90vw] sm:w-auto animate-fade-in pointer-events-auto">
+          <div className="bg-[#0B132B]/95 backdrop-blur-md border border-[#D4AF37]/50 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.6)] p-2.5 sm:p-3 text-xs flex items-center justify-between gap-3 text-white">
             
             <div className="flex items-center gap-2.5 min-w-0">
               <div className="relative shrink-0">

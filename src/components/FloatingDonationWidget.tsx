@@ -239,21 +239,25 @@ ${donorName ? `• اسم المتبرع: ${donorName}\n` : ''}${donorPhone ? `�
           {/* Subtle Ambient Pulse Ring */}
           <span className="absolute -inset-1 rounded-full bg-gradient-to-r from-amber-500/30 via-yellow-400/40 to-emerald-500/30 blur-sm group-hover:opacity-100 opacity-60 animate-pulse pointer-events-none" />
 
-          {/* Bespoke Wheat Ear on Hand SVG Icon */}
-          <div className="relative shrink-0 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center filter drop-shadow-[0_2px_8px_rgba(245,158,11,0.6)] group-hover:rotate-6 transition-transform duration-300">
-            <WheatHandSproutIcon className="w-full h-full" />
+          {/* Official Complex Crest Emblem Icon */}
+          <div className="relative shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full p-0.5 bg-gradient-to-tr from-[#D4AF37] via-[#FFFBEB] to-[#F59E0B] flex items-center justify-center filter drop-shadow-[0_2px_10px_rgba(212,175,55,0.7)] group-hover:scale-110 transition-transform duration-300 shadow-lg">
+            <img 
+              src={OFFICIAL_COMPLEX_LOGO} 
+              alt="شعار مجمع النور الإسلامي العالمي" 
+              className="w-full h-full object-contain filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" 
+            />
           </div>
 
           {/* Label & Account Badge (Compact & Pristine) */}
           <div className="flex flex-col text-right pr-0.5">
             <div className="flex items-center gap-1.5">
               <span className="font-amiri font-black text-xs sm:text-sm text-yellow-300 tracking-wide leading-tight group-hover:text-yellow-200">
-                تبرع للخير
+                مجمع النور • كفالة وتبرع
               </span>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
             </div>
             <span className="text-[10px] font-mono font-bold text-amber-200/90 leading-none mt-0.5">
-              حساب: {OFFICIAL_DONATION_INFO.accountNumber}
+              بنك الخرطوم: {OFFICIAL_DONATION_INFO.accountNumber}
             </span>
           </div>
 

@@ -4,13 +4,14 @@ import {
   AlertTriangle, Filter, Eye, RefreshCw, BarChart2, Globe, HeartHandshake 
 } from 'lucide-react';
 import { NavigationPage } from '../../types';
+import { ServiceStatusDashboard } from '../ServiceStatusDashboard';
 
 interface AdminDashboardPageProps {
   onNavigate: (page: NavigationPage) => void;
 }
 
 export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = () => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'teachers' | 'students' | 'moderation'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'teachers' | 'students' | 'moderation' | 'services'>('overview');
 
   // Sample pending registrations
   const [registrations, setRegistrations] = useState([
@@ -98,6 +99,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = () => {
       <div className="flex items-center gap-2 p-1.5 bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto text-xs font-bold no-scrollbar">
         {[
           { id: 'overview', label: 'طلبات التسجيل الأكاديمية الجديدة' },
+          { id: 'services', label: 'مراقبة حالة الخدمات السحابية (Service Status) ⚡' },
           { id: 'teachers', label: 'إدارة المقارئ والأساتذة المجازين' },
           { id: 'moderation', label: 'مراجعة استفسارات الملتقى العلمي' },
         ].map((tab) => (
@@ -174,6 +176,13 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = () => {
           <div className="p-4 bg-emerald-950/30 border border-emerald-900 rounded-2xl text-emerald-300 text-xs font-semibold">
             حالة البث والاتصال السحابي: مستقرة (100% جهوزية) عبر ملقمات مجمع النور العالمية.
           </div>
+        </div>
+      )}
+
+      {/* TAB CONTENT: SERVICES HEALTH MONITOR */}
+      {activeTab === 'services' && (
+        <div className="space-y-4">
+          <ServiceStatusDashboard />
         </div>
       )}
 

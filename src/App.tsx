@@ -47,15 +47,23 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { 
   BookOpen, Globe, Mail, MapPin, Sparkles, ChevronLeft, 
-  WifiOff, Laptop, Phone, MessageCircle, Radio, Compass, Scroll, GraduationCap, Users, Mic, Zap, HeartHandshake, ShieldCheck 
+  WifiOff, Laptop, Phone, MessageCircle, Radio, Compass, Scroll, GraduationCap, Users, Mic, Zap, HeartHandshake, ShieldCheck,
+  Copy, Check, ExternalLink 
 } from 'lucide-react';
 
 function MainAppContent() {
   const [currentPage, setCurrentPage] = useState<NavigationPage>('home');
   const [pageParams, setPageParams] = useState<any>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [copiedDomain, setCopiedDomain] = useState(false);
   const isOnline = useOnlineStatus();
   const { lang, t, isRtl } = useLanguage();
+
+  const handleCopyDomain = () => {
+    navigator.clipboard.writeText('www.mojamaalnor.com');
+    setCopiedDomain(true);
+    setTimeout(() => setCopiedDomain(false), 2500);
+  };
 
   // Cinematic 3D Sunrise Intro (Runs once per session unless replayed)
   const [showSunriseIntro, setShowSunriseIntro] = useState<boolean>(() => {
@@ -135,11 +143,6 @@ function MainAppContent() {
           <div className="space-y-8 animate-fade-in">
             <LiveMakkahQuranRadio initialExpanded={true} />
           </div>
-        )}
-
-        {/* Global Floating Docked Radio Player when navigating other subpages */}
-        {currentPage !== 'radio' && currentPage !== 'home' && (
-          <LiveMakkahQuranRadio dockedMode={true} />
         )}
       </main>
 
@@ -358,6 +361,68 @@ function MainAppContent() {
               </div>
             </div>
 
+          </div>
+
+          {/* Official Domain Showcase Bar (Easy 1-Click Copy - www.mojamaalnor.com) */}
+          <div className="rounded-3xl bg-gradient-to-r from-[#0B132B] via-[#111C3D] to-[#0B132B] border-2 border-[#D4AF37]/50 p-6 sm:p-8 shadow-[0_0_35px_rgba(212,175,55,0.2)] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-[#D4AF37]/10 rounded-full blur-2xl pointer-events-none" />
+            
+            <div className="space-y-2 text-center md:text-right z-10">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                <span className="px-3.5 py-1 rounded-full bg-[#D4AF37] text-[#070D1E] text-xs font-black flex items-center gap-1.5 shadow-md">
+                  <Globe className="w-3.5 h-3.5 text-[#070D1E]" />
+                  <span>الدومين الرسمي المعتمد لمجمع النور الإسلامي العالمي</span>
+                </span>
+                <span className="px-2.5 py-1 rounded-full bg-[#070D1E] border border-[#D4AF37]/40 text-[#D4AF37] text-[11px] font-mono font-bold">
+                  Official Global Web Domain
+                </span>
+              </div>
+
+              <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
+                <span className="text-2xl sm:text-4xl font-mono font-black text-white tracking-wider select-all drop-shadow-[0_2px_15px_rgba(212,175,55,0.5)]">
+                  www.mojamaalnor.com
+                </span>
+              </div>
+
+              <p className="text-xs text-[#94A3B8] max-w-xl">
+                بوابتك الرقمية العالمية المعتمدة لتعليم القرآن الكريم، إذاعة مكة المكرمة 24/7، وكفالة الأيتام والأوقاف الإسلامية.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 z-10 shrink-0 flex-wrap justify-center">
+              <button
+                onClick={handleCopyDomain}
+                className={`px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all shadow-xl cursor-pointer ${
+                  copiedDomain
+                    ? 'bg-emerald-600 text-white scale-105 shadow-emerald-600/40'
+                    : 'bg-[#D4AF37] hover:bg-[#E5C158] text-[#070D1E] hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(212,175,55,0.4)]'
+                }`}
+                title="انقر لنسخ رابط الدومين الرسمي"
+              >
+                {copiedDomain ? (
+                  <>
+                    <Check className="w-4 h-4 text-white" />
+                    <span>تم نسخ الدومين بنجاح! ✓</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 text-[#070D1E]" />
+                    <span>نسخ رابط الدومين (www.mojamaalnor.com)</span>
+                  </>
+                )}
+              </button>
+
+              <a
+                href="https://www.mojamaalnor.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-3.5 rounded-2xl bg-[#070D1E] hover:bg-[#1E2E5D] text-[#D4AF37] hover:text-white border border-[#D4AF37]/40 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+                title="فتح الرابط في نافذة جديدة"
+              >
+                <span>زيارة الدومين</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
           </div>
 
           {/* Bottom Bar */}

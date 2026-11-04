@@ -5,7 +5,7 @@ import {
   ArrowLeft, CheckCircle2, Star, ShieldCheck, ChevronRight,
   Radio, Mic, MessageCircle, Phone, Search, Compass, BookCheck, 
   Flame, Zap, Scroll, BookMarked, Eye, Download, Check, Headphones,
-  Share2, Clock, Landmark, Feather, Layers, ArrowUpRight, Copy, ExternalLink, Video
+  Share2, Clock, Landmark, Feather, Layers, ArrowUpRight, Copy, ExternalLink, Video, Send
 } from 'lucide-react';
 import { NavigationPage, LibraryBook } from '../../types';
 import { COMPLEX_INFO, FEATURED_SURAHS, RECITERS, OFFICIAL_COMPLEX_LOGO, LIBRARY_BOOKS } from '../../data/islamicData';
@@ -40,6 +40,22 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
   // Multilingual Library State in Home
   const [activeLibraryLang, setActiveLibraryLang] = useState<string>('all');
   const [selectedBookForReading, setSelectedBookForReading] = useState<LibraryBook | null>(null);
+
+  // Sudanese Voice Ad Quick Copy State
+  const [copiedSudaneseAd, setCopiedSudaneseAd] = useState(false);
+  const handleCopySudaneseAd = () => {
+    const text = `يا هلا والله وحبابكم عشرة بلا كشرة يا أهلنا وعشيرتنا وسندنا في كل مكان!
+يا زول يا أصيل.. يا باغي الخير والرفعة.. النفير قام وأهل المروءة والشهامة اتنادوا!
+مجمع النور الإسلامي العالمي فتح بابه على مصراعيه للخير.. لكفالة أيتامنا، وحفظ كتاب الله، وبناء صرح النور العظيم!
+النبي صلى الله عليه وسلم قال: «أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا»..
+الحساب جاهز ومباشر:
+بنك الخرطوم.. حساب رقم: 1727654 باسم الشيخ الهادي سالم - مدير مجمع النور الإسلامي العالمي الخيري الشامل!
+مجمع النور الإسلامي العالمي.. نورٌ يهدي، وصرحٌ يبني أجيال القرآن!
+🌐 www.mojamaalnor.com`;
+    navigator.clipboard.writeText(text);
+    setCopiedSudaneseAd(true);
+    setTimeout(() => setCopiedSudaneseAd(false), 2000);
+  };
 
   // Audio Playback for Quran Preview
   const toggleQuranAudio = () => {
@@ -162,52 +178,37 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
               <span className="text-slate-300">منظومة إسلامية عالمية موحدة</span>
             </div>
 
-            {/* Grand Official Crest Emblem - In Supreme Beauty and Crystal Clarity */}
-            <div className="flex justify-center lg:justify-start pt-1 pb-2">
-              <div className="relative group inline-block">
-                {/* Radiant Ambient Light */}
-                <div className="absolute -inset-3 bg-gradient-to-r from-[#D4AF37]/30 via-yellow-400/40 to-[#D4AF37]/30 rounded-3xl blur-2xl group-hover:opacity-100 transition duration-700 pointer-events-none animate-pulse" />
-                
-                {/* Emblem Display Card */}
-                <div className="relative p-3.5 sm:p-5 bg-gradient-to-b from-[#0B132B] via-[#070D1E] to-[#0A1226] rounded-3xl border-2 border-[#D4AF37]/70 shadow-[0_10px_40px_rgba(212,175,55,0.4)] backdrop-blur-xl transition-transform duration-300 group-hover:scale-[1.02]">
-                  <img 
-                    src={OFFICIAL_COMPLEX_LOGO} 
-                    alt="شعار مجمع النور الإسلامي العالمي الخيري الشامل لتحفيظ القرآن الكريم والعلوم الإسلامية" 
-                    className="w-56 sm:w-72 md:w-80 lg:w-96 max-w-full h-auto object-contain filter drop-shadow-[0_4px_25px_rgba(0,0,0,0.8)]"
-                    loading="eager"
-                  />
-                  <div className="mt-2 text-center border-t border-[#D4AF37]/30 pt-2">
-                    <span className="text-[10px] sm:text-xs text-[#D4AF37] font-bold tracking-wider font-amiri block">
-                      الشعار الرسمي المعتمد لمجمع النور الإسلامي العالمي
-                    </span>
-                  </div>
+            {/* Institution Crest Lockup - Harmonious, Executive & Radiant */}
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-1">
+              <div className="relative shrink-0 flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-2 bg-gradient-to-tr from-[#111C3D] via-[#0B132B] to-[#1A2A54] border-2 border-[#D4AF37]/60 shadow-[0_0_30px_rgba(212,175,55,0.35)] group-hover:scale-105 transition-transform">
+                <img 
+                  src={OFFICIAL_COMPLEX_LOGO} 
+                  alt="شعار مجمع النور الإسلامي العالمي" 
+                  className="w-full h-full object-contain filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]"
+                  loading="eager"
+                />
+              </div>
+
+              <div className="space-y-1.5 text-center lg:text-right">
+                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black font-amiri text-white leading-tight tracking-wide">
+                  مجمع النور الإسلامي العالمي
+                </h1>
+                <div className="text-xs sm:text-sm text-[#D4AF37] font-bold font-amiri tracking-wider">
+                  «القرآن هداية، والعلم بناء، والعمل الخيري عطاء»
+                </div>
+                <div className="text-[11px] text-slate-400 font-mono">
+                  NOOR GLOBAL · A WORLD OF LIGHT (140+ دولة)
                 </div>
               </div>
             </div>
 
-            {/* Official Title & Slogan */}
-            <div className="space-y-3">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-amiri text-white leading-tight tracking-wide">
-                {t.complexName}
-              </h1>
-              
-              <div className="p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-[#111C3D] via-[#0B132B] to-[#111C3D] border border-[#D4AF37]/35 inline-block shadow-inner">
-                <span className="text-xs text-[#D4AF37] font-bold block mb-1">
-                  الشعار المعتمد:
-                </span>
-                <span className="text-xl sm:text-3xl font-amiri font-bold text-[#F8FAFC] tracking-wide">
-                  «القرآن هداية، والعلم بناء، والعمل الخيري عطاء»
-                </span>
-              </div>
-            </div>
-
             {/* High-level Description */}
-            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-sans">
+            <p className="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-sans">
               صرح إسلامي وتقني متقدم ينطلق من هدي مكة المكرمة ليربط أكثر من 140 دولة بالقرآن الكريم وترجماته الحية، أسانيد القراءات العشر، الرعاية الإنسانية الشاملة لكفالة الأيتام، وحوار الحضارات بلغات العالم.
             </p>
 
             {/* Comprehensive Silicon Valley Search Bar */}
-            <form onSubmit={handleQuickSearchSubmit} className="max-w-2xl mx-auto lg:mx-0 relative pt-2">
+            <form onSubmit={handleQuickSearchSubmit} className="max-w-2xl mx-auto lg:mx-0 relative pt-1">
               <div className="relative flex items-center">
                 <Search className={`w-5 h-5 text-[#D4AF37] absolute ${isRtl ? 'right-4' : 'left-4'}`} />
                 <input
@@ -242,63 +243,61 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
               </div>
             </form>
 
-            {/* Action Buttons Matrix */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-3">
-              <button
-                onClick={() => onNavigate('translationsReader')}
-                className="flex items-center gap-2 bg-gradient-to-r from-[#D4AF37] to-[#F59E0B] hover:scale-105 text-[#070D1E] font-black px-5 py-3 rounded-2xl text-xs sm:text-sm shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all cursor-pointer"
-              >
-                <Globe className="w-4 h-4 text-[#070D1E]" />
-                <span>ترجمات القرآن (76 لغة) 🌐</span>
-              </button>
+            {/* Action Buttons Matrix - 2-Level Executive Structure */}
+            <div className="space-y-3 pt-2">
+              {/* Row 1: The Two Core Pillars */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto lg:mx-0">
+                <button
+                  onClick={() => onNavigate('translationsReader')}
+                  className="flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#D4AF37] to-[#F59E0B] hover:scale-[1.02] text-[#070D1E] font-black py-3 px-5 rounded-2xl text-xs sm:text-sm shadow-[0_4px_20px_rgba(212,175,55,0.35)] transition-all cursor-pointer"
+                >
+                  <Globe className="w-4 h-4 text-[#070D1E]" />
+                  <span>تصفح المصحف وترجمات 76 لغة</span>
+                </button>
 
-              <button
-                onClick={() => onNavigate('noorAmbassador')}
-                className="flex items-center gap-2 bg-[#111C3D] hover:bg-[#1A2A54] text-[#D4AF37] font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm border border-[#D4AF37]/50 shadow-md transition-all cursor-pointer"
-              >
-                <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-                <span>سفير النور العالمي 🌟</span>
-              </button>
+                <button
+                  onClick={() => onNavigate('orphansCare')}
+                  className="flex items-center justify-center gap-2.5 bg-[#111C3D] hover:bg-[#1A2A54] hover:scale-[1.02] text-rose-300 font-black py-3 px-5 rounded-2xl text-xs sm:text-sm border-2 border-rose-500/40 shadow-lg transition-all cursor-pointer"
+                >
+                  <Heart className="w-4 h-4 text-rose-400 fill-current" />
+                  <span>كفالة الأيتام (بنكك 1727654)</span>
+                </button>
+              </div>
 
-              <button
-                onClick={() => onNavigate('discoverIslam')}
-                className="flex items-center gap-2 bg-[#111C3D] hover:bg-[#1A2A54] text-sky-300 font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm border border-sky-400/40 shadow-md transition-all cursor-pointer"
-              >
-                <MessageCircle className="w-4 h-4 text-sky-400" />
-                <span>اسأل عن الإسلام 💬</span>
-              </button>
+              {/* Row 2: Secondary 4 Service Chips Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl mx-auto lg:mx-0 text-xs">
+                <button
+                  onClick={() => onNavigate('dawahLibrary')}
+                  className="p-2.5 rounded-xl bg-[#0B132B] hover:bg-[#111C3D] border border-[#D4AF37]/30 text-amber-300 font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Video className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="truncate">المكتبة الدعوية 🎙️</span>
+                </button>
 
-              <button
-                onClick={() => onNavigate('dawahLibrary')}
-                className="flex items-center gap-2 bg-gradient-to-r from-amber-500/20 via-[#111C3D] to-amber-500/20 hover:from-amber-500/30 hover:to-[#1A2A54] text-amber-300 font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm border border-amber-400/60 shadow-[0_0_15px_rgba(212,175,55,0.25)] transition-all cursor-pointer"
-              >
-                <Video className="w-4 h-4 text-amber-400" />
-                <span>المكتبة الدعوية العالمية 🎙️</span>
-              </button>
+                <button
+                  onClick={() => onNavigate('radio')}
+                  className="p-2.5 rounded-xl bg-[#0B132B] hover:bg-[#111C3D] border border-emerald-500/30 text-emerald-300 font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                  <span className="truncate">إذاعة مكة 24/7 🕋</span>
+                </button>
 
-              <button
-                onClick={() => onNavigate('orphansCare')}
-                className="flex items-center gap-2 bg-[#111C3D] hover:bg-[#1A2A54] text-rose-300 font-bold px-5 py-3 rounded-2xl text-xs sm:text-sm border border-rose-500/40 shadow-md transition-all cursor-pointer"
-              >
-                <Heart className="w-4 h-4 text-rose-400 fill-current" />
-                <span>كفالة الأيتام 🤲</span>
-              </button>
+                <button
+                  onClick={() => onNavigate('audioStudio')}
+                  className="p-2.5 rounded-xl bg-[#0B132B] hover:bg-[#111C3D] border border-amber-400/30 text-amber-200 font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Mic className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="truncate">الصوت السوداني 🇸🇩</span>
+                </button>
 
-              <button
-                onClick={() => onNavigate('radio')}
-                className="flex items-center gap-2 bg-[#0B132B] hover:bg-[#111C3D] text-emerald-300 font-bold px-4 py-3 rounded-2xl text-xs border border-emerald-500/40 transition-all cursor-pointer"
-              >
-                <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
-                <span>إذاعة مكة 24/7 🕋</span>
-              </button>
-
-              <button
-                onClick={() => onNavigate('audioStudio')}
-                className="flex items-center gap-2 bg-gradient-to-r from-amber-600/30 to-amber-500/20 hover:from-amber-600/40 hover:to-amber-500/30 text-amber-200 font-bold px-4 py-3 rounded-2xl text-xs border border-amber-400/50 shadow-[0_0_15px_rgba(245,158,11,0.2)] transition-all cursor-pointer animate-pulse"
-              >
-                <span className="text-sm">🇸🇩</span>
-                <span>الصوت الإعلاني الحماسي 🎙️</span>
-              </button>
+                <button
+                  onClick={() => onNavigate('noorAmbassador')}
+                  className="p-2.5 rounded-xl bg-[#0B132B] hover:bg-[#111C3D] border border-[#D4AF37]/30 text-[#D4AF37] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span className="truncate">سفير النور 🌟</span>
+                </button>
+              </div>
             </div>
 
           </div>
@@ -895,6 +894,58 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
 
         </div>
 
+      </section>
+
+      {/* =========================================================================
+          5.5 SUDANESE ENERGETIC MALE COMMERCIAL VOICE STUDIO SHOWCASE
+          ========================================================================= */}
+      <section className="relative rounded-3xl overflow-hidden p-6 sm:p-10 border-2 border-[#D4AF37]/50 bg-gradient-to-br from-[#0B132B] via-[#070D1E] to-[#111C3D] shadow-[0_10px_35px_rgba(212,175,55,0.25)] space-y-6">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-[90px] pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+          <div className="space-y-3 text-center lg:text-right max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111C3D] border border-[#D4AF37]/40 text-xs font-bold text-[#D4AF37] shadow-sm">
+              <Flame className="w-4 h-4 text-amber-400 animate-pulse" />
+              <span>استوديو الصوت الإعلاني الحماسي 🇸🇩 (صوت رجل جهوري)</span>
+            </div>
+
+            <h2 className="text-xl sm:text-3xl font-black font-amiri text-white leading-tight">
+              «يا هلا والله وحبابكم عشرة بلا كشرة يا أهلنا وعشيرتنا وسندنا!»
+            </h2>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              إعلان إذاعي تجاري ناري بطاقة متدفقة وصوت رجل سوداني جهوري فخم، يحث على نفير الخير وكفالة الأيتام ودعم مجمع النور عبر بنك الخرطوم حساب 1727654 باسم الشيخ الهادي سالم. جاهز للاستماع الفوري، التوليد بالذكاء الاصطناعي (Gemini TTS)، والتحميل والمشاركة.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 shrink-0">
+            <button
+              onClick={() => onNavigate('audioStudio')}
+              className="px-5 py-3 rounded-2xl bg-gradient-to-r from-[#D4AF37] to-[#F59E0B] text-[#070D1E] font-black text-xs sm:text-sm flex items-center gap-2 shadow-[0_4px_20px_rgba(212,175,55,0.4)] hover:scale-105 transition-all cursor-pointer"
+            >
+              <Mic className="w-4 h-4 text-[#070D1E]" />
+              <span>دخول استوديو الصوت الإعلاني 🎙️</span>
+            </button>
+
+            <button
+              onClick={handleCopySudaneseAd}
+              className="px-4 py-3 rounded-2xl bg-[#111C3D] hover:bg-[#1A2A54] border border-[#D4AF37]/40 text-slate-100 font-bold text-xs flex items-center gap-2 transition-colors cursor-pointer"
+            >
+              {copiedSudaneseAd ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-[#D4AF37]" />}
+              <span>{copiedSudaneseAd ? 'تم النسخ!' : 'نسخ النص الإعلاني'}</span>
+            </button>
+
+            <a
+              href={`https://api.whatsapp.com/send?text=${encodeURIComponent('🎙️ *إعلان حماسي بصوت رجل سوداني جهوري لمجمع النور الإسلامي العالمي:*\n\n"يا هلا والله وحبابكم عشرة بلا كشرة يا أهلنا وعشيرتنا وسندنا في كل مكان! النفير قام وأهل المروءة اتنادوا.. بنك الخرطوم حساب 1727654 باسم الشيخ الهادي سالم.. مجمع النور الإسلامي العالمي!"\n\n🌐 https://www.mojamaalnor.com')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition-colors shadow-sm"
+            >
+              <Send className="w-4 h-4" />
+              <span>مشاركة واتساب</span>
+            </a>
+          </div>
+        </div>
       </section>
 
 

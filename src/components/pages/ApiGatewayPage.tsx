@@ -8,6 +8,7 @@ import {
 import { api } from '../../services/api';
 import { ApiHealthStatus, ApiKeyRecord, ApiTelemetryMetric, NavigationPage } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
+import { ServiceStatusDashboard } from '../ServiceStatusDashboard';
 
 interface ApiGatewayPageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -256,14 +257,16 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
           TAB 1: HEALTH & SERVICES MATRIX
           ========================================================================= */}
       {activeTab === 'health' && (
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
+        <section className="space-y-8">
+          <ServiceStatusDashboard />
+
+          <div className="flex items-center justify-between pt-4 border-t border-slate-800">
             <h2 className="text-base font-black text-white flex items-center gap-2">
               <Layers className="w-4 h-4 text-amber-400" />
-              <span>مصفوفة الخدمات المتصلة وحالة الاستجابة الفورية</span>
+              <span>مصفوفة خدمات الـ Microservices وتفاصيل البروتوكولات</span>
             </h2>
             <span className="text-xs text-slate-400 font-mono">
-              Uptime: {healthData?.serverUptimeSeconds ? Math.floor(healthData.serverUptimeSeconds / 60) : 124} minutes
+              Gateway Uptime: {healthData?.serverUptimeSeconds ? Math.floor(healthData.serverUptimeSeconds / 60) : 124} minutes
             </span>
           </div>
 

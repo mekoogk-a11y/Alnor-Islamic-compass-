@@ -5,6 +5,8 @@ export const OFFICIAL_COMPLEX_LOGO = '/assets/aistudio/file_000000009a4881f6b7cd
 export const COMPLEX_INFO: ComplexGlobalInfo = {
   name: 'مجمع النور الإسلامي العالمي الخيري الشامل لتحفيظ القرآن الكريم والعلوم الإسلامية',
   slogan: 'نورٌ يهدي.. وصرحٌ يبني أجيال القرآن',
+  officialDomain: 'www.mojamaalnor.com',
+  officialDomainUrl: 'https://www.mojamaalnor.com',
   officialEmail: 'info@alnoor-islamic-complex.org',
   headquarters: 'المنصة العالمية المعتمدة لتعليم القرآن الكريم والعلوم الإسلامية (120 دولة)',
   phones: {

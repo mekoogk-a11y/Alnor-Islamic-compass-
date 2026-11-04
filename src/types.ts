@@ -257,6 +257,8 @@ export interface WaqfProject {
 export interface ComplexGlobalInfo {
   name: string;
   slogan: string;
+  officialDomain?: string;
+  officialDomainUrl?: string;
   officialEmail: string;
   headquarters: string;
   phones: {
