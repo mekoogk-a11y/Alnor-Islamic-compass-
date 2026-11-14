@@ -73,6 +73,37 @@ service cloud.firestore {
              data.status in ['intent', 'processing', 'completed', 'failed'];
     }
 
+    function isValidDawahInquiry(data) {
+      return data.keys().hasAll(['inquiryType', 'fullName', 'email', 'message', 'status', 'createdAt']) &&
+             data.inquiryType in ['question', 'free_quran', 'counselor_request', 'new_muslim'] &&
+             data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 120 &&
+             data.email is string &&
+             data.message is string && data.message.size() >= 5 && data.message.size() <= 3000 &&
+             data.status in ['pending', 'assigned', 'in_dialogue', 'resolved'];
+    }
+
+    function isValidNewMuslimProgress(data) {
+      return data.keys().hasAll(['userId', 'shahadaCompleted', 'createdAt']) &&
+             data.userId is string &&
+             data.shahadaCompleted is bool;
+    }
+
+    function isValidQuizSubmission(data) {
+      return data.keys().hasAll(['userId', 'courseId', 'quizId', 'scorePercentage', 'passed', 'createdAt']) &&
+             data.userId is string &&
+             data.courseId is string &&
+             data.quizId is string &&
+             data.scorePercentage is number &&
+             data.passed is bool;
+    }
+
+    function isValidCertificate(data) {
+      return data.keys().hasAll(['certificateCode', 'recipientName', 'courseTitle', 'issuedAt']) &&
+             data.certificateCode is string &&
+             data.recipientName is string &&
+             data.courseTitle is string;
+    }
+
     // ==========================================
     // COLLECTION ACCESS RULES
     // ==========================================
@@ -90,7 +121,6 @@ service cloud.firestore {
 
     // Orphan Applications Collection
     match /orphan_applications/{applicationId} {
-      // Anyone can look up their own application by tracking number or admins can list
       allow get: if true;
       allow list: if isAdmin();
       allow create: if isValidOrphanApplication(request.resource.data);
@@ -121,6 +151,31 @@ service cloud.firestore {
                       request.resource.data.createdAt == resource.data.createdAt &&
                       isValidDonation(request.resource.data);
       allow delete: if isAdmin();
+    }
+
+    // Dawah Inquiries (Questions, Free Quran, Counselor requests)
+    match /dawah_inquiries/{inquiryId} {
+      allow create: if isValidDawahInquiry(request.resource.data);
+      allow get, list, update, delete: if isAdmin();
+    }
+
+    // New Muslims Confidential Learning Progress (Strict PII isolation)
+    match /new_muslims/{userId} {
+      allow read, write: if isSignedIn() && (isOwner(userId) || isAdmin()) && isValidNewMuslimProgress(request.resource.data);
+      allow get: if isSignedIn() && (isOwner(userId) || isAdmin());
+    }
+
+    // Academy Quiz Submissions
+    match /quiz_submissions/{submissionId} {
+      allow create: if isSignedIn() && isValidQuizSubmission(request.resource.data);
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update, delete: if isAdmin();
+    }
+
+    // Verifiable Completion Certificates (Publicly verifiable by code)
+    match /certificates/{certificateCode} {
+      allow get: if true;
+      allow list, create, update, delete: if isAdmin();
     }
 
     // Connection testing node

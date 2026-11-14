@@ -16,6 +16,7 @@ import {
   DawahLecture, 
   NavigationPage 
 } from '../../types';
+import { VideoPlaylistManager } from '../VideoPlaylistManager';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { OFFICIAL_COMPLEX_LOGO } from '../../data/islamicData';
@@ -55,6 +56,7 @@ export const DawahLibraryPage: React.FC<DawahLibraryPageProps> = ({ onNavigate }
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState<'all' | 'ar' | 'en' | 'both'>('all');
   const [debatesOnly, setDebatesOnly] = useState(false);
+  const [viewMode, setViewMode] = useState<'playlists_studio' | 'classic_scholars'>('playlists_studio');
 
   // Active Video Modal State
   const [activeLecture, setActiveLecture] = useState<DawahLecture | null>(null);
@@ -341,20 +343,52 @@ export const DawahLibraryPage: React.FC<DawahLibraryPageProps> = ({ onNavigate }
             </div>
           </div>
 
-          {/* Admin Management Button (for Admins) */}
-          <div className="flex justify-center pt-1">
+          {/* View Mode Switcher: Playlists Studio vs Classic Scholars */}
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-3 border-t border-amber-400/20">
+            <button
+              onClick={() => setViewMode('playlists_studio')}
+              className={`px-5 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer shadow-lg ${
+                viewMode === 'playlists_studio'
+                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 ring-2 ring-amber-300'
+                  : 'bg-[#0B132B] hover:bg-[#111C3D] text-[#D8CEBB] border border-amber-500/30'
+              }`}
+            >
+              <Video className="w-4 h-4" />
+              <span>استوديو السلاسل وقوائم التشغيل (آلاف الفيديوهات) ⚡</span>
+            </button>
+
+            <button
+              onClick={() => setViewMode('classic_scholars')}
+              className={`px-5 py-2.5 rounded-2xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer shadow-lg ${
+                viewMode === 'classic_scholars'
+                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 ring-2 ring-amber-300'
+                  : 'bg-[#0B132B] hover:bg-[#111C3D] text-[#D8CEBB] border border-amber-500/30'
+              }`}
+            >
+              <User className="w-4 h-4 text-amber-400" />
+              <span>عرض كبار أعلام الدعوة والمناظرات</span>
+            </button>
+
             <button
               onClick={() => setIsAdminPanelOpen(true)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 hover:text-amber-300 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-xs font-bold text-slate-300 hover:text-amber-300 transition-colors cursor-pointer"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
-              <span>{lang === 'ar' ? 'إدارة محتوى المكتبة الدعوية (لوحة المشرفين)' : 'Manage Dawah Library (Admin Panel)'}</span>
+              <span>{lang === 'ar' ? 'إدارة المشرفين' : 'Admin Panel'}</span>
             </button>
           </div>
 
         </div>
       </section>
 
+      {/* Render VideoPlaylistManager Studio if active */}
+      {viewMode === 'playlists_studio' && (
+        <VideoPlaylistManager onSelectVideo={(lec) => setActiveLecture(lec)} />
+      )}
+
+      {/* Render Classic Scholars View if active */}
+      {viewMode === 'classic_scholars' && (
+        <>
       {/* =========================================================================
           2. SCHOLARS SELECTION CAROUSEL & PROFILE BARS
           ========================================================================= */}
@@ -692,6 +726,8 @@ export const DawahLibraryPage: React.FC<DawahLibraryPageProps> = ({ onNavigate }
           </div>
         )}
       </section>
+      </>
+      )}
 
       {/* =========================================================================
           5. IN-APP DEDICATED VIDEO PLAYER MODAL (YouTube Official Embed)

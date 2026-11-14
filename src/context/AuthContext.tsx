@@ -45,80 +45,33 @@ interface AuthContextType {
   clearError: () => void;
 }
 
-const defaultDemoUser: UserAccount = {
-  id: 'USR-88214',
-  fullName: 'عبد الله بن أحمد المنصوري',
-  name: 'عبد الله بن أحمد المنصوري',
-  email: 'almansoori.student@alnoor.org',
-  role: 'student',
-  preferredLanguage: 'ar',
-  avatarLetter: 'ع',
-  country: 'المملكة العربية السعودية',
-  registeredDate: '2025-09-15',
-  joinedDate: '15 رجب 1445 هـ',
-  memorizedJuzCount: 18,
-  lastReadAyah: {
-    surahNumber: 18,
-    surahName: 'الكهف',
-    ayahNumber: 27,
-    page: 297,
-  },
-  bookmarks: [
-    { surahNumber: 1, ayahNumber: 5, surahName: 'الفاتحة', addedAt: '2026-10-12' },
-    { surahNumber: 2, ayahNumber: 255, surahName: 'البقرة (آية الكرسي)', addedAt: '2026-10-20' },
-    { surahNumber: 67, ayahNumber: 1, surahName: 'الملك', addedAt: '2026-10-25' }
-  ],
-  memorizationProgress: [
-    { surahNumber: 1, surahName: 'الفاتحة', completedAyahs: 7, totalAyahs: 7, status: 'مكتمل' },
-    { surahNumber: 112, surahName: 'الإخلاص', completedAyahs: 4, totalAyahs: 4, status: 'مكتمل' },
-    { surahNumber: 113, surahName: 'الفلق', completedAyahs: 5, totalAyahs: 5, status: 'مكتمل' },
-    { surahNumber: 114, surahName: 'الناس', completedAyahs: 6, totalAyahs: 6, status: 'مكتمل' },
-    { surahNumber: 67, surahName: 'الملك', completedAyahs: 18, totalAyahs: 30, status: 'قيد الحفظ' },
-    { surahNumber: 36, surahName: 'يس', completedAyahs: 25, totalAyahs: 83, status: 'قيد الحفظ' }
-  ],
-  enrolledCourses: [
-    {
-      courseId: 'course-quran-1',
-      courseTitle: 'المقرأة الدولية لحفظ القرآن وإتقان الروايات بالسند المتصل',
-      progressPercentage: 65,
-      enrolledAt: '2026-09-01'
-    },
-    {
-      courseId: 'course-hadith-1',
-      courseTitle: 'دبلوم علوم الحديث الشريف ودراسة كتب السنة التسعة',
-      progressPercentage: 100,
-      enrolledAt: '2026-08-10',
-      certificateIssued: true,
-      certificateId: 'CERT-NOOR-2026-0941'
-    }
-  ],
-  certificates: [
-    {
-      id: 'cert-1',
-      certificateNumber: 'ALN-QUR-2024-8891',
-      courseName: 'إجازة في حفظ وإتقان القرآن الكريم برواية حفص عن عاصم',
-      scholarName: 'أ.د. عبد الرحمن بن يوسف المتقي',
-      grade: 'ممتاز مع مرتبة الشرف (98.5%)',
-      issueDate: '15 رجب 1445 هـ'
-    }
-  ]
-};
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserAccount | null>(() => {
-    const saved = localStorage.getItem('alnoor_user_session');
-    if (saved) {
-      try {
+    try {
+      const saved = localStorage.getItem('alnoor_user_session');
+      if (saved) {
         const parsed = JSON.parse(saved);
+        // Completely purge student Abdullah Al-Mansouri mock session if found in storage
+        if (
+          parsed?.id === 'USR-88214' ||
+          parsed?.fullName?.includes('المنصوري') ||
+          parsed?.name?.includes('المنصوري') ||
+          parsed?.email === 'almansoori.student@alnoor.org'
+        ) {
+          localStorage.removeItem('alnoor_user_session');
+          return null;
+        }
         if (!parsed.name && parsed.fullName) parsed.name = parsed.fullName;
         return parsed;
-      } catch (e) {
-        return defaultDemoUser;
       }
+    } catch (_) {
+      try {
+        localStorage.removeItem('alnoor_user_session');
+      } catch (__) {}
     }
-    return defaultDemoUser;
+    return null;
   });
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -137,12 +90,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (userSnap.exists()) {
             const data = userSnap.data();
             setUser((prev) => ({
-              ...(prev || defaultDemoUser),
               id: firebaseUser.uid,
               name: data.displayName || firebaseUser.displayName || 'مستخدم مجمع النور',
               fullName: data.displayName || firebaseUser.displayName || 'مستخدم مجمع النور',
               email: firebaseUser.email || '',
               role: data.role || role,
+              country: data.country || 'العالم الإسلامي',
+              preferredLanguage: 'ar',
+              avatarLetter: (data.displayName || firebaseUser.displayName || 'م')[0],
+              registeredDate: data.createdAt || new Date().toISOString().split('T')[0],
+              joinedDate: data.joinedDate || '1446 هـ',
+              memorizedJuzCount: data.memorizedJuzCount || 0,
+              bookmarks: prev?.bookmarks || [],
+              memorizationProgress: prev?.memorizationProgress || [],
+              enrolledCourses: prev?.enrolledCourses || [],
+              certificates: prev?.certificates || [],
             }));
           } else {
             // Create user document in Firestore
@@ -192,12 +154,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const role: UserRole = isAdminEmail ? 'admin' : 'student';
 
       const resolvedUser: UserAccount = {
-        ...defaultDemoUser,
         id: firebaseUser.uid,
         name: firebaseUser.displayName || 'مستخدم مجمع النور',
         fullName: firebaseUser.displayName || 'مستخدم مجمع النور',
         email: firebaseUser.email || '',
         role: role,
+        country: 'العالم الإسلامي',
+        preferredLanguage: 'ar',
+        avatarLetter: (firebaseUser.displayName || 'م')[0],
+        registeredDate: new Date().toISOString().split('T')[0],
+        joinedDate: '1446 هـ',
+        memorizedJuzCount: 0,
+        bookmarks: [],
+        memorizationProgress: [],
+        enrolledCourses: [],
+        certificates: [],
       };
 
       setUser(resolvedUser);
@@ -232,14 +203,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       name: resolvedName,
       email: email,
       role: (email.includes('admin') || email === 'mekoogk@gmail.com') ? 'admin' : role,
-      country: 'المملكة العربية السعودية',
-      memorizedJuzCount: role === 'hafiz' ? 30 : 5,
+      country: 'العالم الإسلامي',
+      preferredLanguage: 'ar',
+      avatarLetter: resolvedName[0] || 'ط',
+      memorizedJuzCount: role === 'hafiz' ? 30 : 0,
       registeredDate: new Date().toISOString().split('T')[0],
-      joinedDate: 'شوال 1445 هـ',
-      bookmarks: defaultDemoUser.bookmarks,
-      memorizationProgress: defaultDemoUser.memorizationProgress,
-      enrolledCourses: defaultDemoUser.enrolledCourses,
-      certificates: defaultDemoUser.certificates,
+      joinedDate: '1446 هـ',
+      bookmarks: [],
+      memorizationProgress: [],
+      enrolledCourses: [],
+      certificates: [],
     };
     setUser(newUser);
   };
@@ -267,6 +240,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await firebaseSignOut(auth);
+    } catch (e) {}
+    try {
+      localStorage.removeItem('alnoor_user_session');
     } catch (e) {}
     setUser(null);
   };

@@ -13,7 +13,7 @@ interface GlobalSearchModalProps {
   onNavigate: (page: NavigationPage, params?: any) => void;
 }
 
-type FilterCategory = 'all' | 'quran' | 'hadith' | 'academy' | 'scholars';
+type FilterCategory = 'all' | 'quran' | 'hadith' | 'dawah' | 'academy' | 'scholars' | 'orphans';
 
 export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   isOpen,
@@ -55,13 +55,13 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       id: string;
       title: string;
       subtitle: string;
-      category: 'quran' | 'hadith' | 'academy' | 'scholars';
+      category: 'quran' | 'hadith' | 'dawah' | 'academy' | 'scholars' | 'orphans';
       categoryLabel: string;
       page: NavigationPage;
       payload?: any;
     }> = [];
 
-    // Search Quran Surahs
+    // Search Quran Surahs & Translations
     if (category === 'all' || category === 'quran') {
       SURAHS_INDEX.forEach((surah) => {
         if (
@@ -80,6 +80,17 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           });
         }
       });
+
+      if ('ترجمة'.includes(term) || 'لغات'.includes(term) || 'translation'.includes(term) || '76'.includes(term)) {
+        matchedItems.push({
+          id: 'quran-translations-reader',
+          title: 'قارئ ترجمات معاني القرآن بـ 76 لغة عالمية',
+          subtitle: 'ربط مباشر مع مجمع الملك فهد لطباعة المصحف وQuranEnc للمطالعة والبحث متعدد اللغات',
+          category: 'quran',
+          categoryLabel: 'ترجمات عالمية',
+          page: 'translationsReader',
+        });
+      }
     }
 
     // Search Hadith
@@ -100,6 +111,30 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             categoryLabel: 'السنة النبوية',
             page: 'hadith',
             payload: { hadithId: h.id },
+          });
+        }
+      });
+    }
+
+    // Search Dawah Library & Reverts
+    if (category === 'all' || category === 'dawah') {
+      const dawahEntries = [
+        { id: 'dawah-deedat', title: 'مناظرات ومحاضرات الشيخ أحمد ديدات', desc: 'القرآن معجزة المعجزات، هل الكتاب المقدس كلام الله، وحوار الأديان', page: 'dawahLibrary' as NavigationPage },
+        { id: 'dawah-naik', title: 'أبحاث الدكتور ذاكر نايك (Zakir Naik)', desc: 'القرآن والعلم الحديث، وتفنيد الشبهات لغير المسلمين باللغة الإنجليزية', page: 'dawahLibrary' as NavigationPage },
+        { id: 'dawah-discover', title: 'مركز اسأل عن الإسلام والرد على الشبهات', desc: 'إجابات موثقة عن حقيقة التوحيد، نبوة محمد ﷺ، وحقوق المرأة في الإسلام', page: 'discoverIslam' as NavigationPage },
+        { id: 'dawah-reverts', title: 'بوابة المهتدين الجدد (New Muslims)', desc: 'برنامج رعاية المهتدين، خطوات الوضوء والصلاة، والتواصل المباشر مع المرشدين', page: 'newMuslims' as NavigationPage },
+        { id: 'dawah-ambassador', title: 'سفير النور العالمي (Noor Ambassador)', desc: 'بطاقات دعوية عالمية بلغات متعددة مجهزة للتنزيل والنشر', page: 'noorAmbassador' as NavigationPage },
+      ];
+
+      dawahEntries.forEach((d) => {
+        if (d.title.includes(term) || d.desc.includes(term)) {
+          matchedItems.push({
+            id: d.id,
+            title: d.title,
+            subtitle: d.desc,
+            category: 'dawah',
+            categoryLabel: 'المكتبة الدعوية',
+            page: d.page,
           });
         }
       });
@@ -145,6 +180,28 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           });
         }
       });
+    }
+
+    // Search Orphans & Charity
+    if (category === 'all' || category === 'orphans') {
+      if (term.includes('يتيم') || term.includes('أيتام') || term.includes('كفالة') || term.includes('تبرع') || term.includes('1727654') || term.includes('بنك') || term.includes('خرطوم') || term.includes('وقف')) {
+        matchedItems.push({
+          id: 'orphans-sponsorship-portal',
+          title: 'كفالة الأيتام والرعاية الشاملة (حساب بنك الخرطوم 1727654)',
+          subtitle: 'باسم الشيخ الهادي سالم - مدير مجمع النور الإسلامي العالمي الخيري الشامل',
+          category: 'orphans',
+          categoryLabel: 'كفالة الأيتام',
+          page: 'orphansCare',
+        });
+        matchedItems.push({
+          id: 'waqf-shares',
+          title: 'السهم الوقفي والصدقات الجارية لمجمع النور',
+          subtitle: 'مشاريع سقيا الماء، كفالة الحلقات، واستدامة الصرح القرآني',
+          category: 'orphans',
+          categoryLabel: 'الوقف والخيرات',
+          page: 'waqf',
+        });
+      }
     }
 
     return matchedItems.slice(0, 15);
@@ -195,8 +252,10 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             { id: 'all', label: 'الكل' },
             { id: 'quran', label: 'القرآن الكريم' },
             { id: 'hadith', label: 'السنة النبوية' },
+            { id: 'dawah', label: 'المكتبة الدعوية' },
             { id: 'academy', label: 'الأكاديمية' },
             { id: 'scholars', label: 'العلماء' },
+            { id: 'orphans', label: 'الأيتام والوقف' },
           ].map((tab) => (
             <button
               key={tab.id}

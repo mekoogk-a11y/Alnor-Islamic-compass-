@@ -561,7 +561,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onOpenS
                 className="w-full py-2.5 bg-[#111C3D] text-[#D4AF37] font-bold rounded-xl text-xs border border-[#D4AF37]/40 flex items-center justify-center gap-2 shadow-sm cursor-pointer"
               >
                 <User className="w-4 h-4 text-[#D4AF37]" />
-                <span>لوحة متابعة الطالب ({user.name || user.fullName})</span>
+                <span>لوحة حسابي ومتابعة الحفظ ({user.name || user.fullName})</span>
               </button>
             ) : (
               <button

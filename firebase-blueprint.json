@@ -68,6 +68,67 @@
         "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp." }
       },
       "required": ["amount", "programId", "status", "createdAt"]
+    },
+    "DawahInquiry": {
+      "title": "DawahInquiry",
+      "description": "Inquiries, questions about Islam, requests for free Quran translations, and counselor dialogues.",
+      "type": "object",
+      "properties": {
+        "inquiryType": { "type": "string", "enum": ["question", "free_quran", "counselor_request", "new_muslim"], "description": "Type of inquiry." },
+        "fullName": { "type": "string", "description": "Inquirer full name." },
+        "email": { "type": "string", "format": "email", "description": "Contact email." },
+        "phone": { "type": "string", "description": "Phone or WhatsApp number." },
+        "country": { "type": "string", "description": "Country of residence." },
+        "preferredLanguage": { "type": "string", "description": "Language code." },
+        "message": { "type": "string", "description": "Question or details." },
+        "status": { "type": "string", "enum": ["pending", "assigned", "in_dialogue", "resolved"], "description": "Workflow status." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp." }
+      },
+      "required": ["inquiryType", "fullName", "email", "message", "status", "createdAt"]
+    },
+    "NewMuslimProgress": {
+      "title": "NewMuslimProgress",
+      "description": "Confidential learning progress for newly reverted Muslims.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "User ID." },
+        "nativeLanguage": { "type": "string", "description": "Native language." },
+        "shahadaCompleted": { "type": "boolean", "description": "Whether Shahada declaration has been guided." },
+        "wuduMastered": { "type": "boolean", "description": "Whether ablution steps are mastered." },
+        "prayerLevel": { "type": "string", "enum": ["learning", "daily_practicing", "consistent"], "description": "Prayer practice stage." },
+        "memorizedSurahsCount": { "type": "number", "description": "Number of short Surahs memorized." },
+        "mentorAssigned": { "type": "string", "description": "Assigned scholar or mentor name." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Record creation timestamp." }
+      },
+      "required": ["userId", "shahadaCompleted", "createdAt"]
+    },
+    "QuizSubmission": {
+      "title": "QuizSubmission",
+      "description": "Academy course quiz submissions and evaluated scores.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Student user ID." },
+        "courseId": { "type": "string", "description": "Course identifier." },
+        "quizId": { "type": "string", "description": "Quiz identifier." },
+        "scorePercentage": { "type": "number", "description": "Achieved score 0-100." },
+        "passed": { "type": "boolean", "description": "Whether score passes threshold." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Submission timestamp." }
+      },
+      "required": ["userId", "courseId", "quizId", "scorePercentage", "passed", "createdAt"]
+    },
+    "CertificateRecord": {
+      "title": "CertificateRecord",
+      "description": "Verifiable Islamic science and Quran completion certificates.",
+      "type": "object",
+      "properties": {
+        "certificateCode": { "type": "string", "description": "Public verification code (e.g. ALNOOR-CERT-XXXXXX)." },
+        "recipientName": { "type": "string", "description": "Student full name." },
+        "courseTitle": { "type": "string", "description": "Title of the completed course." },
+        "track": { "type": "string", "description": "Study track." },
+        "grade": { "type": "string", "description": "Evaluation grade." },
+        "issuedAt": { "type": "string", "format": "date-time", "description": "Issuance date." }
+      },
+      "required": ["certificateCode", "recipientName", "courseTitle", "issuedAt"]
     }
   },
   "firestore": {
@@ -86,6 +147,22 @@
     "/donations/{donationId}": {
       "schema": "WaqfDonation",
       "description": "Stores Waqf shares and donation intent records."
+    },
+    "/dawah_inquiries/{inquiryId}": {
+      "schema": "DawahInquiry",
+      "description": "Stores non-Muslim questions, free Quran requests, and counselor bookings."
+    },
+    "/new_muslims/{userId}": {
+      "schema": "NewMuslimProgress",
+      "description": "Stores confidential learning roadmap for new Muslims with strict owner/admin access."
+    },
+    "/quiz_submissions/{submissionId}": {
+      "schema": "QuizSubmission",
+      "description": "Stores course test results and student grading records."
+    },
+    "/certificates/{certificateCode}": {
+      "schema": "CertificateRecord",
+      "description": "Stores verifiable completion certificates issued by the Complex."
     }
   }
 }

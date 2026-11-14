@@ -385,6 +385,91 @@ app.post('/api/v1/ai/sudanese-voice', async (req: Request, res: Response) => {
   }
 });
 
+// Alias for advertising voiceover generation: POST /api/v1/voice/generate-ad
+app.post('/api/v1/voice/generate-ad', async (req: Request, res: Response) => {
+  try {
+    const { text, voiceName = 'Fenrir', style } = req.body;
+    if (!text || typeof text !== 'string') {
+      return sendApiError(res, 400, 'TEXT_REQUIRED', 'النص الإعلاني مطلوب');
+    }
+
+    const ttsResponse = await ai.models.generateContent({
+      model: 'gemini-3.8-flash-lite-tts',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              text: text.slice(0, 700),
+              speechMetadata: {
+                style: style || 'Enthusiastic, energetic, and authoritative masculine Sudanese Arabic radio commercial announcer with warm resonant timbre and vibrant charismatic delivery',
+              },
+            },
+          ],
+        },
+      ],
+      config: {
+        responseModalities: ['AUDIO'],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: { voiceName: voiceName || 'Fenrir' },
+          },
+        },
+      },
+    });
+
+    const base64Audio = ttsResponse.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    if (!base64Audio) {
+      return sendApiError(res, 500, 'TTS_EMPTY', 'لم يتم استلام ملف الصوت من المحرك');
+    }
+
+    return sendApiResponse(res, {
+      audioBase64: base64Audio,
+      mimeType: 'audio/wav',
+      voiceName,
+      dialect: 'Sudanese Arabic Male High Energy',
+    }, { provider: 'Gemini 3.8 Flash-Lite TTS' });
+  } catch (error: any) {
+    console.error('Voice generate error:', error);
+    return sendApiError(res, 500, 'TTS_ERROR', error.message || 'حدث خطأ أثناء توليد الصوت الإعلاني');
+  }
+});
+
+// Video Series & Playlists API (v1)
+const serverVideoSeries: any[] = [
+  {
+    id: 'deedat-debates-master',
+    titleAr: 'سلسلة مناظرات الشيخ أحمد ديدات الكبرى',
+    totalEpisodes: 24,
+    scholarName: 'الشيخ أحمد ديدات',
+    category: 'comparative_religion'
+  },
+  {
+    id: 'zakir-quran-modern-science',
+    titleAr: 'سلسلة القرآن والعلم الحديث',
+    totalEpisodes: 30,
+    scholarName: 'الدكتور ذاكر نايك',
+    category: 'quran_science'
+  }
+];
+
+app.get('/api/v1/videos/series', (_req: Request, res: Response) => {
+  return sendApiResponse(res, serverVideoSeries);
+});
+
+app.post('/api/v1/videos/batch', (req: Request, res: Response) => {
+  const { series, videos } = req.body;
+  if (series) {
+    serverVideoSeries.push(series);
+  }
+  return sendApiResponse(res, {
+    success: true,
+    addedVideosCount: Array.isArray(videos) ? videos.length : 0,
+    totalSeriesCount: serverVideoSeries.length,
+    message: 'تمت الفهرسة بنجاح في مجمع النور'
+  });
+});
+
 // =========================================================================
 // ORPHANS CARE & SPONSORSHIP API (v1)
 // =========================================================================
@@ -546,6 +631,251 @@ app.get('/api/v1/mobile/config', (_req: Request, res: Response) => {
 });
 
 // =========================================================================
+// GLOBAL DAWAH INQUIRIES & COUNSELOR DISPATCH (WhyIslam / IslamHouse Pattern)
+// =========================================================================
+
+const dawahInquiriesList: any[] = [
+  {
+    id: 'INQ-8801',
+    trackingCode: 'ALNOOR-DAWAH-104928',
+    inquiryType: 'free_quran',
+    fullName: 'David M. Miller',
+    email: 'david.m@example.com',
+    phone: '+14155552671',
+    country: 'United States',
+    preferredLanguage: 'en',
+    message: 'I would like to receive an authentic English translation of the Holy Quran to study monotheism and Jesus in Islam.',
+    status: 'assigned',
+    assignedMentor: 'Sheikh Dr. Bilal Al-Amri',
+    createdAt: '2025-02-14T11:00:00Z',
+  },
+  {
+    id: 'INQ-8802',
+    trackingCode: 'ALNOOR-DAWAH-104929',
+    inquiryType: 'question',
+    fullName: 'Marc Dupont',
+    email: 'm.dupont@example.fr',
+    phone: '+33612345678',
+    country: 'France',
+    preferredLanguage: 'fr',
+    message: 'Quelle est la vision de l’Islam sur la fraternité humaine et la science moderne ?',
+    status: 'in_dialogue',
+    assignedMentor: 'Ustadh Tariq Al-Maghribi',
+    createdAt: '2025-02-15T09:30:00Z',
+  }
+];
+
+// POST /api/v1/dawah/inquire - Submit question or request copy of Quran
+app.post('/api/v1/dawah/inquire', (req: Request, res: Response) => {
+  const { inquiryType = 'question', fullName, email, phone, country, preferredLanguage = 'en', message } = req.body;
+  if (!fullName || !email || !message) {
+    return sendApiError(res, 400, 'MISSING_FIELDS', 'الاسم، البريد الإلكتروني، والرسالة مطلوبة لإتمام الاستفسار');
+  }
+
+  const trackingCode = `ALNOOR-DAWAH-${Math.floor(100000 + Math.random() * 900000)}`;
+  const record = {
+    id: `INQ-${Date.now().toString().slice(-6)}`,
+    trackingCode,
+    inquiryType,
+    fullName: String(fullName).trim(),
+    email: String(email).trim().toLowerCase(),
+    phone: phone ? String(phone).trim() : null,
+    country: country || 'Global',
+    preferredLanguage,
+    message: String(message).trim(),
+    status: 'pending',
+    assignedMentor: 'لجنة الدعوة العالمية بمجمع النور',
+    createdAt: new Date().toISOString(),
+  };
+
+  dawahInquiriesList.unshift(record);
+  return sendApiResponse(res, record, { provider: 'Al-Noor Global Dawah Bureau' });
+});
+
+// GET /api/v1/dawah/inquiries - List inquiries for admin/counselors
+app.get('/api/v1/dawah/inquiries', (_req: Request, res: Response) => {
+  return sendApiResponse(res, dawahInquiriesList);
+});
+
+// =========================================================================
+// NEW MUSLIMS EDUCATION ROADMAP (SeekersGuidance / WhyIslam Model)
+// =========================================================================
+
+const newMuslimCurriculum = [
+  {
+    step: 1,
+    id: 'shahada',
+    titleAr: 'شهادة التوحيد والإيمان الصافي',
+    titleEn: 'The Shahadah: Pure Monotheism',
+    descAr: 'معنى لا إله إلا الله محمد رسول الله، وأركان الإيمان الستة بدون تعقيد.',
+    descEn: 'The declaration of faith: There is no deity but Allah and Muhammad is His messenger.',
+    keyVerses: ['سورة الإخلاص (112:1-4)', 'سورة البقرة (2:255)'],
+    completionRequirement: 'نطق الشهادتين واستيقان القلب'
+  },
+  {
+    step: 2,
+    id: 'wudu',
+    titleAr: 'الطهارة والوضوء خطوة بخطوة',
+    titleEn: 'Purification & Ablution (Wudu)',
+    descAr: 'خطوات الوضوء المصورة، شروط صحته، ونواقضه بطريقة عملية ميسرة.',
+    descEn: 'Step-by-step physical and spiritual purification before communion with the Creator.',
+    keyVerses: ['سورة المائدة (5:6)'],
+    completionRequirement: 'إتقان فرائض وسنن الوضوء'
+  },
+  {
+    step: 3,
+    id: 'salah',
+    titleAr: 'إقامة الصلاة المفروضة والأذكار',
+    titleEn: 'The Daily Prayers (Salah)',
+    descAr: 'أوقات الصلوات الخمس، اتجاه القبلة، الحركات والأقوال مع النطق الصوتي.',
+    descEn: 'The five daily prayers, body postures, recitation with transliteration and translation.',
+    keyVerses: ['سورة طه (20:14)', 'سورة العنكبوت (29:45)'],
+    completionRequirement: 'أداء صلاة الفجر والظهر والعصر والمغرب والعشاء'
+  },
+  {
+    step: 4,
+    id: 'quran_basics',
+    titleAr: 'حفظ سورة الفاتحة وقصار السور',
+    titleEn: 'Surah Al-Fatihah & Short Surahs',
+    descAr: 'حفظ أم الكتاب وسور الإخلاص والفلق والناس بالترديد الصوتي والتجويد.',
+    descEn: 'Memorizing the Opening Chapter and the protective surahs with correct pronunciation.',
+    keyVerses: ['سورة الفاتحة', 'المعوذتان'],
+    completionRequirement: 'تلاوة سورة الفاتحة غيباً في الصلاة'
+  }
+];
+
+// GET /api/v1/new-muslims/curriculum - Foundation curriculum for reverts
+app.get('/api/v1/new-muslims/curriculum', (_req: Request, res: Response) => {
+  return sendApiResponse(res, newMuslimCurriculum, { provider: 'Al-Noor Reverts Support Board' });
+});
+
+// =========================================================================
+// ACADEMY QUIZZES & VERIFIABLE CERTIFICATE REGISTRY
+// =========================================================================
+
+const certificatesRegistry: Record<string, any> = {
+  'ALNOOR-CERT-904128': {
+    certificateCode: 'ALNOOR-CERT-904128',
+    recipientName: 'عبد الرحمن بن عبد الله',
+    courseTitle: 'إتقان رواية حفص عن عاصم من طريق الشاطبية',
+    track: 'القرآن والقراءات',
+    grade: 'امتياز مع مرتبة الشرف (98%)',
+    examinerName: 'فضيلة الشيخ الدكتور عثمان بن سالم',
+    issuedAt: '2025-01-20T10:00:00Z',
+    verified: true
+  },
+  'ALNOOR-CERT-904129': {
+    certificateCode: 'ALNOOR-CERT-904129',
+    recipientName: 'Michael John (Ibrahim)',
+    courseTitle: 'Islamic Fundamentals for New Reverts',
+    track: 'الدعوة والمهتدين',
+    grade: 'Distinction (95%)',
+    examinerName: 'Sheikh Bilal Al-Amri',
+    issuedAt: '2025-02-01T12:00:00Z',
+    verified: true
+  }
+};
+
+// POST /api/v1/academy/quizzes/submit - Submit quiz and issue verifiable certificate
+app.post('/api/v1/academy/quizzes/submit', (req: Request, res: Response) => {
+  const { courseId, quizId, recipientName, scorePercentage, track = 'العلوم الشرعية' } = req.body;
+  if (!recipientName || scorePercentage === undefined) {
+    return sendApiError(res, 400, 'MISSING_DATA', 'اسم الطالب والنتيجة مطلوبان لتقييم الاختبار');
+  }
+
+  const percentage = Number(scorePercentage);
+  const passed = percentage >= 75;
+
+  let certRecord = null;
+  if (passed) {
+    const certificateCode = `ALNOOR-CERT-${Math.floor(100000 + Math.random() * 900000)}`;
+    certRecord = {
+      certificateCode,
+      recipientName: String(recipientName).trim(),
+      courseTitle: courseId || 'الدورة التأصيلية في علوم الوحيين',
+      track,
+      grade: percentage >= 90 ? 'ممتاز مرتفع' : 'جيد جداً',
+      scorePercentage: percentage,
+      examinerName: 'هيئة كبار المشايخ والمقرئين بمجمع النور',
+      issuedAt: new Date().toISOString(),
+      verified: true,
+    };
+    certificatesRegistry[certificateCode] = certRecord;
+  }
+
+  return sendApiResponse(res, {
+    passed,
+    scorePercentage: percentage,
+    certificate: certRecord,
+    feedback: passed
+      ? 'مبارك النجاح الباهر! تم منحك الشهادة الأكاديمية الرسمية المعتمدة برقم تحقق فريد.'
+      : 'أحسنت المحاولة! يرجى مراجعة محاور الدرس وإعادة الاختبار لتحقيق نسبة الإتقان المطلوبة (75%+).'
+  });
+});
+
+// GET /api/v1/academy/certificates/verify/:code - Public Verification endpoint
+app.get('/api/v1/academy/certificates/verify/:code', (req: Request, res: Response) => {
+  const code = req.params.code.trim().toUpperCase();
+  const cert = certificatesRegistry[code];
+  if (!cert) {
+    return sendApiError(res, 404, 'CERT_NOT_FOUND', 'لم يتم العثور على شهادة بهذا الرمز، يرجى التحقق من صحة الإدخال');
+  }
+  return sendApiResponse(res, cert, { provider: 'Al-Noor Academic Verification Authority' });
+});
+
+// =========================================================================
+// UNIFIED MULTI-INDEX GLOBAL SEARCH ENGINE (Quran.com + IslamHouse standard)
+// =========================================================================
+
+app.get('/api/v1/search/unified', (req: Request, res: Response) => {
+  const q = ((req.query.q as string) || '').trim().toLowerCase();
+  const cat = ((req.query.category as string) || 'all').toLowerCase();
+
+  if (!q) {
+    return sendApiResponse(res, { query: '', totalCount: 0, results: [] });
+  }
+
+  const indexItems = [
+    // Quran
+    { type: 'quran', title: 'سورة الفاتحة (أم الكتاب)', desc: 'فاتحة الكتاب العظيم وركن الصلاة، بالرسم العثماني والصوت والترجمة', page: 'quran', tag: 'المصحف الشريف' },
+    { type: 'quran', title: 'سورة البقرة (سنم القرآن)', desc: 'أطول سور القرآن، تتضمن آية الكرسي وأحكام الشريعة', page: 'quran', tag: 'المصحف الشريف' },
+    { type: 'quran', title: 'ترجمات معاني القرآن بـ 76 لغة', desc: 'تصفح القرآن بالإنجليزية والفرنسية والإسبانية والأردية والسواحلية', page: 'translationsReader', tag: 'ترجمات عالمية' },
+    // Hadith
+    { type: 'hadith', title: 'صحيح الإمام البخاري', desc: 'أصح كتاب بعد كتاب الله، مرتباً حسب الكتب والأبواب الفقهية', page: 'hadith', tag: 'السنة النبوية' },
+    { type: 'hadith', title: 'صحيح الإمام مسلم', desc: 'جامع أحاديث المصطفى ﷺ مع تخريج الأسانيد ودقة الروايات', page: 'hadith', tag: 'السنة النبوية' },
+    // Dawah
+    { type: 'dawah', title: 'أرشيف ومناظرات الشيخ أحمد ديدات', desc: 'المناظرات الكبرى، القرآن معجزة المعجزات، وحوار الأديان', page: 'dawahLibrary', tag: 'المكتبة الدعوية' },
+    { type: 'dawah', title: 'محاضرات الدكتور ذاكر نايك', desc: 'القرآن والعلم الحديث، إجابات على أسئلة المشككين لغير المسلمين', page: 'dawahLibrary', tag: 'المكتبة الدعوية' },
+    { type: 'dawah', title: 'سفير النور العالمي', desc: 'بطاقات دعوية عالمية بلغات متعددة جاهزة للنشر والتوزيع', page: 'noorAmbassador', tag: 'دعوة بلغات العالم' },
+    { type: 'dawah', title: 'اسأل عن الإسلام وحوار غير المسلمين', desc: 'أجوبة موثقة على أكثر من 50 سؤالاً شائعاً عن الإسلام والنبوة', page: 'discoverIslam', tag: 'مركز الدعوة' },
+    // Orphans & Waqf
+    { type: 'orphans', title: 'كفالة الأيتام والرعاية الشاملة', desc: 'كفالة 1,280 يتيماً ودعم الأسر، بنك الخرطوم 1727654 باسم الشيخ الهادي سالم', page: 'orphansCare', tag: 'العمل الخيري' },
+    { type: 'waqf', title: 'السهم الوقفي والصدقة الجارية', desc: 'المساهمة في استدامة مقارئ القرآن وطباعة المصاحف', page: 'waqf', tag: 'الوقف الإسلامي' },
+    // Radio & Studio
+    { type: 'radio', title: 'إذاعة القرآن الكريم مباشر من مكة المكرمة', desc: 'بث حي متواصل 24 ساعة لأذان وتكبيرات وتلاوات الحرم المكي الشريف', page: 'radio', tag: 'بث مباشر 24/7' },
+    { type: 'audio', title: 'استوديو الصوت الإعلاني الحماسي 🇸🇩', desc: 'إعلانات دعوية إذاعية حماسية بصوت رجل سوداني جهوري فخم', page: 'audioStudio', tag: 'صوتيات' },
+    // Academy & AI
+    { type: 'academy', title: 'أكاديمية النور ومقارئ القرآن المسندة', desc: 'دورات التجويد، الفقه المؤصل، واختبارات الحصول على الإجازات والشهادات', page: 'academy', tag: 'التعليم الأكاديمي' },
+    { type: 'ai', title: 'المساعد المعرفي الإسلامي الذكي', desc: 'بحث وتوثيق شرعي بالآيات والأحاديث المعتمدة وضوابط الفتوى', page: 'aiScholar', tag: 'ذكاء اصطناعي' },
+  ];
+
+  const matched = indexItems.filter(item => {
+    const matchCat = cat === 'all' || item.type === cat;
+    const matchQuery = item.title.toLowerCase().includes(q) || 
+                       item.desc.toLowerCase().includes(q) || 
+                       item.tag.toLowerCase().includes(q);
+    return matchCat && matchQuery;
+  });
+
+  return sendApiResponse(res, {
+    query: q,
+    category: cat,
+    totalCount: matched.length,
+    results: matched,
+  });
+});
+
+// =========================================================================
 // BACKWARDS-COMPATIBILITY ADAPTERS FOR EXISTING APPLET FEATURES
 // =========================================================================
 
@@ -632,6 +962,18 @@ app.post('/api/community/ask', (req: Request, res: Response) => {
   };
   communityQuestions.push(newQuestion);
   return res.json({ success: true, question: newQuestion });
+});
+
+// =========================================================================
+// SITE OWNERSHIP VERIFICATION ROUTES
+// =========================================================================
+
+app.get('/kgcwankausnf.html', (_req: Request, res: Response) => {
+  res.type('text/html').send(`<!doctype html><html><head><meta name="site-verification" content="kgcwankausnf" /><meta name="google-site-verification" content="kgcwankausnf" /></head><body>kgcwankausnf</body></html>`);
+});
+
+app.get(['/kgcwankausnf', '/kgcwankausnf.txt', '/.well-known/kgcwankausnf.txt', '/.well-known/site-verification'], (_req: Request, res: Response) => {
+  res.type('text/plain').send('kgcwankausnf');
 });
 
 // =========================================================================
