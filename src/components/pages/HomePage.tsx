@@ -13,6 +13,7 @@ import { PWAInstallButton } from '../PWAInstallButton';
 import { LiveMakkahQuranRadio } from '../LiveMakkahQuranRadio';
 import { LuminousGlobalGlobe } from '../LuminousGlobalGlobe';
 import { BookReaderModal } from '../BookReaderModal';
+import { INTRO_VIDEO_SRC } from '../ComplexIntroVideoModal';
 import { useLanguage } from '../../context/LanguageContext';
 
 interface HomePageProps {
@@ -371,6 +372,52 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
 
       </section>
 
+      {/* =========================================================================
+          1.5 OFFICIAL INTRODUCTORY VIDEO SHOWCASE (الفيديو التعريفي الرسمي بالمجمع)
+          ========================================================================= */}
+      <section className="rounded-3xl bg-gradient-to-br from-[#0B132B] via-[#070D1E] to-[#0B132B] border border-[#D4AF37]/40 p-5 sm:p-8 shadow-2xl">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          <div className="lg:col-span-5 space-y-4">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#111C3D] border border-[#D4AF37]/40 text-xs font-bold text-[#D4AF37]">
+              <Video className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>الفيديو التعريفي الرسمي بالمجمع</span>
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl font-black font-amiri text-white leading-snug">
+              مجمع النور الإسلامي العالمي الخيري الشامل
+            </h2>
+
+            <p className="text-xs sm:text-sm text-[#D8CEBB] leading-relaxed">
+              منارةٌ للقرآن الكريم، ونشر العلم الشرعي، والدعوة إلى الله بمختلف لغات العالم، وكفالة الأيتام ورعاية الأسر المتعففة بإشراف المدير العام الأستاذ الهادي سالم محمد الشيخ.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+              <div className="p-3 rounded-2xl bg-[#070D1E] border border-[#D4AF37]/25 space-y-1">
+                <span className="text-[#94A3B8] block text-[11px]">للتواصل والاستفسار</span>
+                <span className="font-mono font-black text-white block" dir="ltr">0912169169</span>
+                <span className="font-mono font-black text-[#D4AF37] block" dir="ltr">0904499914</span>
+              </div>
+              <div className="p-3 rounded-2xl bg-[#070D1E] border border-emerald-500/30 space-y-1">
+                <span className="text-[#94A3B8] block text-[11px]">رقم الحساب للمساهمة والتبرع</span>
+                <span className="font-mono font-black text-emerald-400 text-lg block" dir="ltr">1727654</span>
+                <span className="text-[10px] text-slate-400 block">ساهموا معنا في نشر نور القرآن</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-7">
+            <div className="rounded-2xl overflow-hidden bg-black border border-[#D4AF37]/40 shadow-[0_12px_40px_rgba(0,0,0,0.85)]">
+              <video
+                src={INTRO_VIDEO_SRC}
+                controls
+                playsInline
+                preload="metadata"
+                className="w-full max-h-[520px] object-contain bg-black"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* =========================================================================
           2. DUAL FLAGSHIP SPOTLIGHT: سفير النور (Ambassador) & اسأل عن الإسلام (Ask Islam)

@@ -969,11 +969,15 @@ app.post('/api/community/ask', (req: Request, res: Response) => {
 // =========================================================================
 
 app.get('/kgcwankausnf.html', (_req: Request, res: Response) => {
-  res.type('text/html').send(`<!doctype html><html><head><meta name="site-verification" content="kgcwankausnf" /><meta name="google-site-verification" content="kgcwankausnf" /></head><body>kgcwankausnf</body></html>`);
+  res.type('text/html').send(`<!doctype html><html><head><meta name="google-site-verification" content="CRjC4I8nvt5yVCJr-kDyAGNSbSieuBuzojSRkxO8nF4" /><meta name="site-verification" content="kgcwankausnf" /><meta name="google-site-verification" content="kgcwankausnf" /></head><body>kgcwankausnf</body></html>`);
 });
 
 app.get(['/kgcwankausnf', '/kgcwankausnf.txt', '/.well-known/kgcwankausnf.txt', '/.well-known/site-verification'], (_req: Request, res: Response) => {
   res.type('text/plain').send('kgcwankausnf');
+});
+
+app.get('/google-site-verification.txt', (_req: Request, res: Response) => {
+  res.type('text/plain').send('google-site-verification=CRjC4I8nvt5yVCJr-kDyAGNSbSieuBuzojSRkxO8nF4');
 });
 
 // =========================================================================

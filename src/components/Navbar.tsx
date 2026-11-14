@@ -126,14 +126,15 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, onOpenS
           {/* Quick Controls */}
           <div className="flex items-center gap-2">
             
-            {/* Cinematic Sunrise Intro Replay */}
+            {/* Official Complex Intro Video Replay */}
             {onReplayIntro && (
               <button
                 onClick={onReplayIntro}
                 className="flex items-center gap-1.5 bg-[#111C3D] hover:bg-[#1E2E5D] text-amber-300 border border-amber-400/40 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer shadow-sm"
-                title="مشاهدة مشهد شروق النور ثلاثي الأبعاد السينمائي"
+                title="مشاهدة الفيديو التعريفي الرسمي لمجمع النور الإسلامي العالمي"
               >
-                <span>شروق النور 🌅</span>
+                <Video className="w-3.5 h-3.5 text-amber-400" />
+                <span>الفيديو التعريفي</span>
               </button>
             )}
 

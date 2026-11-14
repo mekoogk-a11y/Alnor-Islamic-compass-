@@ -37,6 +37,7 @@ import { NoorAmbassadorPage } from './components/pages/NoorAmbassadorPage';
 import { DiscoverIslamPage } from './components/pages/DiscoverIslamPage';
 import { DawahLibraryPage } from './components/pages/DawahLibraryPage';
 import { CinematicSunriseIntro } from './components/CinematicSunriseIntro';
+import { ComplexIntroVideoModal } from './components/ComplexIntroVideoModal';
 import { PrayerTimesBar } from './components/PrayerTimesBar';
 
 import { NavigationPage } from './types';
@@ -65,18 +66,12 @@ function MainAppContent() {
     setTimeout(() => setCopiedDomain(false), 2500);
   };
 
-  // Cinematic 3D Sunrise Intro (Runs once per session unless replayed)
-  const [showSunriseIntro, setShowSunriseIntro] = useState<boolean>(() => {
-    try {
-      const shown = sessionStorage.getItem('alnoor_sunrise_intro_shown');
-      return !shown;
-    } catch (_) {
-      return false;
-    }
-  });
+  // Official Introductory Video (Appears and plays immediately on site open)
+  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(true);
+  const [showSunriseIntro, setShowSunriseIntro] = useState<boolean>(false);
 
   const handleReplayIntro = () => {
-    setShowSunriseIntro(true);
+    setShowIntroVideo(true);
   };
 
   const handleNavigate = (page: NavigationPage, params?: any) => {
@@ -88,7 +83,12 @@ function MainAppContent() {
   return (
     <div className={`min-h-screen bg-[#070D1E] text-[#F8FAFC] flex flex-col font-sans selection:bg-[#D4AF37]/30 selection:text-[#F8FAFC] antialiased pb-36 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
       
-      {/* Cinematic 3D Sunrise Experience (WebGL & Three.js) */}
+      {/* Official Introductory Video Modal on Site Open */}
+      {showIntroVideo && (
+        <ComplexIntroVideoModal onClose={() => setShowIntroVideo(false)} />
+      )}
+
+      {/* Optional Cinematic 3D Sunrise Experience */}
       {showSunriseIntro && (
         <CinematicSunriseIntro 
           onComplete={() => setShowSunriseIntro(false)} 
