@@ -985,6 +985,21 @@ app.get('/google-site-verification.txt', (_req: Request, res: Response) => {
 // =========================================================================
 
 async function startServer() {
+  // Always serve /assets directly with reliable HTTP Byte-Range support for MP4 video playback
+  const assetsDir = process.env.NODE_ENV === 'production'
+    ? path.join(__dirname, 'dist', 'assets')
+    : path.join(__dirname, 'public', 'assets');
+
+  app.use('/assets', express.static(assetsDir, {
+    acceptRanges: true,
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.mp4')) {
+        res.setHeader('Content-Type', 'video/mp4');
+        res.setHeader('Accept-Ranges', 'bytes');
+      }
+    },
+  }));
+
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
@@ -993,7 +1008,7 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    app.use(express.static(path.join(__dirname, 'dist')));
+    app.use(express.static(path.join(__dirname, 'dist'), { acceptRanges: true }));
     app.get('*', (_req, res) => {
       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });

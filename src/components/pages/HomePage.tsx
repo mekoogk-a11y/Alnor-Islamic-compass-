@@ -406,12 +406,19 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
           </div>
 
           <div className="lg:col-span-7">
-            <div className="rounded-2xl overflow-hidden bg-black border border-[#D4AF37]/40 shadow-[0_12px_40px_rgba(0,0,0,0.85)]">
+            <div className="rounded-2xl overflow-hidden bg-black border border-[#D4AF37]/40 shadow-[0_12px_40px_rgba(0,0,0,0.85)] relative">
               <video
                 src={INTRO_VIDEO_SRC}
                 controls
                 playsInline
                 preload="metadata"
+                onError={(e) => {
+                  const vid = e.currentTarget;
+                  if (!vid.dataset.retried) {
+                    vid.dataset.retried = '1';
+                    vid.load();
+                  }
+                }}
                 className="w-full max-h-[520px] object-contain bg-black"
               />
             </div>

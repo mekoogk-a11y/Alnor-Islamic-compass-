@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Navbar } from './components/Navbar';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { PWAInstallButton } from './components/PWAInstallButton';
@@ -70,9 +70,13 @@ function MainAppContent() {
   const [showIntroVideo, setShowIntroVideo] = useState<boolean>(true);
   const [showSunriseIntro, setShowSunriseIntro] = useState<boolean>(false);
 
-  const handleReplayIntro = () => {
+  const handleReplayIntro = useCallback(() => {
     setShowIntroVideo(true);
-  };
+  }, []);
+
+  const handleCloseIntro = useCallback(() => {
+    setShowIntroVideo(false);
+  }, []);
 
   const handleNavigate = (page: NavigationPage, params?: any) => {
     setCurrentPage(page);
@@ -85,7 +89,7 @@ function MainAppContent() {
       
       {/* Official Introductory Video Modal on Site Open */}
       {showIntroVideo && (
-        <ComplexIntroVideoModal onClose={() => setShowIntroVideo(false)} />
+        <ComplexIntroVideoModal onClose={handleCloseIntro} />
       )}
 
       {/* Optional Cinematic 3D Sunrise Experience */}

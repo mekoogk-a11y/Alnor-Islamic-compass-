@@ -12,13 +12,17 @@ interface ComplexIntroVideoModalProps {
 export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ onClose }) => {
   const { isRtl } = useLanguage();
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [autoplayBlockedAudio, setAutoplayBlockedAudio] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
+  const [videoError, setVideoError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
-  // Immediately start playback on mount; gracefully fall back to muted autoplay if browser blocks audio
+  // Immediately start playback once on mount without tearing down on parent re-renders
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -26,6 +30,8 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
     let cancelled = false;
 
     const attemptAutoplay = async () => {
+      if (cancelled) return;
+      setVideoError(null);
       try {
         video.muted = false;
         await video.play();
@@ -34,20 +40,26 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
           setIsMuted(false);
           setAutoplayBlockedAudio(false);
         }
-      } catch (_) {
-        // Browser policy requires user gesture for unmuted autoplay; start muted immediately
-        try {
-          video.muted = true;
-          await video.play();
-          if (!cancelled) {
-            setIsPlaying(true);
-            setIsMuted(true);
-            setAutoplayBlockedAudio(true);
+      } catch (err: any) {
+        if (cancelled) return;
+        // If browser policy blocks unmuted autoplay, gracefully fall back to muted autoplay
+        if (err?.name === 'NotAllowedError') {
+          try {
+            video.muted = true;
+            await video.play();
+            if (!cancelled) {
+              setIsPlaying(true);
+              setIsMuted(true);
+              setAutoplayBlockedAudio(true);
+            }
+          } catch (_) {
+            if (!cancelled) {
+              setIsPlaying(false);
+              setAutoplayBlockedAudio(true);
+            }
           }
-        } catch (__) {
-          if (!cancelled) {
-            setIsPlaying(false);
-          }
+        } else if (err?.name !== 'AbortError') {
+          setIsPlaying(false);
         }
       }
     };
@@ -56,7 +68,7 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -64,11 +76,47 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
     return () => {
       cancelled = true;
       window.removeEventListener('keydown', handleKeyDown);
-      if (video) {
-        video.pause();
-      }
+      video.pause();
     };
-  }, [onClose]);
+  }, []);
+
+  const handleVideoError = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (retryCount < 2) {
+      setRetryCount((c) => c + 1);
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.load();
+          videoRef.current.play().catch(() => {});
+        }
+      }, 600);
+      return;
+    }
+    setIsPlaying(false);
+    setVideoError('تعذر تحميل الفيديو مؤقتاً، يرجى الضغط على إعادة المحاولة.');
+  };
+
+  const handleRetryLoad = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    setVideoError(null);
+    setRetryCount(0);
+    video.load();
+    video.muted = false;
+    video.play()
+      .then(() => {
+        setIsPlaying(true);
+        setIsMuted(false);
+        setAutoplayBlockedAudio(false);
+      })
+      .catch(() => {
+        video.muted = true;
+        setIsMuted(true);
+        setAutoplayBlockedAudio(true);
+        video.play().then(() => setIsPlaying(true)).catch(() => {});
+      });
+  };
 
   const handleTogglePlay = async () => {
     const video = videoRef.current;
@@ -81,6 +129,7 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
       try {
         await video.play();
         setIsPlaying(true);
+        setVideoError(null);
       } catch (_) {}
     } else {
       video.pause();
@@ -97,7 +146,7 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
     if (!nextMuted) {
       setAutoplayBlockedAudio(false);
       if (video.paused) {
-        video.play().catch(() => {});
+        video.play().then(() => setIsPlaying(true)).catch(() => {});
       }
     }
   };
@@ -118,13 +167,14 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
     if (!video) return;
     video.currentTime = 0;
     setHasEnded(false);
+    setVideoError(null);
     video.muted = false;
     setIsMuted(false);
     setAutoplayBlockedAudio(false);
     video.play().then(() => setIsPlaying(true)).catch(() => {
       video.muted = true;
       setIsMuted(true);
-      video.play().catch(() => {});
+      video.play().then(() => setIsPlaying(true)).catch(() => {});
     });
   };
 
@@ -174,19 +224,20 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
           <video
             ref={videoRef}
             src={INTRO_VIDEO_SRC}
-            autoPlay
             playsInline
             controls
             preload="auto"
             onPlay={() => {
               setIsPlaying(true);
               setHasEnded(false);
+              setVideoError(null);
             }}
             onPause={() => setIsPlaying(false)}
             onEnded={() => {
               setIsPlaying(false);
               setHasEnded(true);
             }}
+            onError={handleVideoError}
             onVolumeChange={(e) => {
               const target = e.currentTarget;
               setIsMuted(target.muted);
@@ -194,6 +245,19 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
             }}
             className="w-full max-h-[65vh] object-contain bg-black focus:outline-none"
           />
+          {videoError && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/85 p-6 text-center">
+              <p className="text-xs sm:text-sm text-amber-200 font-bold">{videoError}</p>
+              <button
+                type="button"
+                onClick={handleRetryLoad}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#D4AF37] text-[#070D1E] text-xs font-black cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>إعادة تشغيل الفيديو</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Bottom Controls & Audio Prompt (Outside video canvas so video remains 100% unobstructed) */}
