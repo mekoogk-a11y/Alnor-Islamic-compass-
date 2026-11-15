@@ -52,6 +52,10 @@ export default defineConfig(() => {
           navigateFallbackDenylist: [/^\/api\//, /^\/assets\/.*\.(mp4|webm|mp3|wav)$/i],
           runtimeCaching: [
             {
+              urlPattern: /\/assets\/.*\.(mp4|webm|mp3|wav)$/i,
+              handler: 'NetworkOnly',
+            },
+            {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
               handler: 'CacheFirst',
               options: {

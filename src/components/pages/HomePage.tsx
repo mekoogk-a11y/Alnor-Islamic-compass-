@@ -5,7 +5,8 @@ import {
   ArrowLeft, CheckCircle2, Star, ShieldCheck, ChevronRight,
   Radio, Mic, MessageCircle, Phone, Search, Compass, BookCheck, 
   Flame, Zap, Scroll, BookMarked, Eye, Download, Check, Headphones,
-  Share2, Clock, Landmark, Feather, Layers, ArrowUpRight, Copy, ExternalLink, Video, Send
+  Share2, Clock, Landmark, Feather, Layers, ArrowUpRight, Copy, ExternalLink, Video, Send,
+  VolumeX, Maximize2, Loader2, WifiOff, AlertTriangle, RotateCcw
 } from 'lucide-react';
 import { NavigationPage, LibraryBook } from '../../types';
 import { COMPLEX_INFO, FEATURED_SURAHS, RECITERS, OFFICIAL_COMPLEX_LOGO, LIBRARY_BOOKS } from '../../data/islamicData';
@@ -13,7 +14,8 @@ import { PWAInstallButton } from '../PWAInstallButton';
 import { LiveMakkahQuranRadio } from '../LiveMakkahQuranRadio';
 import { LuminousGlobalGlobe } from '../LuminousGlobalGlobe';
 import { BookReaderModal } from '../BookReaderModal';
-import { INTRO_VIDEO_SRC } from '../ComplexIntroVideoModal';
+import { INTRO_VIDEO_SOURCES, INTRO_VIDEO_POSTER } from '../ComplexIntroVideoModal';
+import { useResilientVideo, formatVideoTime } from '../../hooks/useResilientVideo';
 import { useLanguage } from '../../context/LanguageContext';
 
 interface HomePageProps {
@@ -29,6 +31,16 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
   const [selectedReciter, setSelectedReciter] = useState(RECITERS[0]);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Resilient inline introductory video state (preload=none prevents competing with opening modal)
+  const inlineVideoRef = useRef<HTMLVideoElement | null>(null);
+  const inlineVideoContainerRef = useRef<HTMLDivElement | null>(null);
+  const { state: inlineVideoState, actions: inlineVideoActions } = useResilientVideo({
+    videoRef: inlineVideoRef,
+    sources: INTRO_VIDEO_SOURCES,
+    autoPlay: false,
+    playerId: 'home-inline',
+  });
 
   // Search input state
   const [searchQuery, setSearchQuery] = useState('');
@@ -406,21 +418,151 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenSearch }) 
           </div>
 
           <div className="lg:col-span-7">
-            <div className="rounded-2xl overflow-hidden bg-black border border-[#D4AF37]/40 shadow-[0_12px_40px_rgba(0,0,0,0.85)] relative">
-              <video
-                src={INTRO_VIDEO_SRC}
-                controls
-                playsInline
-                preload="metadata"
-                onError={(e) => {
-                  const vid = e.currentTarget;
-                  if (!vid.dataset.retried) {
-                    vid.dataset.retried = '1';
-                    vid.load();
-                  }
-                }}
-                className="w-full max-h-[520px] object-contain bg-black"
-              />
+            <div
+              ref={inlineVideoContainerRef}
+              data-inline-video="true"
+              className="rounded-2xl overflow-hidden bg-[#050914] border border-[#D4AF37]/40 shadow-[0_12px_40px_rgba(0,0,0,0.85)]"
+            >
+              <div className="relative bg-black flex items-center justify-center w-full [&:fullscreen]:h-screen [&:fullscreen]:w-screen">
+                <div className="w-full max-h-[500px] aspect-square flex items-center justify-center bg-black [[data-inline-video]:fullscreen_&]:max-h-screen [[data-inline-video]:fullscreen_&]:h-screen">
+                  <video
+                    ref={inlineVideoRef}
+                    src={inlineVideoState.currentSrc}
+                    poster={INTRO_VIDEO_POSTER}
+                    playsInline
+                    preload="none"
+                    onClick={inlineVideoActions.togglePlay}
+                    className="w-full h-full max-h-[500px] object-contain bg-black cursor-pointer focus:outline-none [[data-inline-video]:fullscreen_&]:max-h-screen"
+                  />
+                </div>
+
+                {/* Big Play Button before playback starts */}
+                {!inlineVideoState.isPlaying && !inlineVideoState.isBuffering && !inlineVideoState.errorMessage && (
+                  <button
+                    type="button"
+                    onClick={inlineVideoActions.togglePlay}
+                    aria-label="تشغيل الفيديو التعريفي للمجمع"
+                    className="absolute inset-0 flex flex-col items-center justify-center gap-2.5 bg-black/40 hover:bg-black/30 transition-colors cursor-pointer"
+                  >
+                    <span className="w-16 h-16 rounded-full bg-[#D4AF37] text-[#070D1E] flex items-center justify-center shadow-[0_0_28px_rgba(212,175,55,0.5)]">
+                      <Play className="w-7 h-7 fill-current ml-0.5" />
+                    </span>
+                    <span className="px-3.5 py-1 rounded-lg bg-[#0B132B]/90 border border-[#D4AF37]/40 text-xs font-bold text-white">
+                      {inlineVideoState.hasEnded ? 'إعادة مشاهدة الفيديو التعريفي' : 'مشاهدة الفيديو التعريفي'}
+                    </span>
+                  </button>
+                )}
+
+                {/* Buffering / Offline Indicator */}
+                {(inlineVideoState.isBuffering || inlineVideoState.isOffline) && !inlineVideoState.errorMessage && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/65 pointer-events-none px-4 text-center">
+                    {inlineVideoState.isOffline ? (
+                      <>
+                        <WifiOff className="w-8 h-8 text-amber-400" />
+                        <p className="text-xs font-bold text-amber-200">
+                          انقطع الاتصال، سيتم استئناف التشغيل عند عودة الشبكة.
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <Loader2 className="w-8 h-8 text-[#D4AF37] animate-spin" />
+                        <p className="text-xs font-bold text-white">جاري التحميل...</p>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* Error & Retry Overlay */}
+                {inlineVideoState.errorMessage && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#070D1E]/90 p-5 text-center">
+                    <AlertTriangle className="w-9 h-9 text-amber-400" />
+                    <p className="text-xs text-amber-100 font-bold max-w-xs">{inlineVideoState.errorMessage}</p>
+                    <button
+                      type="button"
+                      onClick={inlineVideoActions.retry}
+                      className="flex items-center gap-1.5 px-4 py-2 min-h-[40px] rounded-xl bg-[#D4AF37] text-[#070D1E] text-xs font-black cursor-pointer"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                      <span>إعادة المحاولة</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Scrubber & Compact Controls */}
+              <div className="px-3.5 py-2.5 bg-[#0B132B] border-t border-[#D4AF37]/25 space-y-2">
+                <div className="flex items-center gap-3" dir="ltr">
+                  <span className="text-[11px] font-mono tabular-nums text-[#CBD5E1] shrink-0">
+                    {formatVideoTime(inlineVideoState.currentTime)}
+                  </span>
+                  <div className="relative flex-1 flex items-center h-5">
+                    <div className="absolute inset-x-0 h-1.5 rounded-full bg-[#1E293B] overflow-hidden pointer-events-none">
+                      <div
+                        className="h-full bg-[#D4AF37]/30 transition-all duration-200"
+                        style={{ width: `${inlineVideoState.bufferedPercent}%` }}
+                      />
+                      <div
+                        className="h-full bg-[#D4AF37] -mt-1.5 transition-all duration-100"
+                        style={{ width: `${inlineVideoState.progressPercent}%` }}
+                      />
+                    </div>
+                    <input
+                      type="range"
+                      min={0}
+                      max={inlineVideoState.duration > 0 ? inlineVideoState.duration : 85}
+                      step={0.1}
+                      value={inlineVideoState.currentTime}
+                      onChange={(e) => inlineVideoActions.seekTo(parseFloat(e.target.value))}
+                      aria-label="شريط التقدم للفيديو التعريفي"
+                      className="relative z-10 w-full h-5 opacity-0 cursor-pointer"
+                    />
+                  </div>
+                  <span className="text-[11px] font-mono tabular-nums text-[#94A3B8] shrink-0">
+                    {inlineVideoState.duration > 0 ? formatVideoTime(inlineVideoState.duration) : '01:25'}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={inlineVideoActions.togglePlay}
+                      className="flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-xl bg-[#111C3D] hover:bg-[#1A2A54] border border-[#D4AF37]/30 text-white text-xs font-bold cursor-pointer whitespace-nowrap"
+                    >
+                      {inlineVideoState.isPlaying ? (
+                        <Pause className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      ) : (
+                        <Play className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      )}
+                      <span>{inlineVideoState.isPlaying ? 'إيقاف مؤقت' : 'تشغيل'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={inlineVideoActions.toggleMute}
+                      className="flex items-center gap-1.5 px-3 py-1.5 min-h-[36px] rounded-xl bg-[#111C3D] hover:bg-[#1A2A54] border border-[#D4AF37]/30 text-[#E2E8F0] text-xs font-bold cursor-pointer whitespace-nowrap"
+                    >
+                      {inlineVideoState.isMuted ? (
+                        <VolumeX className="w-3.5 h-3.5 text-rose-400" />
+                      ) : (
+                        <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
+                      )}
+                      <span>{inlineVideoState.isMuted ? 'إلغاء الكتم' : 'كتم'}</span>
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => inlineVideoActions.toggleFullscreen(inlineVideoContainerRef.current)}
+                    title="ملء الشاشة"
+                    aria-label="ملء الشاشة"
+                    className="flex items-center gap-1 px-2.5 py-1.5 min-h-[36px] rounded-xl bg-[#111C3D] hover:bg-[#1A2A54] border border-[#D4AF37]/30 text-[#E2E8F0] text-xs font-bold cursor-pointer"
+                  >
+                    <Maximize2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">ملء الشاشة</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

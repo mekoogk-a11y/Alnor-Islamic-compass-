@@ -985,6 +985,19 @@ app.get('/google-site-verification.txt', (_req: Request, res: Response) => {
 // =========================================================================
 
 async function startServer() {
+  const setMediaStreamHeaders = (res: Response, filePath: string) => {
+    if (filePath.endsWith('.mp4')) {
+      res.setHeader('Content-Type', 'video/mp4');
+      res.setHeader('Accept-Ranges', 'bytes');
+      res.setHeader('Cache-Control', 'public, max-age=604800');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    } else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg') || filePath.endsWith('.png')) {
+      res.setHeader('Cache-Control', 'public, max-age=604800');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+    }
+  };
+
   // Always serve /assets directly with reliable HTTP Byte-Range support for MP4 video playback
   const assetsDir = process.env.NODE_ENV === 'production'
     ? path.join(__dirname, 'dist', 'assets')
@@ -992,12 +1005,9 @@ async function startServer() {
 
   app.use('/assets', express.static(assetsDir, {
     acceptRanges: true,
-    setHeaders: (res, filePath) => {
-      if (filePath.endsWith('.mp4')) {
-        res.setHeader('Content-Type', 'video/mp4');
-        res.setHeader('Accept-Ranges', 'bytes');
-      }
-    },
+    etag: true,
+    lastModified: true,
+    setHeaders: setMediaStreamHeaders,
   }));
 
   if (process.env.NODE_ENV !== 'production') {
@@ -1008,7 +1018,12 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    app.use(express.static(path.join(__dirname, 'dist'), { acceptRanges: true }));
+    app.use(express.static(path.join(__dirname, 'dist'), {
+      acceptRanges: true,
+      etag: true,
+      lastModified: true,
+      setHeaders: setMediaStreamHeaders,
+    }));
     app.get('*', (_req, res) => {
       res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     });
