@@ -9,6 +9,8 @@ import {
 import { DawahLecture, DawahCategory, DawahScholar } from '../types';
 import { DAWAH_CATEGORIES, INITIAL_DAWAH_SCHOLARS, INITIAL_DAWAH_LECTURES } from '../data/dawahData';
 import { useLanguage } from '../context/LanguageContext';
+import { useToast } from '../context/ToastContext';
+import { createVideoPosterDataUri } from '../utils/islamicArtwork';
 
 export interface VideoSeries {
   id: string;
@@ -112,6 +114,7 @@ interface VideoPlaylistManagerProps {
 
 export const VideoPlaylistManager: React.FC<VideoPlaylistManagerProps> = ({ onSelectVideo }) => {
   const { lang, isRtl } = useLanguage();
+  const { showToast } = useToast();
 
   // Navigation tabs: 'all_videos' | 'by_series' | 'by_topic' | 'my_queue' | 'studio_ingest'
   const [activeTab, setActiveTab] = useState<'all_videos' | 'by_series' | 'by_topic' | 'my_queue' | 'studio_ingest'>('by_series');
@@ -239,7 +242,7 @@ export const VideoPlaylistManager: React.FC<VideoPlaylistManagerProps> = ({ onSe
         setBulkVideoJson('');
       }
     } catch (err: any) {
-      alert(`خطأ في صيغة JSON: ${err.message}`);
+      showToast(`خطأ في صيغة JSON: ${err.message}`, 'error');
     }
   };
 
@@ -535,7 +538,7 @@ export const VideoPlaylistManager: React.FC<VideoPlaylistManagerProps> = ({ onSe
                       alt={lecture.titleAr}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80';
+                        (e.target as HTMLImageElement).src = createVideoPosterDataUri(lecture.titleAr, 'AL-NOOR DAWAH ARCHIVE');
                       }}
                     />
 

@@ -1,4 +1,5 @@
 import { HadithBook, HadithItem, ScholarProfile, AcademyCourse, CommunityQuestion } from '../types';
+import { createScholarEmblemDataUri } from '../utils/islamicArtwork';
 
 export const HADITH_BOOKS: HadithBook[] = [
   {
@@ -192,7 +193,7 @@ export const VERIFIED_SCHOLARS: ScholarProfile[] = [
     rating: 4.98,
     availableDays: ['السبت', 'الاثنين', 'الأربعاء'],
     sessionDuration: '45 دقيقة',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80'
+    avatarUrl: createScholarEmblemDataUri('ع.م', '#D4AF37', 'MADINAH QIRAAT')
   },
   {
     id: 'scholar-2',
@@ -209,7 +210,7 @@ export const VERIFIED_SCHOLARS: ScholarProfile[] = [
     rating: 4.95,
     availableDays: ['الأحد', 'الثلاثاء', 'الخميس'],
     sessionDuration: '60 دقيقة',
-    avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80'
+    avatarUrl: createScholarEmblemDataUri('م.أ', '#38BDF8', 'HADITH SCHOLAR')
   },
   {
     id: 'scholar-3',
@@ -226,7 +227,7 @@ export const VERIFIED_SCHOLARS: ScholarProfile[] = [
     rating: 4.92,
     availableDays: ['الاثنين', 'الأربعاء', 'الجمعة'],
     sessionDuration: '50 دقيقة',
-    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80'
+    avatarUrl: createScholarEmblemDataUri('ع.ق', '#34D399', 'FIQH & USOOL')
   },
   {
     id: 'scholar-4',
@@ -243,7 +244,7 @@ export const VERIFIED_SCHOLARS: ScholarProfile[] = [
     rating: 4.99,
     availableDays: ['السبت', 'الأحد', 'الثلاثاء', 'الخميس'],
     sessionDuration: '40 دقيقة',
-    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80'
+    avatarUrl: createScholarEmblemDataUri('ف.ش', '#A78BFA', 'QURANIC BALAGHA')
   }
 ];
 

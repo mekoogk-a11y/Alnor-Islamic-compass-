@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { COMPLEX_INFO } from '../../data/islamicData';
+import { createVideoPosterDataUri } from '../../utils/islamicArtwork';
 
 type DawahBranch = 'englishDawah' | 'otherLanguages' | 'videosLectures' | 'simplifiedFiqh' | 'dawahRadio';
 
@@ -147,7 +148,7 @@ export const NewMuslimsPage: React.FC<{ onNavigate: (page: any) => void }> = ({ 
       duration: '24:15',
       category: 'Foundations',
       language: 'English',
-      thumbnail: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80',
+      thumbnail: createVideoPosterDataUri('Purpose of Life', 'FOUNDATIONS • EN', '#D4AF37'),
       embedId: 'dQw4w9WgXcQ',
       description: 'An insightful scholarly lecture exploring existential questions: Why are we here? What is the divine message conveyed through all the prophets from Abraham to Muhammad?',
       keyTakeaways: [
@@ -163,7 +164,7 @@ export const NewMuslimsPage: React.FC<{ onNavigate: (page: any) => void }> = ({ 
       duration: '31:40',
       category: 'Revert Stories',
       language: 'English',
-      thumbnail: 'https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=800&q=80',
+      thumbnail: createVideoPosterDataUri('Journey to Light', 'REVERT STORIES • EN', '#38BDF8'),
       embedId: 'dQw4w9WgXcQ',
       description: 'A deep intellectual and spiritual journey detailing how Western academic study of theology led to finding tranquility and intellectual satisfaction in the Islamic tradition.',
       keyTakeaways: [
@@ -179,7 +180,7 @@ export const NewMuslimsPage: React.FC<{ onNavigate: (page: any) => void }> = ({ 
       duration: '18:50',
       category: 'Comparative',
       language: 'English',
-      thumbnail: 'https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=800&q=80',
+      thumbnail: createVideoPosterDataUri('Jesus in Islam', 'COMPARATIVE • EN', '#34D399'),
       embedId: 'dQw4w9WgXcQ',
       description: 'Discover the profound Islamic love and respect for Prophet Isa (Jesus son of Mary peace be upon him), his miracles in the Quran, and the continuity of Abrahamic prophecy.',
       keyTakeaways: [
@@ -195,7 +196,7 @@ export const NewMuslimsPage: React.FC<{ onNavigate: (page: any) => void }> = ({ 
       duration: '22:10',
       category: 'Revert Stories',
       language: 'French',
-      thumbnail: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80',
+      thumbnail: createVideoPosterDataUri('Foi & Science', 'HISTOIRES • FR', '#A78BFA'),
       embedId: 'dQw4w9WgXcQ',
       description: 'Une analyse rigoureuse des correspondances entre les découvertes scientifiques modernes et les versets coraniques révélés il y a quatorze siècles.',
       keyTakeaways: [
@@ -211,7 +212,7 @@ export const NewMuslimsPage: React.FC<{ onNavigate: (page: any) => void }> = ({ 
       duration: '19:35',
       category: 'New Muslim Guide',
       language: 'English',
-      thumbnail: 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?auto=format&fit=crop&w=800&q=80',
+      thumbnail: createVideoPosterDataUri('Daily Anchor', 'NEW MUSLIM GUIDE', '#F59E0B'),
       embedId: 'dQw4w9WgXcQ',
       description: 'Compassionate guidance for those who recently took their Shahada. How to ease into the prayers, handle family reactions, and build an unbroken connection with Allah.',
       keyTakeaways: [
@@ -227,7 +228,7 @@ export const NewMuslimsPage: React.FC<{ onNavigate: (page: any) => void }> = ({ 
       duration: '27:12',
       category: 'Foundations',
       language: 'Spanish',
-      thumbnail: 'https://images.unsplash.com/photo-1590076215667-875d4ef2d7ee?auto=format&fit=crop&w=800&q=80',
+      thumbnail: createVideoPosterDataUri('El Coran Hoy', 'FUNDAMENTOS • ES', '#38BDF8'),
       embedId: 'dQw4w9WgXcQ',
       description: 'Presentación clara y elocuente sobre el milagro de la revelación coránica, su preservación textual y su guía ética para el mundo contemporáneo.',
       keyTakeaways: [

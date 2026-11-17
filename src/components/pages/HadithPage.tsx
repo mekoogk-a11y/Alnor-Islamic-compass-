@@ -6,6 +6,7 @@ import {
 import { HADITH_BOOKS, HADITH_DATA } from '../../data/hadithAndScholarsData';
 import { HadithItem, NavigationPage } from '../../types';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface HadithPageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -14,6 +15,7 @@ interface HadithPageProps {
 
 export const HadithPage: React.FC<HadithPageProps> = ({ initialHadithId }) => {
   const { user } = useAuth();
+  const { isRtl } = useLanguage();
   const [selectedBookId, setSelectedBookId] = useState<string>('all');
   const [gradeFilter, setGradeFilter] = useState<'all' | 'صحيح' | 'متفق عليه' | 'حسن'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -55,7 +57,7 @@ export const HadithPage: React.FC<HadithPageProps> = ({ initialHadithId }) => {
   };
 
   return (
-    <div className="space-y-8" dir="rtl">
+    <div className="space-y-8" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Hero Header */}
       <div className="bg-gradient-to-r from-slate-900 via-emerald-950/80 to-slate-900 border border-emerald-900/50 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl -z-10 pointer-events-none" />

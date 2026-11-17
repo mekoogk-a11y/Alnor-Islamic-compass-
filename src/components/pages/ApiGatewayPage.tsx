@@ -8,6 +8,7 @@ import {
 import { api } from '../../services/api';
 import { ApiHealthStatus, ApiKeyRecord, ApiTelemetryMetric, NavigationPage } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
+import { useToast } from '../../context/ToastContext';
 import { ServiceStatusDashboard } from '../ServiceStatusDashboard';
 
 interface ApiGatewayPageProps {
@@ -16,6 +17,7 @@ interface ApiGatewayPageProps {
 
 export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) => {
   const { lang, isRtl } = useLanguage();
+  const { showToast } = useToast();
   
   // Active Tab
   const [activeTab, setActiveTab] = useState<'health' | 'keys' | 'playground' | 'mobile' | 'telemetry'>('health');
@@ -76,8 +78,9 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
       const created = await api.gateway.createKey(newKeyName.trim(), newKeyPlatform);
       setKeysList(prev => [created, ...prev]);
       setNewKeyName('');
-    } catch (e) {
-      console.error('Error creating key:', e);
+      showToast('تم إنشاء مفتاح API بنجاح.', 'success');
+    } catch (e: any) {
+      showToast(e?.message || 'تتطلب هذه العملية تسجيل الدخول بصلاحية مشرف عام.', 'warning');
     } finally {
       setIsCreatingKey(false);
     }
@@ -88,8 +91,9 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
     try {
       await api.gateway.revokeKey(id);
       setKeysList(prev => prev.map(k => k.id === id ? { ...k, status: 'revoked' } : k));
-    } catch (e) {
-      console.error('Error revoking key:', e);
+      showToast('تم إبطال مفتاح API بنجاح.', 'info');
+    } catch (e: any) {
+      showToast(e?.message || 'تتطلب هذه العملية تسجيل الدخول بصلاحية مشرف عام.', 'warning');
     }
   };
 
@@ -116,7 +120,7 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
         try {
           body = JSON.parse(playgroundPayload);
         } catch (e) {
-          alert('صيغة JSON غير صالحة');
+          showToast('صيغة JSON غير صالحة، يرجى التحقق من الحقول.', 'error');
           setIsSendingRequest(false);
           return;
         }

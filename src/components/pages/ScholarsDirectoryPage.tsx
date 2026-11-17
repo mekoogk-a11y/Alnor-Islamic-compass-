@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { SCHOLARS_DIRECTORY } from '../../data/hadithAndScholarsData';
 import { ScholarProfile, NavigationPage } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface ScholarsDirectoryPageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -12,6 +13,7 @@ interface ScholarsDirectoryPageProps {
 }
 
 export const ScholarsDirectoryPage: React.FC<ScholarsDirectoryPageProps> = () => {
+  const { isRtl } = useLanguage();
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedScholar, setSelectedScholar] = useState<ScholarProfile | null>(null);
@@ -40,7 +42,7 @@ export const ScholarsDirectoryPage: React.FC<ScholarsDirectoryPageProps> = () =>
   };
 
   return (
-    <div className="space-y-8" dir="rtl">
+    <div className="space-y-8" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-emerald-950/80 to-slate-900 border border-emerald-900/50 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
         <div className="max-w-3xl space-y-4">

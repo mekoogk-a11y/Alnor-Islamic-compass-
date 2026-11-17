@@ -5,12 +5,14 @@ import {
 } from 'lucide-react';
 import { NavigationPage } from '../../types';
 import { ServiceStatusDashboard } from '../ServiceStatusDashboard';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface AdminDashboardPageProps {
   onNavigate: (page: NavigationPage) => void;
 }
 
 export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = () => {
+  const { isRtl } = useLanguage();
   const [activeTab, setActiveTab] = useState<'overview' | 'orphansAudit' | 'dawahInquiries' | 'teachers' | 'students' | 'moderation' | 'services'>('overview');
   const [dawahFilter, setDawahFilter] = useState<'all' | 'free_quran' | 'question' | 'counselor_request'>('all');
 
@@ -109,7 +111,7 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = () => {
   };
 
   return (
-    <div className="space-y-8" dir="rtl">
+    <div className="space-y-8" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-emerald-950/80 to-slate-900 border border-emerald-900/50 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
         <div className="max-w-3xl space-y-3">

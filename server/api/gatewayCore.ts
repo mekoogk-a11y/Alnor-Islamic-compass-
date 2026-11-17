@@ -181,7 +181,7 @@ class ApiGatewayManager {
         uptimePercentage: 99.95,
         lastChecked: now,
         endpoint: '/api/v1/ai/scholar',
-        primaryProvider: 'Google Gemini 3.8 Flash (Server-Side Proxy)',
+        primaryProvider: 'Google Gemini 4 Hydrogen (Server-Side Proxy)',
         fallbackProvider: 'الأرشيف الفقهي والأكاديمي لمجمع النور',
       },
       {

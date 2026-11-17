@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { X, User, Mail, ShieldCheck, Lock, Sparkles, BookOpen, GraduationCap, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import { UserRole } from '../types';
 
 export const AuthModal: React.FC = () => {
   const { isAuthModalOpen, closeAuthModal, login, loginWithGoogle, register, error, clearError, user } = useAuth();
+  const { isRtl } = useLanguage();
   const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -57,8 +59,8 @@ export const AuthModal: React.FC = () => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
       <div 
-        className="w-full max-w-lg bg-slate-900 border border-emerald-800/60 rounded-3xl shadow-2xl overflow-hidden flex flex-col text-right text-slate-100"
-        dir="rtl"
+        className={`w-full max-w-lg bg-slate-900 border border-emerald-800/60 rounded-3xl shadow-2xl overflow-hidden flex flex-col ${isRtl ? 'text-right' : 'text-left'} text-slate-100`}
+        dir={isRtl ? 'rtl' : 'ltr'}
       >
         {/* Header */}
         <div className="p-6 bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 border-b border-slate-800 flex items-center justify-between">

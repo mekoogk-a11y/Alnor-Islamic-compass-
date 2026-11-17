@@ -4,6 +4,8 @@ import {
   Calendar, CheckCircle, Clock, ArrowLeft, LogOut, ShieldCheck, Sparkles 
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { useToast } from '../../context/ToastContext';
 import { ACADEMY_COURSES } from '../../data/hadithAndScholarsData';
 import { NavigationPage } from '../../types';
 
@@ -13,10 +15,12 @@ interface UserDashboardPageProps {
 
 export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({ onNavigate }) => {
   const { user, logout, openAuthModal, updateMemorizationProgress } = useAuth();
+  const { isRtl } = useLanguage();
+  const { showToast } = useToast();
 
   if (!user) {
     return (
-      <div className="max-w-md mx-auto p-8 bg-slate-900 border border-slate-800 rounded-3xl text-center space-y-4 my-12" dir="rtl">
+      <div className="max-w-md mx-auto p-8 bg-slate-900 border border-slate-800 rounded-3xl text-center space-y-4 my-12" dir={isRtl ? 'rtl' : 'ltr'}>
         <User className="w-12 h-12 text-amber-400 mx-auto" />
         <h2 className="text-xl font-bold text-white">بوابة الطالب والباحث</h2>
         <p className="text-xs text-slate-400 leading-relaxed">
@@ -39,7 +43,7 @@ export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({ onNavigate
   );
 
   return (
-    <div className="space-y-8" dir="rtl">
+    <div className="space-y-8" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Profile Header */}
       <div className="bg-gradient-to-r from-slate-900 via-emerald-950/80 to-slate-900 border border-emerald-900/50 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -248,7 +252,7 @@ export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({ onNavigate
                 <div className="pt-2 flex items-center justify-between">
                   <span className="text-emerald-400 font-bold">التقدير: {cert.grade}</span>
                   <button
-                    onClick={() => alert(`جاري تنزيل ملف الإجازة الرسمية للشهادة رقم: ${cert.certificateNumber}`)}
+                    onClick={() => showToast(`جاري تجهيز ملف الإجازة الرسمية للشهادة رقم: ${cert.certificateNumber}`, 'info')}
                     className="text-amber-400 hover:underline font-bold"
                   >
                     تحميل بصيغة PDF

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { PWAInstallButton } from './components/PWAInstallButton';
@@ -46,6 +46,7 @@ import { useOnlineStatus } from './hooks/useOnlineStatus';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import { 
   BookOpen, Globe, Mail, MapPin, Sparkles, ChevronLeft, 
   WifiOff, Laptop, Phone, MessageCircle, Radio, Compass, Scroll, GraduationCap, Users, Mic, Zap, HeartHandshake, ShieldCheck,
@@ -66,8 +67,21 @@ function MainAppContent() {
     setTimeout(() => setCopiedDomain(false), 2500);
   };
 
-  // Official Introductory Video (Appears and plays immediately on site open)
-  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(true);
+  // Official Introductory Video: opens automatically on first visit of session unless prefers-reduced-motion is active;
+  // can always be replayed on demand from the Navbar button.
+  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(() => {
+    try {
+      const reducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      const alreadySeen =
+        typeof window !== 'undefined' &&
+        sessionStorage.getItem('alnoor_intro_seen') === '1';
+      return !reducedMotion && !alreadySeen;
+    } catch {
+      return true;
+    }
+  });
   const [showSunriseIntro, setShowSunriseIntro] = useState<boolean>(false);
 
   const handleReplayIntro = useCallback(() => {
@@ -75,6 +89,9 @@ function MainAppContent() {
   }, []);
 
   const handleCloseIntro = useCallback(() => {
+    try {
+      sessionStorage.setItem('alnoor_intro_seen', '1');
+    } catch {}
     setShowIntroVideo(false);
   }, []);
 
@@ -84,8 +101,39 @@ function MainAppContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Dynamic SEO document title per active portal section
+  useEffect(() => {
+    const pageTitlesAr: Record<NavigationPage, string> = {
+      home: 'الرئيسية',
+      quran: 'المصحف الشريف والتلاوات',
+      hadith: 'موسوعة السنة النبوية',
+      academy: 'أكاديمية النور والمقارئ',
+      scholars: 'هيئة كبار العلماء',
+      aiScholar: 'المساعد العلمي الذكي',
+      community: 'الملتقى العلمي',
+      dashboard: 'لوحة الطالب',
+      admin: 'لوحة الإدارة العامة',
+      sciences: 'العلوم الشرعية',
+      library: 'المكتبة الرقمية',
+      waqf: 'السهم الوقفي والزكاة',
+      about: 'عن مجمع النور',
+      register: 'التسجيل والالتحاق',
+      newMuslims: 'رعاية المهتدين الجدد',
+      radio: 'إذاعة القرآن الكريم من مكة',
+      audioStudio: 'استوديو الصوت الإعلاني السوداني',
+      orphansCare: 'كفالة ورعاية الأيتام',
+      translationsReader: 'ترجمات معاني القرآن',
+      apiGateway: 'بوابة API السحابية',
+      noorAmbassador: 'سفير النور العالمي',
+      discoverIslam: 'اسأل عن الإسلام',
+      dawahLibrary: 'المكتبة الدعوية العالمية',
+    };
+    const suffix = 'مجمع النور الإسلامي العالمي';
+    document.title = currentPage === 'home' ? `${suffix} | NOOR GLOBAL` : `${pageTitlesAr[currentPage] || suffix} | ${suffix}`;
+  }, [currentPage]);
+
   return (
-    <div className={`min-h-screen bg-[#070D1E] text-[#F8FAFC] flex flex-col font-sans selection:bg-[#D4AF37]/30 selection:text-[#F8FAFC] antialiased pb-36 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
+    <div dir={isRtl ? 'rtl' : 'ltr'} className={`min-h-screen bg-[#070D1E] text-[#F8FAFC] flex flex-col font-sans selection:bg-[#D4AF37]/30 selection:text-[#F8FAFC] antialiased pb-36 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
       
       {/* Official Introductory Video Modal on Site Open */}
       {showIntroVideo && (
@@ -480,7 +528,9 @@ export default function App() {
     <ThemeProvider>
       <LanguageProvider>
         <AuthProvider>
-          <MainAppContent />
+          <ToastProvider>
+            <MainAppContent />
+          </ToastProvider>
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>

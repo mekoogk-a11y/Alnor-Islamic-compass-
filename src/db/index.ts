@@ -28,7 +28,7 @@ export const createPool = () => {
 };
 
 // Create or retrieve the pool instance.
-const pool = createPool();
+export const pool = createPool();
 
 // Initialize Drizzle with the pool and schema.
 export const db = drizzle(pool, { schema });

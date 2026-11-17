@@ -8,6 +8,7 @@ import {
 import { SUDANESE_VOICE_ADS } from '../../data/sudaneseVoiceAds';
 import { SudaneseVoiceAd, NavigationPage } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
+import { useToast } from '../../context/ToastContext';
 
 interface SudaneseAudioStudioPageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -15,6 +16,7 @@ interface SudaneseAudioStudioPageProps {
 
 export const SudaneseAudioStudioPage: React.FC<SudaneseAudioStudioPageProps> = ({ onNavigate }) => {
   const { lang, isRtl } = useLanguage();
+  const { showToast } = useToast();
   
   // Voice ads catalogue (initial + user generated)
   const [adsList, setAdsList] = useState<SudaneseVoiceAd[]>(SUDANESE_VOICE_ADS);
@@ -265,7 +267,7 @@ export const SudaneseAudioStudioPage: React.FC<SudaneseAudioStudioPageProps> = (
     }
 
     if (!('speechSynthesis' in window)) {
-      alert('متصفحك لا يدعم محرك تخليق الصوت Web Speech Synthesis');
+      showToast('متصفحك لا يدعم محرك تخليق الصوت Web Speech Synthesis', 'warning');
       return;
     }
 
@@ -443,9 +445,13 @@ export const SudaneseAudioStudioPage: React.FC<SudaneseAudioStudioPageProps> = (
         setCustomTopic('');
         setScriptGenSuccess(true);
         setTimeout(() => setScriptGenSuccess(false), 3000);
+      } else {
+        const errBody = await response.json().catch(() => ({}));
+        showToast(errBody?.error?.message || 'تعذر توليد النص الإعلاني حالياً، يرجى المحاولة بعد قليل.', 'error');
       }
     } catch (err) {
       console.error('Failed to generate script:', err);
+      showToast('حدث خطأ في الاتصال بالخادم أثناء توليد النص الإعلاني.', 'error');
     } finally {
       setIsGeneratingScript(false);
     }
@@ -533,7 +539,7 @@ export const SudaneseAudioStudioPage: React.FC<SudaneseAudioStudioPageProps> = (
           });
         }, 1000);
       } catch (err) {
-        alert('تعذر الوصول للميكروفون، يرجى السماح بصلاحية التسجيل في المتصفح.');
+        showToast('تعذر الوصول للميكروفون، يرجى السماح بصلاحية التسجيل في المتصفح.', 'warning');
       }
     }
   };

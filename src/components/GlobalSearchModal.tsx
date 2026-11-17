@@ -6,6 +6,7 @@ import {
 import { NavigationPage } from '../types';
 import { HADITH_DATA, SCHOLARS_DIRECTORY, ACADEMY_COURSES } from '../data/hadithAndScholarsData';
 import { SURAHS_INDEX } from '../data/islamicData';
+import { useLanguage } from '../context/LanguageContext';
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   onClose,
   onNavigate,
 }) => {
+  const { isRtl } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState<FilterCategory>('all');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -212,8 +214,8 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-14 sm:pt-24 px-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
       <div 
-        className="w-full max-w-2xl bg-slate-900 border border-emerald-800/60 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh] text-right"
-        dir="rtl"
+        className={`w-full max-w-2xl bg-slate-900 border border-emerald-800/60 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh] ${isRtl ? 'text-right' : 'text-left'}`}
+        dir={isRtl ? 'rtl' : 'ltr'}
       >
         {/* Search Input Bar */}
         <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center gap-3 bg-slate-950/70">

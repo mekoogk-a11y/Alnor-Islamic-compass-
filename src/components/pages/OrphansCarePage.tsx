@@ -9,6 +9,9 @@ import { NavigationPage, OrphanApplication, OrphanProfile, SponsorshipProgram } 
 import { ORPHANS_CONTACT_INFO, SPONSORSHIP_PROGRAMS, INITIAL_ORPHANS_PROFILES, INITIAL_ORPHAN_APPLICATIONS } from '../../data/orphansData';
 import { OFFICIAL_DONATION_INFO } from '../../data/islamicData';
 import { useLanguage } from '../../context/LanguageContext';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
+import { auth } from '../../services/firebase';
 import { orphansFirebaseService } from '../../services/orphansFirebaseService';
 
 interface OrphansCarePageProps {
@@ -17,6 +20,11 @@ interface OrphansCarePageProps {
 
 export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) => {
   const { lang, isRtl } = useLanguage();
+  const { user, openAuthModal } = useAuth();
+  const { showToast } = useToast();
+  const isAuthorizedAdmin = Boolean(
+    user && (user.role === 'admin' || user.email?.toLowerCase() === 'mekoogk@gmail.com')
+  );
 
   // Active view tab
   const [activeTab, setActiveTab] = useState<'programs' | 'profiles' | 'register' | 'track' | 'admin'>('programs');
@@ -65,9 +73,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
   const [sponsorPhone, setSponsorPhone] = useState('');
   const [sponsorSuccess, setSponsorSuccess] = useState(false);
 
-  // Admin section
-  const [adminAuthenticated, setAdminAuthenticated] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('');
+  // Admin section state
   const [adminApplications, setAdminApplications] = useState<OrphanApplication[]>(INITIAL_ORPHAN_APPLICATIONS);
   const [adminStatusFilter, setAdminStatusFilter] = useState<string>('all');
   const [statusUpdatingId, setStatusUpdatingId] = useState<string | null>(null);
@@ -206,18 +212,26 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
   // Admin status update
   const handleUpdateStatus = async (appId: string, newStatus: any) => {
     setStatusUpdatingId(appId);
+    const noteSnapshot = adminFieldNote;
     try {
       setAdminApplications((prev) =>
-        prev.map((a) => (a.id === appId ? { ...a, status: newStatus, fieldNotes: adminFieldNote || a.fieldNotes, updatedAt: new Date().toISOString() } : a))
+        prev.map((a) => (a.id === appId ? { ...a, status: newStatus, fieldNotes: noteSnapshot || a.fieldNotes, updatedAt: new Date().toISOString() } : a))
       );
       setAdminFieldNote('');
       try {
+        const token = await auth.currentUser?.getIdToken();
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         await fetch(`/api/v1/orphans/applications/${appId}/status`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: newStatus, notes: adminFieldNote })
+          headers,
+          body: JSON.stringify({ status: newStatus, notes: noteSnapshot }),
         });
-      } catch (err) {}
+        showToast('تم تحديث حالة ملف اليتيم بنجاح.', 'success');
+      } catch {
+        showToast('تم تحديث الحالة محلياً؛ يرجى التحقق من اتصال المشرف للمزامنة السحابية.', 'warning');
+      }
     } finally {
       setStatusUpdatingId(null);
     }
@@ -1242,7 +1256,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
       {/* TAB 5: DEDICATED ORPHANS ADMIN DASHBOARD */}
       {activeTab === 'admin' && (
         <section className="rounded-3xl border border-[#E5DCCB] dark:border-[#3A4237] p-6 sm:p-8 shadow-lg bg-[#FAF8F2] dark:bg-[#272B25] space-y-6">
-          {!adminAuthenticated ? (
+          {!isAuthorizedAdmin ? (
             <div className="max-w-md mx-auto text-center space-y-4 py-8">
               <div className="w-12 h-12 rounded-2xl bg-[#343832] text-[#B9A477] flex items-center justify-center mx-auto">
                 <Lock className="w-6 h-6" />
@@ -1250,34 +1264,21 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
               <h2 className="text-lg font-black text-[#343832] dark:text-[#F7F5EF]">
                 دخول لوحة إدارة قسم كفالة الأيتام
               </h2>
-              <p className="text-xs text-[#657568] dark:text-[#D8CEBB]">
-                مخصصة للباحثين الاجتماعيين ولجنة اعتماد طلبات الكفالة بمجمع النور
+              <p className="text-xs text-[#657568] dark:text-[#D8CEBB] leading-relaxed">
+                مخصصة للباحثين الاجتماعيين ولجنة اعتماد طلبات الكفالة بمجمع النور عبر المصادقة المؤسسية المعتمدة.
               </p>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (adminPassword === 'admin' || adminPassword === 'alnoor2025' || adminPassword === 'orphan') {
-                    setAdminAuthenticated(true);
-                  } else {
-                    alert('كلمة المرور غير صحيحة (استخدم: alnoor2025 أو admin)');
-                  }
-                }}
-                className="space-y-3"
+              {user && (
+                <p className="text-[11px] font-bold text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5">
+                  أنت مسجل حالياً بحساب ({user.email}) دون صلاحية مشرف أيتام. يرجى تسجيل الدخول بحساب الإدارة المعتمد.
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={openAuthModal}
+                className="w-full py-3 rounded-xl bg-[#394E43] hover:bg-[#2F4238] text-white text-xs font-bold transition-colors cursor-pointer"
               >
-                <input
-                  type="password"
-                  value={adminPassword}
-                  onChange={(e) => setAdminPassword(e.target.value)}
-                  placeholder="كلمة مرور المشرف (alnoor2025)"
-                  className="w-full px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] text-xs bg-white dark:bg-[#1F221E] text-center"
-                />
-                <button
-                  type="submit"
-                  className="w-full py-2.5 rounded-xl bg-[#394E43] text-white text-xs font-bold"
-                >
-                  تسجيل الدخول للوحة الأيتام
-                </button>
-              </form>
+                تسجيل الدخول بحساب الإدارة المعتمد
+              </button>
             </div>
           ) : (
             <div className="space-y-6">
@@ -1287,7 +1288,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                     لوحة متابعة واعتماد طلبات الأيتام (Orphans Operations Console)
                   </h2>
                   <p className="text-xs text-[#657568] dark:text-[#D8CEBB]">
-                    إجمالي الطلبات المسجلة: {adminApplications.length} طلب
+                    إجمالي الطلبات المسجلة: {adminApplications.length} طلب • المشرف: {user?.email}
                   </p>
                 </div>
 
@@ -1303,12 +1304,6 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                     <option value="approved">معتمد</option>
                     <option value="rejected">مرفوض</option>
                   </select>
-                  <button
-                    onClick={() => setAdminAuthenticated(false)}
-                    className="px-3 py-1.5 rounded-xl bg-red-100 text-red-800 text-xs font-bold"
-                  >
-                    خروج
-                  </button>
                 </div>
               </div>
 

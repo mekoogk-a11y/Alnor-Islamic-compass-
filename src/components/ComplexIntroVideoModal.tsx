@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   Play,
   Pause,
@@ -34,6 +34,10 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
 
+  const [isClosing, setIsClosing] = useState(false);
+  const [autoSkipSeconds, setAutoSkipSeconds] = useState<number | null>(null);
+  const [autoSkipCancelled, setAutoSkipCancelled] = useState(false);
+
   const { state, actions } = useResilientVideo({
     videoRef,
     sources: INTRO_VIDEO_SOURCES,
@@ -42,6 +46,42 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
     storageKey: 'alnoor_intro_video_pos',
   });
 
+  const handleSmoothClose = useCallback(() => {
+    if (isClosing) return;
+    setIsClosing(true);
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      onCloseRef.current();
+    } else {
+      window.setTimeout(() => {
+        onCloseRef.current();
+      }, 260);
+    }
+  }, [isClosing]);
+
+  // Smart fallback: if playback fails unrecoverably, start a gentle auto-skip countdown
+  useEffect(() => {
+    if (!state.errorMessage || autoSkipCancelled) {
+      setAutoSkipSeconds(null);
+      return;
+    }
+    setAutoSkipSeconds(6);
+    const interval = window.setInterval(() => {
+      setAutoSkipSeconds((prev) => {
+        if (prev === null) return null;
+        if (prev <= 1) {
+          window.clearInterval(interval);
+          handleSmoothClose();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, [state.errorMessage, autoSkipCancelled, handleSmoothClose]);
+
   // Keyboard shortcuts (Escape, Space, ArrowLeft/Right, M, F)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -49,7 +89,7 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
       if (tag === 'input' || tag === 'textarea') return;
 
       if (e.key === 'Escape') {
-        onCloseRef.current();
+        handleSmoothClose();
       } else if (e.key === ' ' || e.key === 'k' || e.key === 'K') {
         e.preventDefault();
         actions.togglePlay();
@@ -69,7 +109,7 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [actions]);
+  }, [actions, handleSmoothClose]);
 
   const handleSeekInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const targetSec = parseFloat(e.target.value);
@@ -80,13 +120,19 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6 bg-[#030712]/95 backdrop-blur-xl animate-fade-in overflow-y-auto"
+      className={`fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-6 bg-[#030712]/95 backdrop-blur-xl overflow-y-auto transition-opacity duration-300 ${
+        isClosing ? 'opacity-0 pointer-events-none' : 'opacity-100 animate-fade-in'
+      }`}
       dir={isRtl ? 'rtl' : 'ltr'}
       role="dialog"
       aria-modal="true"
       aria-label="الفيديو التعريفي لمجمع النور الإسلامي العالمي"
     >
-      <div className="relative w-full max-w-3xl bg-[#070D1E] border border-[#D4AF37]/50 rounded-3xl shadow-[0_25px_90px_rgba(0,0,0,0.95)] overflow-hidden my-auto">
+      <div
+        className={`relative w-full max-w-3xl bg-[#070D1E] border border-[#D4AF37]/50 rounded-3xl shadow-[0_25px_90px_rgba(0,0,0,0.95)] overflow-hidden my-auto transition-all duration-300 ${
+          isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
+        }`}
+      >
         {/* Top Institutional Header Bar (Outside video canvas) */}
         <div className="px-4 py-3 sm:px-6 bg-[#0B132B] border-b border-[#D4AF37]/25 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -108,7 +154,7 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
 
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleSmoothClose}
             className="flex items-center gap-1.5 px-3 py-2 min-h-[40px] rounded-xl bg-[#111C3D] hover:bg-rose-950/70 text-[#E2E8F0] hover:text-white border border-[#D4AF37]/30 text-xs font-bold transition-colors cursor-pointer shrink-0 whitespace-nowrap"
             aria-label="إغلاق الفيديو والدخول للموقع"
           >
@@ -174,21 +220,48 @@ export const ComplexIntroVideoModal: React.FC<ComplexIntroVideoModalProps> = ({ 
             </div>
           )}
 
-          {/* Error & Recovery Overlay */}
+          {/* Error & Smart Fallback Overlay */}
           {state.errorMessage && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3.5 bg-[#070D1E]/90 p-6 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3.5 bg-[#070D1E]/92 p-6 text-center">
               <AlertTriangle className="w-10 h-10 text-amber-400" />
               <p className="text-xs sm:text-sm text-amber-100 font-bold max-w-sm leading-relaxed">
                 {state.errorMessage}
               </p>
-              <button
-                type="button"
-                onClick={actions.retry}
-                className="flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-xl bg-[#D4AF37] hover:bg-[#E5C158] text-[#070D1E] text-xs font-black cursor-pointer transition-colors"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span>إعادة المحاولة</span>
-              </button>
+              {autoSkipSeconds !== null && !autoSkipCancelled && (
+                <p className="text-[11px] text-[#CBD5E1]">
+                  سيتم الدخول تلقائياً إلى البوابة الرئيسية خلال {autoSkipSeconds} ثوانٍ...
+                </p>
+              )}
+              <div className="flex flex-wrap items-center justify-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAutoSkipCancelled(false);
+                    actions.retry();
+                  }}
+                  className="flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-[#D4AF37] hover:bg-[#E5C158] text-[#070D1E] text-xs font-black cursor-pointer transition-colors"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  <span>إعادة المحاولة</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSmoothClose}
+                  className="flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-[#111C3D] hover:bg-[#1E2E5D] text-[#F8FAFC] border border-[#D4AF37]/40 text-xs font-bold cursor-pointer transition-colors"
+                >
+                  <span>تخطي ودخول الموقع</span>
+                  <ArrowLeft className={`w-4 h-4 ${isRtl ? '' : 'rotate-180'}`} />
+                </button>
+                {autoSkipSeconds !== null && !autoSkipCancelled && (
+                  <button
+                    type="button"
+                    onClick={() => setAutoSkipCancelled(true)}
+                    className="px-3 py-2 text-[11px] text-[#94A3B8] hover:text-white underline cursor-pointer"
+                  >
+                    إلغاء التخطي التلقائي
+                  </button>
+                )}
+              </div>
             </div>
           )}
         </div>

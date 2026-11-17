@@ -7,6 +7,8 @@ import {
 import { ACADEMY_COURSES } from '../../data/hadithAndScholarsData';
 import { AcademyCourse, NavigationPage } from '../../types';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { useToast } from '../../context/ToastContext';
 
 interface AcademyPageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -15,6 +17,8 @@ interface AcademyPageProps {
 
 export const AcademyPage: React.FC<AcademyPageProps> = ({ onNavigate, initialCourseId }) => {
   const { user, enrollCourse } = useAuth();
+  const { isRtl } = useLanguage();
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'courses' | 'halaqat' | 'recitationCorrection' | 'verifyCertificate'>('courses');
   const [departmentFilter, setDepartmentFilter] = useState<string>('all');
   const [selectedCourse, setSelectedCourse] = useState<AcademyCourse | null>(null);
@@ -94,7 +98,7 @@ export const AcademyPage: React.FC<AcademyPageProps> = ({ onNavigate, initialCou
   });
 
   return (
-    <div className="space-y-8" dir="rtl">
+    <div className="space-y-8" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-emerald-950/80 to-slate-900 border border-emerald-900/50 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
         <div className="max-w-3xl space-y-4">
@@ -321,7 +325,7 @@ export const AcademyPage: React.FC<AcademyPageProps> = ({ onNavigate, initialCou
                 </div>
 
                 <button
-                  onClick={() => alert(`جاري الاتصال بالغرفة الصوتية الافتراضية: ${halaqa.title}\nيرجى تجهيز الميكروفون والمصحف الشريف.`)}
+                  onClick={() => showToast(`جاري الاتصال بالغرفة الصوتية الافتراضية: ${halaqa.title}\nيرجى تجهيز الميكروفون والمصحف الشريف.`, 'info')}
                   className="w-full py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold text-xs rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-950"
                 >
                   <Video className="w-4 h-4" />

@@ -4,25 +4,28 @@ import {
   Server, Database, Cpu, Shield, Clock, Wifi, Zap, ExternalLink 
 } from 'lucide-react';
 
-interface ServiceHealth {
+interface ServiceStatusEntry {
   status: 'operational' | 'degraded' | 'down';
   latencyMs: number;
-  uptime: string;
+  uptimePercentage: number;
   lastChecked: string;
-  details?: string;
-  version?: string;
+  note?: string;
 }
 
 interface GatewayHealthData {
   status: string;
-  services: Record<string, {
-    status: 'operational' | 'degraded' | 'down';
-    latencyMs: number;
-    uptimePercentage: number;
-    lastChecked: string;
-  }>;
+  serviceMap?: Record<string, ServiceStatusEntry>;
+  services: ApiHealthStatusEntry[] | Record<string, ServiceStatusEntry>;
   nodeEnvironment: string;
   serverUptimeSeconds: number;
+}
+
+interface ApiHealthStatusEntry {
+  serviceId: string;
+  status: string;
+  latencyMs: number;
+  uptimePercentage: number;
+  lastChecked: string;
 }
 
 export const ServiceStatusDashboard: React.FC = () => {
@@ -30,9 +33,11 @@ export const ServiceStatusDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
   const [pingLatency, setPingLatency] = useState<number | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const fetchHealthStatus = async () => {
     setIsLoading(true);
+    setFetchError(null);
     const startPing = Date.now();
     try {
       const response = await fetch('/api/v1/health');
@@ -43,37 +48,12 @@ export const ServiceStatusDashboard: React.FC = () => {
         const json = await response.json();
         setHealthData(json.data || json);
       } else {
-        // Fallback default operational state for local dev
-        setHealthData({
-          status: 'operational',
-          services: {
-            'core-gateway': { status: 'operational', latencyMs: elapsed, uptimePercentage: 99.98, lastChecked: new Date().toISOString() },
-            'cloudsql-postgres': { status: 'operational', latencyMs: 24, uptimePercentage: 99.99, lastChecked: new Date().toISOString() },
-            'redis-cache': { status: 'operational', latencyMs: 3, uptimePercentage: 100, lastChecked: new Date().toISOString() },
-            'firebase-auth': { status: 'operational', latencyMs: 42, uptimePercentage: 99.95, lastChecked: new Date().toISOString() },
-            'gemini-ai-engine': { status: 'operational', latencyMs: 180, uptimePercentage: 99.90, lastChecked: new Date().toISOString() },
-            'makkah-radio-stream': { status: 'operational', latencyMs: 65, uptimePercentage: 99.95, lastChecked: new Date().toISOString() }
-          },
-          nodeEnvironment: 'development',
-          serverUptimeSeconds: 3600
-        });
+        setFetchError(`تعذر جلب الحالة المباشرة من الخادم (HTTP ${response.status})`);
       }
-    } catch (err) {
+    } catch {
       const elapsed = Date.now() - startPing;
       setPingLatency(elapsed);
-      setHealthData({
-        status: 'operational',
-        services: {
-          'core-gateway': { status: 'operational', latencyMs: elapsed, uptimePercentage: 99.98, lastChecked: new Date().toISOString() },
-          'cloudsql-postgres': { status: 'operational', latencyMs: 28, uptimePercentage: 99.99, lastChecked: new Date().toISOString() },
-          'redis-cache': { status: 'operational', latencyMs: 2, uptimePercentage: 100, lastChecked: new Date().toISOString() },
-          'firebase-auth': { status: 'operational', latencyMs: 45, uptimePercentage: 99.95, lastChecked: new Date().toISOString() },
-          'gemini-ai-engine': { status: 'operational', latencyMs: 210, uptimePercentage: 99.90, lastChecked: new Date().toISOString() },
-          'makkah-radio-stream': { status: 'operational', latencyMs: 70, uptimePercentage: 99.95, lastChecked: new Date().toISOString() }
-        },
-        nodeEnvironment: 'cloud-run',
-        serverUptimeSeconds: 7200
-      });
+      setFetchError('تعذر الاتصال بخادم مراقبة الخدمات حالياً.');
     } finally {
       setIsLoading(false);
       setLastRefreshed(new Date());
@@ -105,7 +85,7 @@ export const ServiceStatusDashboard: React.FC = () => {
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-950/60 text-amber-300 border border-amber-500/30">
             <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-            <span>أداء منخفض جزئياً</span>
+            <span>يتطلب تهيئة أو أداء جزئي</span>
           </span>
         );
       case 'down':
@@ -135,7 +115,7 @@ export const ServiceStatusDashboard: React.FC = () => {
     },
     {
       id: 'redis-cache',
-      nameAr: 'طبقة التخزين المؤقت الذاكرية (Redis/Memory Cache)',
+      nameAr: 'طبقة التخزين المؤقت الذاكرية (Memory Cache)',
       desc: 'تسريع مواقيت الصلاة والتقويم الهجري والفهارس القرآنية',
       icon: Zap,
       type: 'Low-Latency Cache'
@@ -163,13 +143,28 @@ export const ServiceStatusDashboard: React.FC = () => {
     }
   ];
 
+  const resolveServiceStatus = (id: string): ServiceStatusEntry => {
+    if (healthData?.serviceMap?.[id]) {
+      return healthData.serviceMap[id];
+    }
+    if (healthData?.services && !Array.isArray(healthData.services) && healthData.services[id]) {
+      return healthData.services[id];
+    }
+    return {
+      status: fetchError ? 'down' : 'degraded',
+      latencyMs: pingLatency ?? 0,
+      uptimePercentage: fetchError ? 0 : 99.5,
+      lastChecked: new Date().toISOString(),
+    };
+  };
+
   return (
     <div className="space-y-6">
       {/* Header Bar */}
       <div className="rounded-2xl bg-[#0B132B] border border-[#D4AF37]/30 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-emerald-400 animate-ping" />
+            <span className={`w-3 h-3 rounded-full ${fetchError ? 'bg-rose-400' : 'bg-emerald-400 animate-ping'}`} />
             <h3 className="text-lg font-bold text-[#F8FAFC] font-amiri flex items-center gap-2">
               <Activity className="w-5 h-5 text-[#D4AF37]" />
               <span>لوحة مراقبة حالة الخدمات والأنظمة (Service Health Monitor)</span>
@@ -196,16 +191,24 @@ export const ServiceStatusDashboard: React.FC = () => {
         </div>
       </div>
 
+      {fetchError && (
+        <div className="rounded-xl bg-rose-950/40 border border-rose-500/40 p-3.5 text-xs text-rose-200 flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+          <span>{fetchError}</span>
+        </div>
+      )}
+
       {/* Grid of Monitored Services */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {servicesConfig.map((srv) => {
-          const srvData = healthData?.services?.[srv.id] || {
-            status: 'operational' as const,
-            latencyMs: 18,
-            uptimePercentage: 99.98,
-            lastChecked: new Date().toISOString()
-          };
+          const srvData = resolveServiceStatus(srv.id);
           const IconComponent = srv.icon;
+          const dotColor =
+            srvData.status === 'operational'
+              ? 'bg-emerald-400'
+              : srvData.status === 'degraded'
+              ? 'bg-amber-400'
+              : 'bg-rose-400';
 
           return (
             <div
@@ -230,14 +233,14 @@ export const ServiceStatusDashboard: React.FC = () => {
               </div>
 
               <p className="text-[11px] text-[#94A3B8] leading-relaxed line-clamp-2">
-                {srv.desc}
+                {srvData.note || srv.desc}
               </p>
 
               <div className="pt-3 border-t border-[#D4AF37]/10 grid grid-cols-2 gap-2 text-[11px]">
                 <div className="space-y-0.5">
                   <span className="text-[#64748B] block text-[10px]">زمن الاستجابة</span>
                   <span className="font-mono text-[#F8FAFC] font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
                     {srvData.latencyMs}ms
                   </span>
                 </div>

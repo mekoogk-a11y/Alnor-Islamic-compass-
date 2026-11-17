@@ -19,7 +19,9 @@ import {
 import { VideoPlaylistManager } from '../VideoPlaylistManager';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 import { OFFICIAL_COMPLEX_LOGO } from '../../data/islamicData';
+import { createScholarEmblemDataUri } from '../../utils/islamicArtwork';
 
 interface DawahLibraryPageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -28,6 +30,7 @@ interface DawahLibraryPageProps {
 export const DawahLibraryPage: React.FC<DawahLibraryPageProps> = ({ onNavigate }) => {
   const { lang, isRtl } = useLanguage();
   const { user } = useAuth();
+  const { showToast } = useToast();
   
   // Storage keys for persistent additions
   const STORAGE_KEY_SCHOLARS = 'alnoor_dawah_scholars_v1';
@@ -203,7 +206,7 @@ export const DawahLibraryPage: React.FC<DawahLibraryPageProps> = ({ onNavigate }
       featured: false,
       topicsText: 'مقارنة الأديان, القرآن',
     });
-    alert('تمت إضافة المحاضرة الدعوية بنجاح إلى المكتبة!');
+    showToast('تمت إضافة المحاضرة الدعوية بنجاح إلى المكتبة!', 'success');
   };
 
   // Add Scholar to State & LocalStorage
@@ -220,7 +223,7 @@ export const DawahLibraryPage: React.FC<DawahLibraryPageProps> = ({ onNavigate }
       titleEn: newScholar.titleEn || 'Islamic Scholar and Lecturer',
       bioAr: newScholar.bioAr,
       bioEn: newScholar.bioEn,
-      imageUrl: newScholar.imageUrl || 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80',
+      imageUrl: newScholar.imageUrl || createScholarEmblemDataUri(newScholar.nameAr.slice(0, 2), newScholar.accentColor || '#D4AF37', 'AL-NOOR DAWAH'),
       country: newScholar.country || 'عالمي',
       isEnglishSpeaker: newScholar.isEnglishSpeaker,
       specialties: newScholar.specialtiesText.split(',').map(s => s.trim()).filter(Boolean),
@@ -249,17 +252,17 @@ export const DawahLibraryPage: React.FC<DawahLibraryPageProps> = ({ onNavigate }
       specialtiesText: 'مقارنة الأديان, الرد على الشبهات',
       accentColor: '#D4AF37',
     });
-    alert('تمت إضافة الداعية الجديد بنجاح إلى الهيئة الدعوية للمكتبة!');
+    showToast('تمت إضافة الداعية الجديد بنجاح إلى الهيئة الدعوية للمكتبة!', 'success');
   };
 
   // Delete Lecture
   const handleDeleteLecture = (id: string) => {
-    if (!window.confirm('هل أنت متأكد من حذف هذه المحاضرة؟')) return;
     const updated = lectures.filter(l => l.id !== id);
     setLectures(updated);
     try {
       localStorage.setItem(STORAGE_KEY_LECTURES, JSON.stringify(updated));
     } catch (_) {}
+    showToast('تمت إزالة المحاضرة من القائمة بنجاح.', 'info');
   };
 
   return (

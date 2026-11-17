@@ -1,3 +1,4 @@
+import { auth } from '../firebase';
 import { 
   PrayerTimesData, 
   HijriDateData, 
@@ -34,6 +35,18 @@ class AlNoorApiClient {
       'X-Client-Platform': 'web',
       'X-Client-App-Version': '2.4.0',
     };
+
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const token = await currentUser.getIdToken();
+        if (token) {
+          defaultHeaders['Authorization'] = `Bearer ${token}`;
+        }
+      }
+    } catch {
+      // Proceed without bearer header if token lookup fails
+    }
 
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {

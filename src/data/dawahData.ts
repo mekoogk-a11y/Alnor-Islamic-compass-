@@ -1,4 +1,5 @@
 import { DawahCategory, DawahScholar, DawahLecture } from '../types';
+import { createScholarEmblemDataUri } from '../utils/islamicArtwork';
 
 export const DAWAH_CATEGORIES: {
   id: DawahCategory;
@@ -92,7 +93,7 @@ export const INITIAL_DAWAH_SCHOLARS: DawahScholar[] = [
     titleEn: 'Master of Comparative Religion & Orator (1918 - 2005)',
     bioAr: 'داعية ومناظر إسلامي عالمي هندي-جنوب أفريقي، نال جائزة الملك فيصل العالمية لخدمة الإسلام عام 1986م. أسس المركز الدولي للدعوة الإسلامية (IPCI) في ديربان، وخاض أشهر المناظرات العالمية الموثقة مع كبار القساوسة والمستشرقين، وألّف أكثر من 20 كتاباً تُرجمت لمئات اللغات وأسلم على يديه مئات الآلاف حول العالم.',
     bioEn: 'World-renowned South African Muslim missionary of Indian origin, winner of the King Faisal International Prize for Service to Islam (1986). Founder of IPCI in Durban, he pioneered global public debates defending Islam with razor-sharp biblical cross-references and oratorical mastery.',
-    imageUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80',
+    imageUrl: createScholarEmblemDataUri('أ.د', '#D4AF37', 'COMPARATIVE'),
     country: 'جنوب أفريقيا / South Africa',
     isEnglishSpeaker: true,
     specialties: ['مقارنة الأديان', 'المناظرات الكبرى', 'إثبات رسالة النبي محمد ﷺ', 'الرد على الشبهات'],
@@ -108,7 +109,7 @@ export const INITIAL_DAWAH_SCHOLARS: DawahScholar[] = [
     titleEn: 'Medical Doctor & Global Authority on Comparative Religion',
     bioAr: 'داعية وطبيب هندي عالمي، تلميذ الشيخ أحمد ديدات، نال جائزة الملك فيصل العالمية لخدمة الإسلام عام 2015م. مؤسس شبكة تلفزيون السلام (Peace TV) التي شاهدها أكثر من 200 مليون شخص. يُعرف بذاكرته الفوتوغرافية واستشهاداته المتقنة من القرآن والتوراة والإنجيل والفيدا والهندوسية.',
     bioEn: 'Indian medical doctor and world authority on comparative religion, recipient of the King Faisal International Prize (2015). Founder of Peace TV Network, renowned for his photographic memory quoting the Quran, Bible, Vedas, and Bhagavad Gita with chapter and verse references.',
-    imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80',
+    imageUrl: createScholarEmblemDataUri('ذ.ن', '#38BDF8', 'PEACE RESEARCH'),
     country: 'الهند / ماليزيا (India / Malaysia)',
     isEnglishSpeaker: true,
     specialties: ['القرآن والعلم الحديث', 'مقارنة الأديان', 'أسئلة حرة مع غير المسلمين', 'دحض الشبهات'],
@@ -124,7 +125,7 @@ export const INITIAL_DAWAH_SCHOLARS: DawahScholar[] = [
     titleEn: 'Former Christian Pastor & Inspiring Global Dawah Speaker',
     bioAr: 'داعية إسلامي أمريكي كان قسيساً ومبشراً مسيحياً في تكساس حتى اعتنق الإسلام عام 1991م بعد حوار مع مسلم مصري. عمل كمرشد ديني في السجون الأمريكية وممثل للمسلمين في الأمم المتحدة، ويتميز بأسلوبه الفكاهي الأخاذ وشرحه السلس والمقنع لمفهوم الإله الواحد في الإسلام.',
     bioEn: 'American Islamic preacher who served as a Christian pastor and music minister until embracing Islam in 1991. Former National Muslim Chaplain for Federal Prisons and UN delegate, famous for his warm humor and heartfelt lectures guiding Westerners to the truth of pure Tawhid.',
-    imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80',
+    imageUrl: createScholarEmblemDataUri('ي.إ', '#34D399', 'TAWHID DAWAH'),
     country: 'الولايات المتحدة الأمريكية (USA)',
     isEnglishSpeaker: true,
     specialties: ['قصة إسلامه', 'حقيقة رسالة عيسى عليه السلام', 'مخاطبة العقل الغربي', 'الإسلام الصافي'],
@@ -140,7 +141,7 @@ export const INITIAL_DAWAH_SCHOLARS: DawahScholar[] = [
     titleEn: 'Grand Mufti of Zimbabwe & Motivational Islamic Scholar',
     bioAr: 'عالم ومحاضر إسلامي من زيمبابوي، تخرج من كلية الشريعة بالجامعة الإسلامية بالمدينة المنورة وحصل على الدكتوراه. صُنف كأحد أكثر 500 شخصية إسلامية تأثيراً في العالم. يلقى خطاباته باللغة الإنجليزية في أرجاء المعمورة ويركز على تطهير القلوب، التعامل مع المحن، والمحبة والتراحم.',
     bioEn: 'Grand Mufti of Zimbabwe, graduated with honors from the Islamic University of Madinah. Named among the 500 Most Influential Muslims in the world, he travels globally delivering uplifting reminders on inner peace, family bonding, and prophetic compassion.',
-    imageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80',
+    imageUrl: createScholarEmblemDataUri('إ.م', '#A78BFA', 'ETHICS & WISDOM'),
     country: 'زيمبابوي (Zimbabwe)',
     isEnglishSpeaker: true,
     specialties: ['بناء النفس', 'السكينة في الأزمات', 'الأخلاق النبوية', 'التعامل مع الابتلاءات'],
@@ -156,7 +157,7 @@ export const INITIAL_DAWAH_SCHOLARS: DawahScholar[] = [
     titleEn: 'Founder of Bayyinah Institute & Quranic Linguistics Researcher',
     bioAr: 'داعية ومحاضر أمريكي-باكستاني ومؤسس معهد "بينة" لتعليم اللغة العربية وتدبر القرآن بالولايات المتحدة. عُرف ببحوثه المعمقة في البلاغة العربية ونظم الآيات، وشرحه العصري المؤثر لقصص الأنبياء وسور القرآن الكريم الذي جذب ملايين الشباب من حول العالم.',
     bioEn: 'American-Pakistani Islamic educator and founder of the Bayyinah Institute for Arabic and Quranic Studies in Texas. World-renowned for his profound reflections on the linguistic miracles and emotional beauty of the Quranic text.',
-    imageUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=600&q=80',
+    imageUrl: createScholarEmblemDataUri('ن.خ', '#F59E0B', 'QURANIC ARABIC'),
     country: 'الولايات المتحدة الأمريكية (USA)',
     isEnglishSpeaker: true,
     specialties: ['الإعجاز البياني للقرآن', 'تدبر السور والآيات', 'قصص الأنبياء', 'فهم لغة التنزيل'],

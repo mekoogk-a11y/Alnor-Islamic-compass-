@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/v1/orphans/applications
+Disallow: /api/v1/dawah/inquiries
+Disallow: /api/v1/keys
+
+Sitemap: https://www.mojamaalnor.com/sitemap.xml

@@ -6,6 +6,7 @@ import {
 import { COMMUNITY_QUESTIONS } from '../../data/hadithAndScholarsData';
 import { CommunityQuestion, NavigationPage } from '../../types';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface CommunityPageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -13,6 +14,7 @@ interface CommunityPageProps {
 
 export const CommunityPage: React.FC<CommunityPageProps> = () => {
   const { user } = useAuth();
+  const { isRtl } = useLanguage();
   const [questions, setQuestions] = useState<CommunityQuestion[]>(COMMUNITY_QUESTIONS);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -63,7 +65,7 @@ export const CommunityPage: React.FC<CommunityPageProps> = () => {
   };
 
   return (
-    <div className="space-y-8" dir="rtl">
+    <div className="space-y-8" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Header Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-emerald-950/80 to-slate-900 border border-emerald-900/50 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
         <div className="max-w-3xl space-y-4">

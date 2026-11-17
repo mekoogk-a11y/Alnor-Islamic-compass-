@@ -5,12 +5,14 @@ import {
 } from 'lucide-react';
 import { NavigationPage, WaqfProject } from '../../types';
 import { COMPLEX_INFO, WAQF_PROJECTS, OFFICIAL_DONATION_INFO } from '../../data/islamicData';
+import { useToast } from '../../context/ToastContext';
 
 interface WaqfPageProps {
   onNavigate: (page: NavigationPage) => void;
 }
 
 export const WaqfPage: React.FC<WaqfPageProps> = () => {
+  const { showToast } = useToast();
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   // Zakat Calculator State
@@ -182,7 +184,7 @@ export const WaqfPage: React.FC<WaqfPageProps> = () => {
                   <span className="text-slate-400 font-mono">سهم وقفي باسمك أو باسم والديك</span>
                   <button
                     onClick={() => {
-                      alert(`للمساهمة في مشروع «${project.title}»، يرجى التحويل عبر أحد الحسابات البنكية الرسمية أعلاه، مع إرسال الإشعار إلى ${COMPLEX_INFO.officialEmail}`);
+                      showToast(`للمساهمة في مشروع «${project.title}»، يرجى التحويل عبر أحد الحسابات البنكية الرسمية أعلاه، مع إرسال الإشعار إلى ${COMPLEX_INFO.officialEmail}`, 'info');
                     }}
                     className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl transition-all shadow-md flex items-center gap-1.5"
                   >
