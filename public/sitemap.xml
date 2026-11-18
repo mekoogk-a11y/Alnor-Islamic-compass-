@@ -6,7 +6,22 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://www.mojamaalnor.com/#about</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.mojamaalnor.com/#quran</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://www.mojamaalnor.com/#sciences</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.mojamaalnor.com/#library</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -19,6 +34,31 @@
     <loc>https://www.mojamaalnor.com/#academy</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.mojamaalnor.com/#waqf</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.mojamaalnor.com/#researchCenter</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.mojamaalnor.com/#mediaCenter</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.mojamaalnor.com/#internationalRelations</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://www.mojamaalnor.com/#contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://www.mojamaalnor.com/#translationsReader</loc>
@@ -34,11 +74,6 @@
     <loc>https://www.mojamaalnor.com/#orphansCare</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://www.mojamaalnor.com/#waqf</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://www.mojamaalnor.com/#radio</loc>

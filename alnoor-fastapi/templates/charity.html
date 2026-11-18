@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">المشاريع الخيرية والتبرعات</h1>
+        <p class="section-subtitle">ساهم في دعم حلقات التحفيظ وكفالة طلاب العلم والمبادرات الإنسانية.</p>
+      </div>
+    </div>
+
+    {% if donated_receipt == "invalid" %}
+      <div class="alert alert-error">يرجى إدخال مبلغ مساهمة صحيح أكبر من صفر.</div>
+    {% elif donated_receipt %}
+      <div class="alert alert-success">تم تسجيل مساهمتك في قاعدة البيانات بنجاح! رقم الإيصال المرجعي: {{ donated_receipt }}</div>
+    {% endif %}
+
+    {% if projects %}
+      <div class="cards-grid" style="margin-bottom:2.5rem;">
+        {% for p in projects %}
+        {% set pct = ((p.raised_amount / p.target_amount) * 100) if p.target_amount > 0 else 0 %}
+        <article class="card">
+          <img src="/static/images/academy_hall.jpg" alt="{{ p.title_ar }}" class="card-img" loading="lazy" />
+          <div class="card-meta">{{ p.category_ar }} · {{ p.location_ar }}</div>
+          <h3 class="card-title">{{ p.title_ar }}</h3>
+          <p class="card-text">{{ p.description_ar }}</p>
+          <div class="progress-track"><div class="progress-fill" style="width: {{ [pct, 100]|min|round(1) }}%;"></div></div>
+          <div class="card-meta">المحصّل: {{ "%.0f"|format(p.raised_amount) }} / {{ "%.0f"|format(p.target_amount) }} USD</div>
+          <a href="/projects/{{ p.id }}" class="btn btn-emerald btn-sm">تفاصيل المشروع</a>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="margin-bottom:2rem;">{% include "partials/empty_state.html" %}</div>
+    {% endif %}
+
+    <form action="/donate" method="post" class="form-panel">
+      <h2 class="section-title" style="font-size:1.4rem;margin-bottom:1rem;">نموذج المساهمة الخيرية</h2>
+      <input type="hidden" name="next_url" value="/charity" />
+      <div class="form-grid">
+        <div class="field">
+          <label for="ch_name">الاسم الكامل</label>
+          <input id="ch_name" type="text" name="donor_name" required />
+        </div>
+        <div class="field">
+          <label for="ch_email">البريد الإلكتروني</label>
+          <input id="ch_email" type="email" name="donor_email" />
+        </div>
+        <div class="field">
+          <label for="ch_phone">رقم الهاتف / واتساب</label>
+          <input id="ch_phone" type="text" name="donor_phone" />
+        </div>
+        <div class="field">
+          <label for="ch_amount">المبلغ</label>
+          <input id="ch_amount" type="number" step="0.01" min="1" name="amount" value="50" required />
+        </div>
+        <div class="field">
+          <label for="ch_currency">العملة</label>
+          <select id="ch_currency" name="currency">
+            <option value="USD">USD</option>
+            <option value="SAR">SAR</option>
+            <option value="SDG">SDG</option>
+            <option value="EUR">EUR</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="ch_project">المشروع</label>
+          <select id="ch_project" name="project_id">
+            <option value="">المساهمة العامة</option>
+            {% for p in projects %}
+              <option value="{{ p.id }}">{{ p.title_ar }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="ch_notes">ملاحظات أو إهداء</label>
+        <input id="ch_notes" type="text" name="notes" />
+      </div>
+      <button type="submit" class="btn btn-emerald">تأكيد وإصدار رقم الإيصال</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

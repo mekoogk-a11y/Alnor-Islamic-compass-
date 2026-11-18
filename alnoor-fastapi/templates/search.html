@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">نتائج البحث: "{{ query_text }}"</h1>
+        <p class="section-subtitle">البحث المباشر في الأقسام والمقالات والدورات والدروس والمشاريع والفتاوى.</p>
+      </div>
+    </div>
+
+    {% if not query_text %}
+      <div class="empty-state">اكتب كلمة أو موضوعاً في مربع البحث بالأعلى للبحث في قاعدة البيانات.</div>
+    {% elif not sections and not articles and not courses and not lessons and not projects and not fatwas %}
+      <div class="empty-state">لا توجد نتائج مطابقة لعبارة البحث "{{ query_text }}".</div>
+    {% else %}
+      <div class="cards-grid">
+        {% for s in sections %}
+        <article class="card">
+          <div class="card-meta">قسم رئيسي</div>
+          <h3 class="card-title">{{ s.title_ar }}</h3>
+          <p class="card-text">{{ s.description_ar }}</p>
+          <a href="/sections/{{ s.slug }}" class="btn btn-outline btn-sm">فتح القسم</a>
+        </article>
+        {% endfor %}
+
+        {% for a in articles %}
+        <article class="card">
+          <div class="card-meta">مقال · {{ a.author }}</div>
+          <h3 class="card-title">{{ a.title_ar }}</h3>
+          <p class="card-text">{{ a.summary_ar }}</p>
+          <a href="/articles/{{ a.id }}" class="btn btn-outline btn-sm">قراءة المقال</a>
+        </article>
+        {% endfor %}
+
+        {% for c in courses %}
+        <article class="card">
+          <div class="card-meta">دورة · {{ c.instructor }}</div>
+          <h3 class="card-title">{{ c.title_ar }}</h3>
+          <p class="card-text">{{ c.description_ar }}</p>
+          <a href="/courses/{{ c.id }}" class="btn btn-primary btn-sm">عرض الدورة</a>
+        </article>
+        {% endfor %}
+
+        {% for l in lessons %}
+        <article class="card">
+          <div class="card-meta">درس · {{ l.speaker }}</div>
+          <h3 class="card-title">{{ l.title_ar }}</h3>
+          <p class="card-text">{{ l.summary_ar }}</p>
+        </article>
+        {% endfor %}
+
+        {% for p in projects %}
+        <article class="card">
+          <div class="card-meta">مشروع خيري · {{ p.location_ar }}</div>
+          <h3 class="card-title">{{ p.title_ar }}</h3>
+          <p class="card-text">{{ p.description_ar }}</p>
+          <a href="/projects/{{ p.id }}" class="btn btn-emerald btn-sm">دعم المشروع</a>
+        </article>
+        {% endfor %}
+
+        {% for f in fatwas %}
+        <article class="card">
+          <div class="card-meta">فتوى · {{ f.category_ar }}</div>
+          <h3 class="card-title">{{ f.question_ar }}</h3>
+          <p class="card-text">{{ f.answer_ar }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

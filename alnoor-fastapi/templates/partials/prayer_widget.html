@@ -1,0 +1,28 @@
+<div class="quran-box">
+  <div class="section-header" style="margin-bottom:1rem;">
+    <div>
+      <h2 class="section-title" data-i18n="prayerHeading">مواقيت الصلاة</h2>
+      <p id="prayer-status" class="section-subtitle">جاري تحميل المواقيت عبر Aladhan API...</p>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+      <select id="prayer-city-select" aria-label="اختر المدينة" style="min-height:42px;padding:0.4rem 0.75rem;border-radius:8px;border:1px solid var(--border);background:var(--bg-soft);color:var(--text);">
+        <option value="Makkah,Saudi Arabia">مكة المكرمة</option>
+        <option value="Madinah,Saudi Arabia">المدينة المنورة</option>
+        <option value="Khartoum,Sudan">الخرطوم</option>
+        <option value="Riyadh,Saudi Arabia">الرياض</option>
+        <option value="Cairo,Egypt">القاهرة</option>
+        <option value="Istanbul,Turkey">إسطنبول</option>
+        <option value="London,United Kingdom">لندن</option>
+      </select>
+      <button type="button" id="prayer-geo-btn" class="btn btn-outline btn-sm">تحديد موقعي</button>
+    </div>
+  </div>
+  <div id="prayer-times-grid" class="prayer-grid">
+    <div class="prayer-slot"><div class="prayer-name">الفجر</div><div class="prayer-time">--:--</div></div>
+    <div class="prayer-slot"><div class="prayer-name">الشروق</div><div class="prayer-time">--:--</div></div>
+    <div class="prayer-slot"><div class="prayer-name">الظهر</div><div class="prayer-time">--:--</div></div>
+    <div class="prayer-slot"><div class="prayer-name">العصر</div><div class="prayer-time">--:--</div></div>
+    <div class="prayer-slot"><div class="prayer-name">المغرب</div><div class="prayer-time">--:--</div></div>
+    <div class="prayer-slot"><div class="prayer-name">العشاء</div><div class="prayer-time">--:--</div></div>
+  </div>
+</div>

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">الأذكار والأدعية المأثورة</h1>
+        <p class="section-subtitle">أذكار يومية صحيحة من القرآن الكريم والسنة النبوية المطهرة.</p>
+      </div>
+    </div>
+    <div class="cards-grid">
+      {% for item in adhkar_list %}
+      <article class="card">
+        <div class="card-meta" data-ar="{{ item.category_ar }}" data-en="{{ item.category_en }}">{{ item.category_ar }}</div>
+        <p style="font-family:var(--font-serif);font-size:1.38rem;line-height:2;margin:0;color:var(--text);">{{ item.arabic }}</p>
+        <div class="card-meta">التخريج: {{ item.reference }}</div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

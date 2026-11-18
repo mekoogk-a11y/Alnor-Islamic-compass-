@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:480px;">
+    <h1 class="section-title" style="margin-bottom:1rem;">دخول لوحة الإدارة</h1>
+    {% if error_message %}
+      <div class="alert alert-error">{{ error_message }}</div>
+    {% endif %}
+    <form action="/admin/login" method="post" class="form-panel">
+      <div class="field">
+        <label for="admin_pw">كلمة مرور الإدارة</label>
+        <input id="admin_pw" type="password" name="admin_password" required />
+      </div>
+      <button type="submit" class="btn btn-gold" style="width:100%;">فتح لوحة الإدارة</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

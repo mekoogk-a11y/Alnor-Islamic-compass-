@@ -3,69 +3,70 @@
 
 :root {
   /* =========================================================================
-     NOOR GLOBAL – A WORLD OF LIGHT DESIGN SYSTEM
-     Silicon Valley Global Engineering & Deep Islamic Nobility
+     AL NOOR GLOBAL ISLAMIC CHARITABLE COMPLEX – DIGITAL CAMPUS DESIGN SYSTEM
+     Emerald Green · Dark Sanctuary Green · Ivory & White · Stone · Subtle Gold
      ========================================================================= */
 
-  /* Palette: Nocturnal Deep Navies */
-  --color-midnight: #070D1E;
-  --color-navy-deep: #0B132B;
-  --color-navy-card: #0F172A;
-  --color-navy-border: #1E293B;
-  --color-navy-hover: #162038;
+  /* Core Campus Palette */
+  --color-emerald-deep: #064E3B;
+  --color-emerald-dark: #022C22;
+  --color-emerald-mid: #047857;
+  --color-emerald-soft: #ECFDF5;
 
-  /* Palette: Radiant Gold & Champagne */
-  --color-gold-bright: #F59E0B;
-  --color-gold-classic: #D4AF37;
-  --color-gold-champagne: #E5C07B;
+  --color-gold-subtle: #C8A24A;
+  --color-gold-classic: #B48D35;
   --color-gold-light: #F3E8CB;
-  --color-gold-glow: rgba(212, 175, 55, 0.35);
 
-  /* Palette: Scholarly Ivory & Parchment (For Reading Clear Contrast) */
-  --color-ivory-page: #FBF9F4;
-  --color-ivory-surface: #F6F4EE;
-  --color-ivory-card: #FFFFFF;
-  --color-ivory-text: #1E242B;
-  --color-ivory-border: #E8E2D5;
+  --color-ivory-page: #FAF8F2;
+  --color-ivory-surface: #FFFFFF;
+  --color-stone-warm: #EFECE3;
+  --color-stone-border: #DDD6C7;
+  --color-stone-muted: #D4CCB9;
 
-  /* Semantic Theme Tokens (Default: Nocturnal High-Tech Navy) */
-  --bg-main: #070D1E;
-  --bg-surface: #0B132B;
-  --bg-card: #0F172A;
-  --bg-subtle: #162038;
-  --border-fine: rgba(229, 192, 123, 0.18);
-  --border-strong: rgba(229, 192, 123, 0.35);
-  --border-gold: rgba(212, 175, 55, 0.45);
-  --text-main: #F8FAFC;
-  --text-muted: #CBD5E1;
-  --text-faint: #94A3B8;
-  --accent-primary: #D4AF37;
-  --accent-secondary: #38BDF8;
-  --accent-gold: #F59E0B;
+  /* Semantic Theme Tokens (Default: Campus Architectural Ivory & Emerald Daylight) */
+  --bg-main: #FAF8F2;
+  --bg-surface: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #F3EFE4;
+  --border-fine: rgba(6, 78, 59, 0.14);
+  --border-strong: rgba(6, 78, 59, 0.28);
+  --border-gold: rgba(200, 162, 74, 0.55);
+  --text-main: #0F2920;
+  --text-muted: #38554B;
+  --text-faint: #5C746B;
+  --accent-primary: #064E3B;
+  --accent-secondary: #047857;
+  --accent-gold: #C8A24A;
 }
 
 .dark {
-  --bg-main: #040814;
-  --bg-surface: #070D1E;
-  --bg-card: #0B132B;
-  --bg-subtle: #121C38;
-  --border-fine: rgba(229, 192, 123, 0.15);
-  --border-strong: rgba(229, 192, 123, 0.3);
-  --border-gold: rgba(212, 175, 55, 0.4);
-  --text-main: #F8FAFC;
-  --text-muted: #CBD5E1;
-  --text-faint: #64748B;
-  --accent-primary: #E5C07B;
-  --accent-secondary: #0284C7;
+  --bg-main: #022C22;
+  --bg-surface: #04382B;
+  --bg-card: #064E3B;
+  --bg-subtle: #053E2F;
+  --border-fine: rgba(200, 162, 74, 0.22);
+  --border-strong: rgba(200, 162, 74, 0.42);
+  --border-gold: rgba(212, 175, 55, 0.55);
+  --text-main: #FAF8F2;
+  --text-muted: #D1E7DD;
+  --text-faint: #A3C4B8;
+  --accent-primary: #C8A24A;
+  --accent-secondary: #34D399;
   --accent-gold: #D4AF37;
 }
 
 @layer base {
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+  }
+
   body {
     font-family: 'Cairo', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg-main);
     color: var(--text-main);
-    line-height: 1.7;
+    font-size: 1.0625rem; /* 17px readable scholarly baseline */
+    line-height: 1.8;
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
@@ -75,7 +76,7 @@
   input:focus-visible,
   select:focus-visible,
   textarea:focus-visible {
-    outline: 2px solid #D4AF37;
+    outline: 2px solid #C8A24A;
     outline-offset: 2px;
   }
 }
@@ -97,65 +98,68 @@
   font-family: 'Cinzel', serif;
 }
 
-/* Luminous World of Light Network Grid */
-.bg-noor-grid {
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.12), transparent 45%),
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 100% 100%, 48px 48px, 48px 48px;
-}
-
-/* Sacred Geometric Lattice Pattern Overlay */
+/* Sacred Geometric Islamic Architectural Pattern */
 .bg-islamic-pattern {
-  background-image: radial-gradient(rgba(212, 175, 55, 0.12) 1.2px, transparent 1.2px);
-  background-size: 28px 28px;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(200, 162, 74, 0.14) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 75% 75%, rgba(6, 78, 59, 0.12) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
 }
 
-/* Silicon Valley Tech Glass Card */
-.noor-card {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(11, 19, 43, 0.85) 100%);
-  border: 1px solid rgba(229, 192, 123, 0.2);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+.dark .bg-islamic-pattern {
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.14) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 75% 75%, rgba(52, 211, 153, 0.08) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
 }
 
-.noor-card:hover {
-  border-color: rgba(212, 175, 55, 0.5);
-  box-shadow: 0 12px 40px -8px rgba(212, 175, 55, 0.2);
+/* Architectural Campus Pavilion Card */
+.campus-card {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-fine);
+  box-shadow: 0 6px 24px -6px rgba(6, 78, 59, 0.08);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.campus-card:hover {
+  border-color: var(--border-gold);
+  box-shadow: 0 14px 36px -10px rgba(6, 78, 59, 0.16);
   transform: translateY(-2px);
+}
+
+/* Stone Courtyard Surface */
+.campus-stone-surface {
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-fine);
 }
 
 /* Scholarly Daylight Reading Surface (Comfortable, Pristine Ivory) */
 .scholarly-reading-paper {
-  background-color: var(--color-ivory-page);
-  color: var(--color-ivory-text);
-  border: 1px solid var(--color-ivory-border);
-  box-shadow: 0 4px 20px -2px rgba(30, 36, 43, 0.06);
+  background-color: #FAF8F2;
+  color: #142B22;
+  border: 1px solid #DDD6C7;
+  box-shadow: 0 4px 24px -4px rgba(6, 78, 59, 0.08);
 }
 
-/* Radiant Gold Text Gradient */
+/* Architectural Pointed Arch Top Accent */
+.campus-arch-top {
+  border-top: 3px solid #C8A24A;
+}
+
+/* Subtle Gold Gradient Accent */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #FFF1CA 0%, #D4AF37 50%, #B98E2F 100%);
+  background: linear-gradient(135deg, #F3E8CB 0%, #C8A24A 50%, #9E7B2B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Cyan Guidance Light Gradient */
-.text-cyan-gradient {
-  background: linear-gradient(135deg, #E0F2FE 0%, #38BDF8 60%, #0284C7 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
-
-/* Gold Glow Utility */
-.glow-gold {
-  box-shadow: 0 0 25px -3px rgba(212, 175, 55, 0.35);
-}
-
-.glow-cyan {
-  box-shadow: 0 0 25px -3px rgba(56, 189, 248, 0.35);
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Custom Scrollbar for Smooth Reading */
@@ -165,31 +169,15 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #070D1E;
+  background: var(--bg-subtle);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: #064E3B;
   border-radius: 4px;
-  border: 1px solid rgba(229, 192, 123, 0.2);
+  border: 1px solid rgba(200, 162, 74, 0.35);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #D4AF37;
-}
-
-/* Keyframes for Rotating Global Halo */
-@keyframes pulseGlow {
-  0%, 100% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-}
-
-.animate-pulse-glow {
-  animation: pulseGlow 4s ease-in-out infinite;
+  background: #C8A24A;
 }

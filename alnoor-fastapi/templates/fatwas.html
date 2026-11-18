@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">الفتاوى والاستشارات الشرعية</h1>
+        <p class="section-subtitle">إجابات علمية مؤصلة بإشراف اللجنة الشرعية.</p>
+      </div>
+      <a href="/contact" class="btn btn-outline btn-sm">إرسال سؤال جديد</a>
+    </div>
+    {% if fatwas %}
+      <div class="cards-grid">
+        {% for f in fatwas %}
+        <article class="card">
+          <div class="card-meta">{{ f.category_ar }} · {{ f.scholar_name }}</div>
+          <h3 class="card-title">{{ f.question_ar }}</h3>
+          <p class="card-text">{{ f.answer_ar }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% include "partials/empty_state.html" %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

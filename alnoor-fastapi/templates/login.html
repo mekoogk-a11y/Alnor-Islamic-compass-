@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:480px;">
+    <h1 class="section-title" style="margin-bottom:1rem;">تسجيل الدخول</h1>
+    {% if error_message %}
+      <div class="alert alert-error">{{ error_message }}</div>
+    {% endif %}
+    <form action="/login" method="post" class="form-panel">
+      <div class="field">
+        <label for="l_email">البريد الإلكتروني</label>
+        <input id="l_email" type="email" name="email" required />
+      </div>
+      <div class="field">
+        <label for="l_pass">كلمة المرور</label>
+        <input id="l_pass" type="password" name="password" required />
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">دخول</button>
+    </form>
+    <p style="margin-top:1rem;font-size:0.95rem;color:var(--text-muted);">
+      ليس لديك حساب؟ <a href="/register" style="color:var(--royal-accent);font-weight:700;">إنشاء حساب جديد</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

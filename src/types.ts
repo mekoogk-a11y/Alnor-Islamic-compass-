@@ -20,8 +20,58 @@ export type NavigationPage =
   | 'admin'
   | 'apiGateway'
   | 'dawahLibrary'
-  | 'about' 
-  | 'register';
+  | 'about'
+  | 'register'
+  | 'researchCenter'
+  | 'mediaCenter'
+  | 'internationalRelations'
+  | 'contact';
+
+export interface CampusBuilding {
+  id: string;
+  code: string;
+  wingAr: string;
+  wingEn: string;
+  nameAr: string;
+  nameEn: string;
+  subtitleAr: string;
+  subtitleEn: string;
+  descAr: string;
+  descEn: string;
+  targetPage: NavigationPage;
+  relatedPages: { page: NavigationPage; labelAr: string; labelEn: string }[];
+  servicesAr: string[];
+  servicesEn: string[];
+  accentType: 'emerald' | 'gold' | 'stone' | 'ivory';
+}
+
+export interface ResearchPublication {
+  id: string;
+  titleAr: string;
+  titleEn: string;
+  fieldAr: string;
+  fieldEn: string;
+  authorAr: string;
+  authorEn: string;
+  yearHijri: string;
+  abstractAr: string;
+  abstractEn: string;
+  pagesCount: number;
+  pdfUrl?: string;
+}
+
+export interface MediaPublicationItem {
+  id: string;
+  type: 'announcement' | 'article' | 'lecture' | 'publication';
+  titleAr: string;
+  titleEn: string;
+  summaryAr: string;
+  summaryEn: string;
+  dateLabel: string;
+  categoryAr: string;
+  categoryEn: string;
+  targetPage?: NavigationPage;
+}
 
 export interface SudaneseVoiceAd {
   id: string;

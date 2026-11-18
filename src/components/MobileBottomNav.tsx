@@ -1,7 +1,8 @@
 import React from 'react';
-import { Globe, BookOpen, Scroll, GraduationCap, Radio, User, Compass } from 'lucide-react';
+import { Globe, BookOpen, Scroll, GraduationCap, Radio, User } from 'lucide-react';
 import { NavigationPage } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 interface MobileBottomNavProps {
   currentPage: NavigationPage;
@@ -10,14 +11,16 @@ interface MobileBottomNavProps {
 
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPage, onNavigate }) => {
   const { user, openAuthModal } = useAuth();
+  const { lang } = useLanguage();
+  const isAr = lang === 'ar';
 
-  const items: { id: NavigationPage; label: string; icon: React.FC<{ className?: string }> }[] = [
-    { id: 'home', label: 'الرئيسية', icon: Globe },
-    { id: 'quran', label: 'المصحف', icon: BookOpen },
-    { id: 'hadith', label: 'السنة', icon: Scroll },
-    { id: 'academy', label: 'الأكاديمية', icon: GraduationCap },
-    { id: 'radio', label: 'إذاعة مكة 📻', icon: Radio },
-    { id: 'dashboard', label: user ? 'حسابي' : 'دخول', icon: User },
+  const items: { id: NavigationPage; labelAr: string; labelEn: string; icon: React.FC<{ className?: string }> }[] = [
+    { id: 'home', labelAr: 'المجمع', labelEn: 'Campus', icon: Globe },
+    { id: 'quran', labelAr: 'المصحف', labelEn: 'Quran', icon: BookOpen },
+    { id: 'sciences', labelAr: 'العلوم', labelEn: 'Sciences', icon: Scroll },
+    { id: 'academy', labelAr: 'الأكاديمية', labelEn: 'Academy', icon: GraduationCap },
+    { id: 'radio', labelAr: 'الإذاعة', labelEn: 'Radio', icon: Radio },
+    { id: 'dashboard', labelAr: user ? 'حسابي' : 'دخول', labelEn: user ? 'Portal' : 'Sign In', icon: User },
   ];
 
   const handleClick = (id: NavigationPage) => {
@@ -30,7 +33,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPage, o
   };
 
   return (
-    <nav className="2xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-emerald-900/40 px-2 py-1.5 shadow-2xl safe-area-inset-bottom">
+    <nav className="xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#022C22]/95 backdrop-blur-lg border-t border-[#C8A24A]/40 px-2 py-1.5 shadow-2xl safe-area-inset-bottom">
       <div className="flex items-center justify-around max-w-lg mx-auto">
         {items.map((item) => {
           const Icon = item.icon;
@@ -38,17 +41,20 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPage, o
           return (
             <button
               key={item.id}
+              type="button"
               onClick={() => handleClick(item.id)}
-              className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all ${
+              className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all cursor-pointer ${
                 isActive
-                  ? 'text-amber-400 font-black scale-105'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-[#E5C97B] font-black scale-105'
+                  : 'text-[#D1E7DD] hover:text-white'
               }`}
             >
-              <div className={`p-1 rounded-lg ${isActive ? 'bg-amber-500/15 border border-amber-500/30' : ''}`}>
+              <div className={`p-1 rounded-lg ${isActive ? 'bg-[#064E3B] border border-[#C8A24A]/50' : ''}`}>
                 <Icon className={`w-4 h-4 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
               </div>
-              <span className="text-[10px] mt-0.5 whitespace-nowrap">{item.label}</span>
+              <span className="text-[10px] mt-0.5 whitespace-nowrap">
+                {isAr ? item.labelAr : item.labelEn}
+              </span>
             </button>
           );
         })}

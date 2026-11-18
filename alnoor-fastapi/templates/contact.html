@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:780px;">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">اتصل بنا</h1>
+        <p class="section-subtitle">يسعدنا استقبال استفساراتكم ومقترحاتكم ومشاركاتكم الخيرية والعلمية.</p>
+      </div>
+    </div>
+
+    {% if sent_success %}
+      <div class="alert alert-success">تم استلام رسالتك وحفظها في قاعدة البيانات بنجاح.</div>
+    {% endif %}
+
+    <form action="/contact" method="post" class="form-panel">
+      <div class="field">
+        <label for="c_name">الاسم الكامل</label>
+        <input id="c_name" type="text" name="sender_name" required />
+      </div>
+      <div class="field">
+        <label for="c_email">البريد الإلكتروني</label>
+        <input id="c_email" type="email" name="sender_email" required />
+      </div>
+      <div class="field">
+        <label for="c_subject">الموضوع</label>
+        <input id="c_subject" type="text" name="subject" required />
+      </div>
+      <div class="field">
+        <label for="c_msg">نص الرسالة</label>
+        <textarea id="c_msg" name="message" rows="5" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">إرسال الرسالة</button>
+    </form>
+
+    <div class="card" style="margin-top:1.5rem;">
+      <div class="card-meta">التواصل المباشر عبر واتساب</div>
+      <p style="margin:0;font-weight:700;">WhatsApp: <a href="https://wa.me/249919980435" target="_blank" rel="noopener noreferrer" style="color:var(--royal-accent);">00249919980435</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

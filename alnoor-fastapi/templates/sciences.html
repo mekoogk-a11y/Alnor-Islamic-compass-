@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">العلوم الإسلامية</h1>
+        <p class="section-subtitle">التفسير وعلوم القرآن، الحديث الشريف، الفقه الإسلامي، العقيدة، والسيرة النبوية.</p>
+      </div>
+    </div>
+
+    <div class="services-grid" style="margin-bottom:2.5rem;">
+      {% for sec in science_sections %}
+      <article class="service-card">
+        <div>
+          <h3>{{ sec.title_ar }}</h3>
+          <p>{{ sec.description_ar }}</p>
+        </div>
+        <a href="/sections/{{ sec.slug }}" class="btn btn-outline btn-sm">فتح القسم</a>
+      </article>
+      {% endfor %}
+    </div>
+
+    <h2 class="section-title" style="font-size:1.5rem;margin-bottom:1rem;">أحدث الدروس العلمية</h2>
+    {% if lessons %}
+      <div class="cards-grid">
+        {% for l in lessons %}
+        <article class="card">
+          <div class="card-meta">{{ l.speaker }} · {{ l.duration_minutes }} دقيقة</div>
+          <h3 class="card-title">{{ l.title_ar }}</h3>
+          <p class="card-text">{{ l.summary_ar }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% include "partials/empty_state.html" %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

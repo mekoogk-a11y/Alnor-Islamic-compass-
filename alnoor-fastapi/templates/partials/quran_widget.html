@@ -1,0 +1,20 @@
+<div class="quran-box">
+  <div class="section-header" style="margin-bottom:1rem;">
+    <div>
+      <h2 class="section-title" data-i18n="quranHeading">القرآن الكريم — قراءة واستماع</h2>
+      <p class="section-subtitle">النص العثماني والتلاوة الصوتية المباشرة عبر api.alquran.cloud</p>
+    </div>
+    <a href="/quran" class="btn btn-outline btn-sm">فتح المصحف الكامل</a>
+  </div>
+
+  <div class="quran-controls">
+    <label for="quran-surah-select" style="font-weight:700;">اختر السورة:</label>
+    <select id="quran-surah-select" style="min-height:44px;padding:0.45rem 0.85rem;border-radius:8px;border:1px solid var(--border);background:var(--bg-soft);color:var(--text);flex:1 1 220px;max-width:320px;">
+      <option value="1">1. سورة الفاتحة</option>
+    </select>
+    <button type="button" id="quran-play-surah" class="btn btn-primary btn-sm">تشغيل / إيقاف التلاوة</button>
+    <audio id="quran-audio-player" controls preload="none" style="flex:1 1 240px;max-width:340px;height:40px;"></audio>
+  </div>
+
+  <div id="quran-verses-box" class="quran-verses" dir="rtl">جاري تحميل السورة...</div>
+</div>

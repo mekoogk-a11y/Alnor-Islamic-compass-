@@ -1,0 +1,538 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useState, useCallback, useEffect } from 'react';
+import { Navbar } from './components/Navbar';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { PWAInstallButton } from './components/PWAInstallButton';
+import { FloatingWhatsApp } from './components/FloatingWhatsApp';
+import { FloatingDonationWidget } from './components/FloatingDonationWidget';
+import { GlobalSearchModal } from './components/GlobalSearchModal';
+import { AuthModal } from './components/AuthModal';
+
+// Pages
+import { HomePage } from './components/pages/HomePage';
+import { QuranPage } from './components/pages/QuranPage';
+import { HadithPage } from './components/pages/HadithPage';
+import { AcademyPage } from './components/pages/AcademyPage';
+import { ScholarsDirectoryPage } from './components/pages/ScholarsDirectoryPage';
+import { IslamicAIScholarPage } from './components/pages/IslamicAIScholarPage';
+import { CommunityPage } from './components/pages/CommunityPage';
+import { UserDashboardPage } from './components/pages/UserDashboardPage';
+import { AdminDashboardPage } from './components/pages/AdminDashboardPage';
+import { SciencesPage } from './components/pages/SciencesPage';
+import { LibraryPage } from './components/pages/LibraryPage';
+import { WaqfPage } from './components/pages/WaqfPage';
+import { AboutPage } from './components/pages/AboutPage';
+import { RegisterPage } from './components/pages/RegisterPage';
+import { NewMuslimsPage } from './components/pages/NewMuslimsPage';
+import { LiveMakkahQuranRadio } from './components/LiveMakkahQuranRadio';
+import { SudaneseAudioStudioPage } from './components/pages/SudaneseAudioStudioPage';
+import { OrphansCarePage } from './components/pages/OrphansCarePage';
+import { QuranTranslationsReaderPage } from './components/pages/QuranTranslationsReaderPage';
+import { ApiGatewayPage } from './components/pages/ApiGatewayPage';
+import { NoorAmbassadorPage } from './components/pages/NoorAmbassadorPage';
+import { DiscoverIslamPage } from './components/pages/DiscoverIslamPage';
+import { DawahLibraryPage } from './components/pages/DawahLibraryPage';
+import { CinematicSunriseIntro } from './components/CinematicSunriseIntro';
+import { ComplexIntroVideoModal } from './components/ComplexIntroVideoModal';
+import { PrayerTimesBar } from './components/PrayerTimesBar';
+
+import { NavigationPage } from './types';
+import { COMPLEX_INFO, OFFICIAL_COMPLEX_LOGO } from './data/islamicData';
+import { useOnlineStatus } from './hooks/useOnlineStatus';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import { 
+  BookOpen, Globe, Mail, MapPin, Sparkles, ChevronLeft, 
+  WifiOff, Laptop, Phone, MessageCircle, Radio, Compass, Scroll, GraduationCap, Users, Mic, Zap, HeartHandshake, ShieldCheck,
+  Copy, Check, ExternalLink 
+} from 'lucide-react';
+
+function MainAppContent() {
+  const [currentPage, setCurrentPage] = useState<NavigationPage>('home');
+  const [pageParams, setPageParams] = useState<any>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [copiedDomain, setCopiedDomain] = useState(false);
+  const isOnline = useOnlineStatus();
+  const { lang, t, isRtl } = useLanguage();
+
+  const handleCopyDomain = () => {
+    navigator.clipboard.writeText('www.mojamaalnor.com');
+    setCopiedDomain(true);
+    setTimeout(() => setCopiedDomain(false), 2500);
+  };
+
+  // Official Introductory Video: opens automatically on first visit of session unless prefers-reduced-motion is active;
+  // can always be replayed on demand from the Navbar button.
+  const [showIntroVideo, setShowIntroVideo] = useState<boolean>(() => {
+    try {
+      const reducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      const alreadySeen =
+        typeof window !== 'undefined' &&
+        sessionStorage.getItem('alnoor_intro_seen') === '1';
+      return !reducedMotion && !alreadySeen;
+    } catch {
+      return true;
+    }
+  });
+  const [showSunriseIntro, setShowSunriseIntro] = useState<boolean>(false);
+
+  const handleReplayIntro = useCallback(() => {
+    setShowIntroVideo(true);
+  }, []);
+
+  const handleCloseIntro = useCallback(() => {
+    try {
+      sessionStorage.setItem('alnoor_intro_seen', '1');
+    } catch {}
+    setShowIntroVideo(false);
+  }, []);
+
+  const handleNavigate = (page: NavigationPage, params?: any) => {
+    setCurrentPage(page);
+    setPageParams(params || null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Dynamic SEO document title per active portal section
+  useEffect(() => {
+    const pageTitlesAr: Record<NavigationPage, string> = {
+      home: 'الرئيسية',
+      quran: 'المصحف الشريف والتلاوات',
+      hadith: 'موسوعة السنة النبوية',
+      academy: 'أكاديمية النور والمقارئ',
+      scholars: 'هيئة كبار العلماء',
+      aiScholar: 'المساعد العلمي الذكي',
+      community: 'الملتقى العلمي',
+      dashboard: 'لوحة الطالب',
+      admin: 'لوحة الإدارة العامة',
+      sciences: 'العلوم الشرعية',
+      library: 'المكتبة الرقمية',
+      waqf: 'السهم الوقفي والزكاة',
+      about: 'عن مجمع النور',
+      register: 'التسجيل والالتحاق',
+      newMuslims: 'رعاية المهتدين الجدد',
+      radio: 'إذاعة القرآن الكريم من مكة',
+      audioStudio: 'استوديو الصوت الإعلاني السوداني',
+      orphansCare: 'كفالة ورعاية الأيتام',
+      translationsReader: 'ترجمات معاني القرآن',
+      apiGateway: 'بوابة API السحابية',
+      noorAmbassador: 'سفير النور العالمي',
+      discoverIslam: 'اسأل عن الإسلام',
+      dawahLibrary: 'المكتبة الدعوية العالمية',
+    };
+    const suffix = 'مجمع النور الإسلامي العالمي';
+    document.title = currentPage === 'home' ? `${suffix} | NOOR GLOBAL` : `${pageTitlesAr[currentPage] || suffix} | ${suffix}`;
+  }, [currentPage]);
+
+  return (
+    <div dir={isRtl ? 'rtl' : 'ltr'} className={`min-h-screen bg-[#070D1E] text-[#F8FAFC] flex flex-col font-sans selection:bg-[#D4AF37]/30 selection:text-[#F8FAFC] antialiased pb-36 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}>
+      
+      {/* Official Introductory Video Modal on Site Open */}
+      {showIntroVideo && (
+        <ComplexIntroVideoModal onClose={handleCloseIntro} />
+      )}
+
+      {/* Optional Cinematic 3D Sunrise Experience */}
+      {showSunriseIntro && (
+        <CinematicSunriseIntro 
+          onComplete={() => setShowSunriseIntro(false)} 
+          forceShow={true}
+        />
+      )}
+
+      {/* Offline Alert Indicator if user loses connection */}
+      {!isOnline && (
+        <div className="bg-[#B9A477] text-[#343832] text-xs font-bold py-2 px-4 text-center flex items-center justify-center gap-2 sticky top-0 z-50 shadow-sm border-b border-[#D8CEBB]">
+          <WifiOff className="w-4 h-4" />
+          <span>أنت الآن في وضع عدم الاتصال (Offline) - يتم استخدام البيانات المحفوظة محلياً في المنصة.</span>
+        </div>
+      )}
+
+      {/* Top Global Navigation Bar */}
+      <Navbar
+        currentPage={currentPage}
+        onNavigate={handleNavigate}
+        onOpenSearch={() => setIsSearchOpen(true)}
+        onReplayIntro={handleReplayIntro}
+      />
+
+      {/* Real-time Astronomical Prayer Times & Hijri Calendar Bar */}
+      <PrayerTimesBar />
+
+      {/* Main Pages Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-12">
+        {currentPage === 'home' && <HomePage onNavigate={handleNavigate} onOpenSearch={() => setIsSearchOpen(true)} />}
+        {currentPage === 'newMuslims' && <NewMuslimsPage onNavigate={handleNavigate} />}
+        {currentPage === 'quran' && <QuranPage onNavigate={handleNavigate} />}
+        {currentPage === 'hadith' && <HadithPage onNavigate={handleNavigate} initialHadithId={pageParams?.hadithId} />}
+        {currentPage === 'academy' && <AcademyPage onNavigate={handleNavigate} initialCourseId={pageParams?.courseId} />}
+        {currentPage === 'scholars' && <ScholarsDirectoryPage onNavigate={handleNavigate} initialScholarId={pageParams?.scholarId} />}
+        {currentPage === 'aiScholar' && <IslamicAIScholarPage onNavigate={handleNavigate} />}
+        {currentPage === 'community' && <CommunityPage onNavigate={handleNavigate} />}
+        {currentPage === 'dashboard' && <UserDashboardPage onNavigate={handleNavigate} />}
+        {currentPage === 'admin' && <AdminDashboardPage onNavigate={handleNavigate} />}
+        {currentPage === 'sciences' && <SciencesPage onNavigate={handleNavigate} />}
+        {currentPage === 'library' && <LibraryPage onNavigate={handleNavigate} />}
+        {currentPage === 'waqf' && <WaqfPage onNavigate={handleNavigate} />}
+        {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
+        {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
+        {currentPage === 'noorAmbassador' && <NoorAmbassadorPage onNavigate={handleNavigate} />}
+        {currentPage === 'discoverIslam' && <DiscoverIslamPage onNavigate={handleNavigate} />}
+        {currentPage === 'dawahLibrary' && <DawahLibraryPage onNavigate={handleNavigate} />}
+        {currentPage === 'audioStudio' && <SudaneseAudioStudioPage onNavigate={handleNavigate} />}
+        {currentPage === 'orphansCare' && <OrphansCarePage onNavigate={handleNavigate} />}
+        {currentPage === 'translationsReader' && <QuranTranslationsReaderPage onNavigate={handleNavigate} />}
+        {currentPage === 'apiGateway' && <ApiGatewayPage onNavigate={handleNavigate} />}
+        {currentPage === 'radio' && (
+          <div className="space-y-8 animate-fade-in">
+            <LiveMakkahQuranRadio initialExpanded={true} />
+          </div>
+        )}
+      </main>
+
+      {/* Global Comprehensive Islamic Institutional Footer */}
+      <footer className="border-t border-[#B9A477]/20 bg-[#070D1E] text-[#E2E8F0] pt-14 pb-12 xl:pb-8 px-4 text-xs transition-colors">
+        <div className="max-w-7xl mx-auto space-y-12">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+            
+            {/* Column 1: Identity & Slogan (2 cols on lg) */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="relative shrink-0 flex items-center justify-center">
+                  <img 
+                    src={OFFICIAL_COMPLEX_LOGO} 
+                    alt="شعار مجمع النور الإسلامي العالمي" 
+                    className="h-16 w-auto max-w-[80px] object-contain filter drop-shadow-[0_0_15px_rgba(212,175,55,0.4)]"
+                  />
+                </div>
+                <div>
+                  <h4 className="text-sm sm:text-base font-black text-[#F8FAFC] leading-tight">
+                    {t.complexName}
+                  </h4>
+                  <span className="text-xs text-[#D4AF37] font-medium tracking-wide">NOOR GLOBAL · A WORLD OF LIGHT</span>
+                </div>
+              </div>
+
+              {/* Official Slogan */}
+              <div className="p-3.5 bg-[#0B132B]/80 rounded-2xl border border-[#D4AF37]/30 shadow-inner">
+                <span className="text-[11px] text-[#D4AF37] font-bold block mb-1">
+                  {lang === 'ar' ? 'الشعار المؤسسي المعتمد:' : 'Official Slogan:'}
+                </span>
+                <span className="text-base sm:text-lg font-amiri font-bold text-[#F8FAFC] block">
+                  «القرآن هداية، والعلم بناء، والعمل الخيري عطاء»
+                </span>
+              </div>
+
+              <p className="text-xs text-[#D8CEBB] leading-relaxed max-w-md">
+                {t.heroDesc}
+              </p>
+
+              {/* PWA Install Promotion Box */}
+              <div className="p-3 bg-[#282C26] rounded-xl border border-[#464D43] flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <Laptop className="w-4 h-4 text-[#B9A477] shrink-0" />
+                  <span className="text-[11px] text-[#D8CEBB]">
+                    {lang === 'ar' ? 'متوافق كتطبيق على أجهزة الحاسوب والآيفون والأندرويد' : 'Installable on Desktop, iPhone & Android'}
+                  </span>
+                </div>
+                <PWAInstallButton />
+              </div>
+            </div>
+
+            {/* Column 2: Quick Links */}
+            <div className="space-y-3">
+              <h5 className="text-sm font-bold text-[#F7F5EF] border-b border-[#464D43] pb-2">
+                {lang === 'ar' ? 'أقسام البوابة الإلكترونية' : 'Portal Navigation'}
+              </h5>
+              <ul className="space-y-2 text-xs">
+                <li>
+                  <button onClick={() => handleNavigate('home')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 text-[#D8CEBB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span>{t.navHome}</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('quran')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 text-[#D8CEBB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span>{t.navQuran}</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('hadith')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 font-bold text-[#F7F5EF]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span>{lang === 'ar' ? 'موسوعة السنة النبوية' : 'Hadith Encyclopedia'}</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('academy')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 text-[#D8CEBB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span>{lang === 'ar' ? 'أكاديمية النور والمقارئ' : 'Quran Academy'}</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('scholars')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 text-[#D8CEBB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span>{lang === 'ar' ? 'هيئة كبار العلماء' : 'Scholars Directory'}</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('aiScholar')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 text-[#D8CEBB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span>{lang === 'ar' ? 'المساعد العلمي الذكي' : 'AI Islamic Scholar'}</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('newMuslims')} className="hover:text-[#B9A477] transition-colors flex items-center gap-1.5 font-bold text-[#E5DCCB]">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span>{t.navNewMuslims}</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('radio')} className="text-[#B9A477] hover:text-[#F7F5EF] font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span className="flex items-center gap-1">
+                      <Radio className="w-3.5 h-3.5 animate-pulse" />
+                      <span>{lang === 'ar' ? 'إذاعة القرآن الكريم (مباشر من مكة) 🕋' : 'Holy Quran Radio (Makkah Live)'}</span>
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('audioStudio')} className="text-[#D8CEBB] hover:text-[#B9A477] font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#B9A477] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span className="flex items-center gap-1">
+                      <Mic className="w-3.5 h-3.5 text-[#B9A477] animate-pulse" />
+                      <span>{lang === 'ar' ? 'استوديو الصوت الإعلاني السوداني 🇸🇩' : 'Sudanese Voice Ads Studio'}</span>
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('noorAmbassador')} className="text-[#D4AF37] hover:text-white font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#D4AF37] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span className="flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5 text-[#D4AF37] animate-pulse" />
+                      <span>{lang === 'ar' ? 'سفير النور العالمي 🌟' : 'Noor Ambassador'}</span>
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('discoverIslam')} className="text-[#38BDF8] hover:text-white font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#38BDF8] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span className="flex items-center gap-1">
+                      <MessageCircle className="w-3.5 h-3.5 text-[#38BDF8]" />
+                      <span>{lang === 'ar' ? 'اسأل عن الإسلام 💬' : 'Ask About Islam'}</span>
+                    </span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => handleNavigate('apiGateway')} className="text-[#94A3B8] hover:text-[#D4AF37] font-bold transition-colors flex items-center gap-1.5">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#D4AF37] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span className="flex items-center gap-1">
+                      <Zap className="w-3.5 h-3.5 text-[#D4AF37]" />
+                      <span>{lang === 'ar' ? 'بوابة واجهات API السحابية ⚡' : 'API Gateway & Architecture'}</span>
+                    </span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3: Academic & Maqra'ah Tracks */}
+            <div className="space-y-3">
+              <h5 className="text-sm font-bold text-[#F7F5EF] border-b border-[#464D43] pb-2">
+                {lang === 'ar' ? 'المسارات والبرامج' : 'Programs & Tracks'}
+              </h5>
+              <ul className="space-y-2 text-xs text-[#D8CEBB]">
+                <li>• {lang === 'ar' ? 'مسار الحفظ المتقن (عن بُعد وحضورياً)' : 'Comprehensive Quran Memorization'}</li>
+                <li>• {lang === 'ar' ? 'مسار الإجازة بالسند المتصل (القراءات العشر)' : 'Continuous Chain (Isnad) Ijaza Track'}</li>
+                <li>• {lang === 'ar' ? 'مقارئ تصحيح التلاوة المباشرة 24/7' : 'Live Recitation Correction Rooms'}</li>
+                <li>• {lang === 'ar' ? 'دبلوم الفقه المقارن وأصول الشريعة' : 'Comparative Fiqh & Sharia Diploma'}</li>
+                <li>• {lang === 'ar' ? 'حاسبة الزكاة الشرعية والأوقاف' : 'Smart Islamic Zakat & Waqf'}</li>
+              </ul>
+            </div>
+
+            {/* Column 4: Official Contact & Headquarters (No raw phone numbers) */}
+            <div className="space-y-3">
+              <h5 className="text-sm font-bold text-[#F7F5EF] border-b border-[#464D43] pb-2">
+                {lang === 'ar' ? 'التواصل الرسمي والمقر العام' : 'Official Contact & Office'}
+              </h5>
+              <div className="space-y-2.5 text-xs">
+                
+                {/* Official WhatsApp Action */}
+                <a
+                  href={`https://wa.me/${COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('السلام عليكم ورحمة الله، استفسار عن مجمع النور')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#282C26] border border-[#464D43] hover:border-[#B9A477] transition-colors group"
+                >
+                  <MessageCircle className="w-4 h-4 text-[#B9A477] shrink-0" />
+                  <div>
+                    <span className="text-[10px] text-[#B9A477] block">{t.contactWhatsapp}</span>
+                    <span className="text-[#F7F5EF] text-xs font-bold group-hover:text-[#B9A477]">
+                      {t.chatWhatsapp}
+                    </span>
+                  </div>
+                </a>
+
+                {/* Direct Call Action */}
+                <a
+                  href={`tel:${COMPLEX_INFO.phones.mobile.replace(/[^0-9+]/g, '')}`}
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#282C26] border border-[#464D43] hover:border-[#B9A477] transition-colors group"
+                >
+                  <Phone className="w-4 h-4 text-[#B9A477] shrink-0" />
+                  <div>
+                    <span className="text-[10px] text-[#D8CEBB] block">{t.contactMobile}</span>
+                    <span className="text-[#F7F5EF] text-xs font-bold group-hover:text-[#B9A477]">
+                      {t.callDirect}
+                    </span>
+                  </div>
+                </a>
+
+                <div className="flex items-start gap-2 pt-1">
+                  <Mail className="w-4 h-4 text-[#B9A477] shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-[10px] text-[#80887D] block">{t.contactEmail}:</span>
+                    <span className="font-mono text-[#F7F5EF] text-xs font-bold">{COMPLEX_INFO.officialEmail}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-2">
+                  <MapPin className="w-4 h-4 text-[#B9A477] shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-[10px] text-[#80887D] block">{t.contactAddress}:</span>
+                    <span className="text-[#E5DCCB] text-xs">{COMPLEX_INFO.headquarters}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Official Domain Showcase Bar (Easy 1-Click Copy - www.mojamaalnor.com) */}
+          <div className="rounded-3xl bg-gradient-to-r from-[#0B132B] via-[#111C3D] to-[#0B132B] border-2 border-[#D4AF37]/50 p-6 sm:p-8 shadow-[0_0_35px_rgba(212,175,55,0.2)] flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-[#D4AF37]/10 rounded-full blur-2xl pointer-events-none" />
+            
+            <div className="space-y-2 text-center md:text-right z-10">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                <span className="px-3.5 py-1 rounded-full bg-[#D4AF37] text-[#070D1E] text-xs font-black flex items-center gap-1.5 shadow-md">
+                  <Globe className="w-3.5 h-3.5 text-[#070D1E]" />
+                  <span>الدومين الرسمي المعتمد لمجمع النور الإسلامي العالمي</span>
+                </span>
+                <span className="px-2.5 py-1 rounded-full bg-[#070D1E] border border-[#D4AF37]/40 text-[#D4AF37] text-[11px] font-mono font-bold">
+                  Official Global Web Domain
+                </span>
+              </div>
+
+              <div className="flex items-center justify-center md:justify-start gap-3 pt-1">
+                <span className="text-2xl sm:text-4xl font-mono font-black text-white tracking-wider select-all drop-shadow-[0_2px_15px_rgba(212,175,55,0.5)]">
+                  www.mojamaalnor.com
+                </span>
+              </div>
+
+              <p className="text-xs text-[#94A3B8] max-w-xl">
+                بوابتك الرقمية العالمية المعتمدة لتعليم القرآن الكريم، إذاعة مكة المكرمة 24/7، وكفالة الأيتام والأوقاف الإسلامية.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 z-10 shrink-0 flex-wrap justify-center">
+              <button
+                onClick={handleCopyDomain}
+                className={`px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all shadow-xl cursor-pointer ${
+                  copiedDomain
+                    ? 'bg-emerald-600 text-white scale-105 shadow-emerald-600/40'
+                    : 'bg-[#D4AF37] hover:bg-[#E5C158] text-[#070D1E] hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(212,175,55,0.4)]'
+                }`}
+                title="انقر لنسخ رابط الدومين الرسمي"
+              >
+                {copiedDomain ? (
+                  <>
+                    <Check className="w-4 h-4 text-white" />
+                    <span>تم نسخ الدومين بنجاح! ✓</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 text-[#070D1E]" />
+                    <span>نسخ رابط الدومين (www.mojamaalnor.com)</span>
+                  </>
+                )}
+              </button>
+
+              <a
+                href="https://www.mojamaalnor.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-3.5 rounded-2xl bg-[#070D1E] hover:bg-[#1E2E5D] text-[#D4AF37] hover:text-white border border-[#D4AF37]/40 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+                title="فتح الرابط في نافذة جديدة"
+              >
+                <span>زيارة الدومين</span>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-[#464D43] pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-right text-[11px] text-[#9EA89A]">
+            <div>
+              {lang === 'ar' 
+                ? `جميع الحقوق محفوظة © ${new Date().getFullYear()} مجمع النور الإسلامي • صرحٌ وقفي لله تعالى`
+                : `All Rights Reserved © ${new Date().getFullYear()} Al-Noor Islamic Complex • Charitable Waqf`}
+            </div>
+            <div className="flex items-center gap-4 text-[#B9A477] font-amiri text-xs">
+              <span>« وَقُل رَّبِّ زِدْنِي عِلْمًا »</span>
+              <span>•</span>
+              <span>« إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ »</span>
+            </div>
+          </div>
+
+        </div>
+      </footer>
+
+      {/* Floating Native-Style Bottom Navigation for Mobile & Tablets */}
+      <MobileBottomNav
+        currentPage={currentPage}
+        onNavigate={handleNavigate}
+      />
+
+      {/* Floating 24/7 Live Makkah Quran Radio Mini Player */}
+      <LiveMakkahQuranRadio dockedMode={true} />
+
+      {/* Floating Professional WhatsApp Widget */}
+      <FloatingWhatsApp />
+
+      {/* Floating Wheat Sprout on Hand Donation Widget (Bank of Khartoum 1727654) */}
+      <FloatingDonationWidget />
+
+      {/* Global Google-Style Central Search Modal */}
+      <GlobalSearchModal
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onNavigate={handleNavigate}
+      />
+
+      {/* Global Auth Modal for Students, Teachers & Administrators */}
+      <AuthModal />
+
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <MainAppContent />
+          </ToastProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
+  );
+}

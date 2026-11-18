@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">المكتبة الإسلامية</h1>
+        <p class="section-subtitle">المقالات والأبحاث والدروس المحفوظة في قاعدة بيانات المنصة.</p>
+      </div>
+    </div>
+    {% if articles %}
+      <div class="cards-grid">
+        {% for a in articles %}
+        <article class="card">
+          <div class="card-meta">بقلم: {{ a.author }}</div>
+          <h3 class="card-title">{{ a.title_ar }}</h3>
+          <p class="card-text">{{ a.summary_ar }}</p>
+          <a href="/articles/{{ a.id }}" class="btn btn-outline btn-sm">قراءة المقال</a>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% include "partials/empty_state.html" %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page_title or "النور الإسلامي العالمي الخيري الشامل" }}</title>
+  <meta name="description" content="{{ page_description or 'منصة عالمية تجمع بين تحفيظ القرآن الكريم وتعليم العلوم الإسلامية ونشر المعرفة والعمل الخيري.' }}" />
+  <meta name="theme-color" content="#0F294A" />
+
+  <!-- Open Graph & Social Cards -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="النور الإسلامي العالمي الخيري الشامل" />
+  <meta property="og:title" content="{{ page_title or 'النور الإسلامي العالمي الخيري الشامل' }}" />
+  <meta property="og:description" content="{{ page_description or 'نور القرآن، علمٌ ينتفع به، وخيرٌ يمتد إلى العالم.' }}" />
+  <meta property="og:image" content="/static/images/hero_mosque.jpg" />
+
+  <!-- PWA Compliance -->
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/static/icons/pwa-192x192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="النور" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  {% include "partials/header.html" %}
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+  {% include "partials/footer.html" %}
+  <script src="/static/js/app.js" defer></script>
+</body>
+</html>

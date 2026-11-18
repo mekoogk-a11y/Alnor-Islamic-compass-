@@ -1053,8 +1053,13 @@ app.get('/api/v1/search/unified', (req: Request, res: Response) => {
     { type: 'dawah', title: 'سفير النور العالمي', desc: 'بطاقات دعوية عالمية بلغات متعددة جاهزة للنشر والتوزيع', page: 'noorAmbassador', tag: 'دعوة بلغات العالم' },
     { type: 'dawah', title: 'اسأل عن الإسلام وحوار غير المسلمين', desc: 'أجوبة موثقة على أكثر من 50 سؤالاً شائعاً عن الإسلام والنبوة', page: 'discoverIslam', tag: 'مركز الدعوة' },
     // Orphans & Waqf
-    { type: 'orphans', title: 'كفالة الأيتام والرعاية الشاملة', desc: 'كفالة 1,280 يتيماً ودعم الأسر، بنك الخرطوم 1727654 باسم الشيخ الهادي سالم', page: 'orphansCare', tag: 'العمل الخيري' },
-    { type: 'waqf', title: 'السهم الوقفي والصدقة الجارية', desc: 'المساهمة في استدامة مقارئ القرآن وطباعة المصاحف', page: 'waqf', tag: 'الوقف الإسلامي' },
+    { type: 'orphans', title: 'كفالة الأيتام والرعاية الشاملة', desc: 'بوابة كفالة الأيتام والتتبع الإلكتروني، حساب بنك الخرطوم 1727654 باسم الشيخ الهادي سالم', page: 'orphansCare', tag: 'العمل الخيري' },
+    { type: 'waqf', title: 'المركز الخيري والسهم الوقفي', desc: 'مشاريع سقيا الماء، كفالة حلقات التحفيظ، واستدامة الصرح القرآني', page: 'waqf', tag: 'الوقف الإسلامي' },
+    // Research, Media, International Relations & Contact
+    { type: 'research', title: 'مركز البحوث والدراسات الإسلامية', desc: 'أبحاث علوم القرآن والحديث والفقه المقارن وحوكمة الأوقاف', page: 'researchCenter', tag: 'مركز البحوث' },
+    { type: 'media', title: 'المركز الإعلامي والنشر والأخبار', desc: 'النشرات الرسمية والمقالات والمحاضرات وإذاعة القرآن من مكة', page: 'mediaCenter', tag: 'المركز الإعلامي' },
+    { type: 'international', title: 'مركز العلاقات والشراكات الدولية', desc: 'بوابة التعاون مع المؤسسات التعليمية والخيرية وتقديم طلبات الشراكة', page: 'internationalRelations', tag: 'العلاقات الدولية' },
+    { type: 'contact', title: 'مكتب الاستقبال واتصل بمجمع النور', desc: 'قنوات التواصل الرسمية ونموذج المراسلة المباشرة لإدارة المجمع', page: 'contact', tag: 'اتصل بنا' },
     // Radio & Studio
     { type: 'radio', title: 'إذاعة القرآن الكريم مباشر من مكة المكرمة', desc: 'بث حي متواصل 24 ساعة لأذان وتكبيرات وتلاوات الحرم المكي الشريف', page: 'radio', tag: 'بث مباشر 24/7' },
     { type: 'audio', title: 'استوديو الصوت الإعلاني الحماسي 🇸🇩', desc: 'إعلانات دعوية إذاعية حماسية بصوت رجل سوداني جهوري فخم', page: 'audioStudio', tag: 'صوتيات' },
@@ -1076,6 +1081,108 @@ app.get('/api/v1/search/unified', (req: Request, res: Response) => {
     category: cat,
     totalCount: matched.length,
     results: matched,
+  });
+});
+
+// =========================================================================
+// DIGITAL CAMPUS DEPARTMENTS, PARTNERSHIPS & CONTACT SUBMISSIONS (v1)
+// =========================================================================
+
+const partnershipApplications: Array<{
+  id: string;
+  trackingCode: string;
+  organizationName: string;
+  country: string;
+  contactName: string;
+  email: string;
+  cooperationType: string;
+  proposal: string;
+  status: string;
+  createdAt: string;
+}> = [];
+
+const contactSubmissions: Array<{
+  id: string;
+  trackingCode: string;
+  fullName: string;
+  email: string;
+  department: string;
+  message: string;
+  status: string;
+  createdAt: string;
+}> = [];
+
+app.post('/api/v1/partnerships/apply', (req: Request, res: Response) => {
+  const { organizationName, country = '', contactName, email, cooperationType = 'educational', proposal } = req.body || {};
+  if (!organizationName || !contactName || !email || !proposal) {
+    return sendApiError(res, 400, 'MISSING_FIELDS', 'يرجى إكمال اسم المؤسسة واسم الممثل والبريد الإلكتروني وتفاصيل المقترح.');
+  }
+
+  const trackingCode = `ALNOOR-PARTNER-${Math.floor(100000 + Math.random() * 900000)}`;
+  const record = {
+    id: `PART-${Date.now().toString().slice(-6)}`,
+    trackingCode,
+    organizationName: String(organizationName).trim(),
+    country: String(country || 'غير محدد').trim(),
+    contactName: String(contactName).trim(),
+    email: String(email).trim().toLowerCase(),
+    cooperationType: String(cooperationType).trim(),
+    proposal: String(proposal).trim(),
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  };
+
+  partnershipApplications.unshift(record);
+  return sendApiResponse(res, record, { provider: 'Al-Noor International Relations Directorate' });
+});
+
+app.post('/api/v1/contact/submit', (req: Request, res: Response) => {
+  const { fullName, email, department = 'general', message } = req.body || {};
+  if (!fullName || !email || !message) {
+    return sendApiError(res, 400, 'MISSING_FIELDS', 'الاسم الكامل والبريد الإلكتروني ونص الرسالة مطلوبة.');
+  }
+
+  const trackingCode = `ALNOOR-MSG-${Math.floor(100000 + Math.random() * 900000)}`;
+  const record = {
+    id: `MSG-${Date.now().toString().slice(-6)}`,
+    trackingCode,
+    fullName: String(fullName).trim(),
+    email: String(email).trim().toLowerCase(),
+    department: String(department).trim(),
+    message: String(message).trim(),
+    status: 'received',
+    createdAt: new Date().toISOString(),
+  };
+
+  contactSubmissions.unshift(record);
+  return sendApiResponse(res, record, { provider: 'Al-Noor Official Contact Desk' });
+});
+
+app.get('/api/v1/campus/catalog', (_req: Request, res: Response) => {
+  return sendApiResponse(res, {
+    complexName: 'مجمع النور الإسلامي العالمي الخيري الشامل',
+    departmentsCount: 8,
+    departments: [
+      { code: '01', id: 'bldg-quran', route: 'quran', nameAr: 'مجمع القرآن الكريم', nameEn: 'Quran Complex' },
+      { code: '02', id: 'bldg-sciences', route: 'sciences', nameAr: 'معهد العلوم الإسلامية', nameEn: 'Islamic Sciences Institute' },
+      { code: '03', id: 'bldg-library', route: 'library', nameAr: 'المكتبة الإسلامية العالمية', nameEn: 'Global Islamic Library' },
+      { code: '04', id: 'bldg-charity', route: 'waqf', nameAr: 'المركز الخيري والإنساني', nameEn: 'Charitable & Humanitarian Center' },
+      { code: '05', id: 'bldg-academy', route: 'academy', nameAr: 'الأكاديمية التعليمية', nameEn: 'Educational Academy' },
+      { code: '06', id: 'bldg-research', route: 'researchCenter', nameAr: 'مركز البحوث والدراسات', nameEn: 'Research & Studies Center' },
+      { code: '07', id: 'bldg-media', route: 'mediaCenter', nameAr: 'المركز الإعلامي والنشر', nameEn: 'Media & Publications Center' },
+      { code: '08', id: 'bldg-international', route: 'internationalRelations', nameAr: 'مركز العلاقات الدولية', nameEn: 'International Relations Center' },
+    ],
+    submissionsSummary: {
+      partnershipsCount: partnershipApplications.length,
+      contactMessagesCount: contactSubmissions.length,
+    },
+  });
+});
+
+app.get('/api/v1/campus/admin-submissions', requireAuth, requireAdmin, (_req: Request, res: Response) => {
+  return sendApiResponse(res, {
+    partnerships: partnershipApplications,
+    contacts: contactSubmissions,
   });
 });
 

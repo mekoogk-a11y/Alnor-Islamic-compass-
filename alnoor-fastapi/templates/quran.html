@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">القرآن الكريم — المصحف والتلاوة الصوتية</h1>
+        <p class="section-subtitle">اختر السورة من القائمة لقراءة الآيات الكريمة والاستماع المباشر لتلاوة مرتلة عبر api.alquran.cloud.</p>
+      </div>
+    </div>
+    {% include "partials/quran_widget.html" %}
+  </div>
+</section>
+{% endblock %}

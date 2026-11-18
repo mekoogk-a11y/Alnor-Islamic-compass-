@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">الدورات التعليمية</h1>
+        <p class="section-subtitle">مسارات علمية وتأصيلية في القرآن الكريم والعلوم الشرعية.</p>
+      </div>
+    </div>
+    {% if courses %}
+      <div class="cards-grid">
+        {% for c in courses %}
+        <article class="card">
+          <img src="/static/images/quran_desk.jpg" alt="{{ c.title_ar }}" class="card-img" loading="lazy" />
+          <div class="card-meta">{{ c.instructor }} · {{ c.level_ar }} · {{ c.duration_weeks }} أسابيع</div>
+          <h3 class="card-title">{{ c.title_ar }}</h3>
+          <p class="card-text">{{ c.description_ar }}</p>
+          <a href="/courses/{{ c.id }}" class="btn btn-primary btn-sm">تفاصيل الدورة</a>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      {% include "partials/empty_state.html" %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

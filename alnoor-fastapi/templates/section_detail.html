@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">{{ section.title_ar }}</h1>
+        <p class="section-subtitle">{{ section.description_ar }}</p>
+      </div>
+      <a href="/" class="btn btn-outline btn-sm">العودة للرئيسية</a>
+    </div>
+
+    {% if not articles and not courses and not lessons and not projects %}
+      {% include "partials/empty_state.html" %}
+    {% endif %}
+
+    {% if courses %}
+      <h2 class="section-title" style="font-size:1.5rem;margin-bottom:1rem;">الدورات المرتبطة بالقسم</h2>
+      <div class="cards-grid" style="margin-bottom:2rem;">
+        {% for c in courses %}
+        <article class="card">
+          <div class="card-meta">{{ c.instructor }} · {{ c.level_ar }}</div>
+          <h3 class="card-title">{{ c.title_ar }}</h3>
+          <p class="card-text">{{ c.description_ar }}</p>
+          <a href="/courses/{{ c.id }}" class="btn btn-primary btn-sm">عرض الدورة</a>
+        </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if lessons %}
+      <h2 class="section-title" style="font-size:1.5rem;margin-bottom:1rem;">الدروس والمحاضرات</h2>
+      <div class="cards-grid" style="margin-bottom:2rem;">
+        {% for l in lessons %}
+        <article class="card">
+          <div class="card-meta">{{ l.speaker }} · {{ l.duration_minutes }} دقيقة</div>
+          <h3 class="card-title">{{ l.title_ar }}</h3>
+          <p class="card-text">{{ l.summary_ar }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if articles %}
+      <h2 class="section-title" style="font-size:1.5rem;margin-bottom:1rem;">المقالات والأبحاث</h2>
+      <div class="cards-grid" style="margin-bottom:2rem;">
+        {% for a in articles %}
+        <article class="card">
+          <div class="card-meta">{{ a.author }}</div>
+          <h3 class="card-title">{{ a.title_ar }}</h3>
+          <p class="card-text">{{ a.summary_ar }}</p>
+          <a href="/articles/{{ a.id }}" class="btn btn-outline btn-sm">قراءة المزيد</a>
+        </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if projects %}
+      <h2 class="section-title" style="font-size:1.5rem;margin-bottom:1rem;">المشاريع الخيرية</h2>
+      <div class="cards-grid">
+        {% for p in projects %}
+        <article class="card">
+          <div class="card-meta">{{ p.category_ar }} · {{ p.location_ar }}</div>
+          <h3 class="card-title">{{ p.title_ar }}</h3>
+          <p class="card-text">{{ p.description_ar }}</p>
+          <a href="/projects/{{ p.id }}" class="btn btn-emerald btn-sm">دعم المشروع</a>
+        </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

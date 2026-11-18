@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:480px;">
+    <h1 class="section-title" style="margin-bottom:1rem;">إنشاء حساب جديد</h1>
+    {% if error_message %}
+      <div class="alert alert-error">{{ error_message }}</div>
+    {% endif %}
+    <form action="/register" method="post" class="form-panel">
+      <div class="field">
+        <label for="r_name">الاسم الكامل</label>
+        <input id="r_name" type="text" name="full_name" required />
+      </div>
+      <div class="field">
+        <label for="r_email">البريد الإلكتروني</label>
+        <input id="r_email" type="email" name="email" required />
+      </div>
+      <div class="field">
+        <label for="r_pass">كلمة المرور (6 أحرف على الأقل)</label>
+        <input id="r_pass" type="password" name="password" minlength="6" required />
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">إنشاء الحساب</button>
+    </form>
+    <p style="margin-top:1rem;font-size:0.95rem;color:var(--text-muted);">
+      لديك حساب مسبقاً؟ <a href="/login" style="color:var(--royal-accent);font-weight:700;">تسجيل الدخول</a>
+    </p>
+  </div>
+</section>
+{% endblock %}

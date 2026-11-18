@@ -1,0 +1,48 @@
+<header class="site-header">
+  <div class="container">
+    <div class="header-top">
+      <a href="/" class="brand-link">
+        <img src="/static/images/logo.jpg" alt="شعار النور الإسلامي العالمي" class="brand-logo" width="42" height="42" />
+        <span data-i18n="brand">النور الإسلامي العالمي</span>
+      </a>
+
+      <form action="/search" method="get" class="search-bar" role="search">
+        <input type="search" name="q" value="{{ query_text or '' }}" data-i18n-placeholder="searchPlaceholder" placeholder="ابحث في المقالات، الدورات، الفتاوى..." aria-label="البحث في الموقع" required />
+        <button type="submit" class="search-btn" data-i18n="searchBtn">بحث</button>
+      </form>
+
+      <div class="header-actions">
+        <button type="button" id="pwa-install-btn" class="btn btn-emerald btn-sm" hidden data-i18n="installApp">تثبيت التطبيق</button>
+        <button type="button" id="lang-toggle" class="btn btn-outline btn-sm" aria-label="تبديل اللغة">English</button>
+        <button type="button" id="theme-toggle" class="btn btn-outline btn-sm" aria-label="تبديل الوضع الليلي والنهاري">🌙</button>
+
+        {% if current_user %}
+          <a href="/account" class="btn btn-primary btn-sm">{{ current_user.full_name }}</a>
+        {% else %}
+          <a href="/login" class="btn btn-outline btn-sm" data-i18n="login">دخول</a>
+          <a href="/register" class="btn btn-primary btn-sm" data-i18n="register">حساب جديد</a>
+        {% endif %}
+        <a href="/admin" class="btn btn-gold btn-sm" data-i18n="admin">الإدارة</a>
+        <button type="button" id="mobile-menu-btn" class="btn btn-outline btn-sm mobile-menu-btn" aria-label="القائمة">☰</button>
+      </div>
+    </div>
+  </div>
+
+  <nav id="main-nav-strip" class="nav-strip" aria-label="التنقل الرئيسي">
+    <div class="container">
+      <div class="nav-links">
+        <a href="/" class="nav-link {% if request.url.path == '/' %}active{% endif %}" data-ar="الرئيسية" data-en="Home">الرئيسية</a>
+        <a href="/quran" class="nav-link {% if request.url.path == '/quran' %}active{% endif %}" data-ar="القرآن الكريم" data-en="Holy Quran">القرآن الكريم</a>
+        <a href="/tahfiz" class="nav-link {% if request.url.path == '/tahfiz' %}active{% endif %}" data-ar="التحفيظ والتعليم" data-en="Memorization">التحفيظ والتعليم</a>
+        <a href="/islamic-sciences" class="nav-link {% if request.url.path == '/islamic-sciences' %}active{% endif %}" data-ar="العلوم الإسلامية" data-en="Islamic Sciences">العلوم الإسلامية</a>
+        <a href="/library" class="nav-link {% if request.url.path == '/library' %}active{% endif %}" data-ar="المكتبة" data-en="Library">المكتبة</a>
+        <a href="/courses" class="nav-link {% if request.url.path == '/courses' %}active{% endif %}" data-ar="الدورات" data-en="Courses">الدورات</a>
+        <a href="/fatwas" class="nav-link {% if request.url.path == '/fatwas' %}active{% endif %}" data-ar="الفتاوى" data-en="Fatwas">الفتاوى</a>
+        <a href="/adhkar" class="nav-link {% if request.url.path == '/adhkar' %}active{% endif %}" data-ar="الأذكار" data-en="Adhkar">الأذكار</a>
+        <a href="/charity" class="nav-link {% if request.url.path == '/charity' %}active{% endif %}" data-ar="المشاريع الخيرية" data-en="Charity">المشاريع الخيرية</a>
+        <a href="/about" class="nav-link {% if request.url.path == '/about' %}active{% endif %}" data-ar="من نحن" data-en="About">من نحن</a>
+        <a href="/contact" class="nav-link {% if request.url.path == '/contact' %}active{% endif %}" data-ar="اتصل بنا" data-en="Contact">اتصل بنا</a>
+      </div>
+    </div>
+  </nav>
+</header>

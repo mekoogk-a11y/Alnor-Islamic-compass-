@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:860px;">
+    <div class="card-meta" style="margin-bottom:0.5rem;">{{ item_type }} · {{ item_meta }}</div>
+    <h1 class="section-title" style="margin-bottom:1.25rem;">{{ item_title }}</h1>
+    <div class="card" style="padding:2rem;">
+      <p style="margin:0;white-space:pre-line;line-height:1.9;">{{ item_body }}</p>
+    </div>
+    <div style="margin-top:1.5rem;">
+      <a href="{{ back_url }}" class="btn btn-outline btn-sm">العودة للقائمة</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

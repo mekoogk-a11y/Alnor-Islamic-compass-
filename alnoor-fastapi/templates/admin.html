@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">لوحة الإدارة — النور الإسلامي العالمي</h1>
+        <p class="section-subtitle">إضافة وإدارة المقالات والدورات والدروس والمشاريع الخيرية والفتاوى والعلماء والأخبار.</p>
+      </div>
+      <form action="/logout" method="post">
+        <button type="submit" class="btn btn-outline btn-sm">تسجيل الخروج</button>
+      </form>
+    </div>
+
+    {% if saved_flag %}
+      <div class="alert alert-success">تم تحديث قاعدة البيانات بنجاح ({{ saved_flag }}).</div>
+    {% endif %}
+
+    <div class="cards-grid" style="margin-bottom:2rem;">
+      <!-- إضافة مقال -->
+      <form action="/admin/articles" method="post" class="form-panel">
+        <h2 class="card-title" style="margin-bottom:1rem;">إضافة مقال علمي</h2>
+        <div class="field"><label>العنوان</label><input type="text" name="title_ar" required /></div>
+        <div class="field"><label>الكاتب</label><input type="text" name="author" required /></div>
+        <div class="field">
+          <label>القسم</label>
+          <select name="section_id">
+            <option value="">عام</option>
+            {% for s in sections %}<option value="{{ s.id }}">{{ s.title_ar }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="field"><label>الملخص</label><input type="text" name="summary_ar" required /></div>
+        <div class="field"><label>نص المقال</label><textarea name="content_ar" rows="3" required></textarea></div>
+        <button type="submit" class="btn btn-primary btn-sm">حفظ المقال</button>
+      </form>
+
+      <!-- إضافة دورة -->
+      <form action="/admin/courses" method="post" class="form-panel">
+        <h2 class="card-title" style="margin-bottom:1rem;">إضافة دورة تعليمية</h2>
+        <div class="field"><label>اسم الدورة</label><input type="text" name="title_ar" required /></div>
+        <div class="field"><label>المشرف / الشيخ</label><input type="text" name="instructor" required /></div>
+        <div class="field"><label>المستوى</label><input type="text" name="level_ar" value="مفتوح للجميع" required /></div>
+        <div class="field"><label>المدة (أسابيع)</label><input type="number" name="duration_weeks" value="4" min="1" required /></div>
+        <div class="field">
+          <label>القسم</label>
+          <select name="section_id">
+            <option value="">عام</option>
+            {% for s in sections %}<option value="{{ s.id }}">{{ s.title_ar }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="field"><label>الوصف</label><textarea name="description_ar" rows="2" required></textarea></div>
+        <button type="submit" class="btn btn-primary btn-sm">حفظ الدورة</button>
+      </form>
+
+      <!-- إضافة مشروع خيري -->
+      <form action="/admin/projects" method="post" class="form-panel">
+        <h2 class="card-title" style="margin-bottom:1rem;">إضافة مشروع خيري</h2>
+        <div class="field"><label>اسم المشروع</label><input type="text" name="title_ar" required /></div>
+        <div class="field"><label>التصنيف</label><input type="text" name="category_ar" value="مشروع خيري" required /></div>
+        <div class="field"><label>الموقع</label><input type="text" name="location_ar" value="دولي" required /></div>
+        <div class="field"><label>المبلغ المستهدف (USD)</label><input type="number" name="target_amount" value="10000" min="1" step="0.01" required /></div>
+        <div class="field"><label>وصف المشروع</label><textarea name="description_ar" rows="3" required></textarea></div>
+        <button type="submit" class="btn btn-emerald btn-sm">حفظ المشروع</button>
+      </form>
+    </div>
+
+    <div class="cards-grid" style="margin-bottom:2rem;">
+      <!-- إضافة درس -->
+      <form action="/admin/lessons" method="post" class="form-panel">
+        <h2 class="card-title" style="margin-bottom:1rem;">إضافة درس / محاضرة</h2>
+        <div class="field"><label>عنوان الدرس</label><input type="text" name="title_ar" required /></div>
+        <div class="field"><label>المحاضر</label><input type="text" name="speaker" required /></div>
+        <div class="field"><label>المدة (دقائق)</label><input type="number" name="duration_minutes" value="30" min="1" required /></div>
+        <div class="field"><label>رابط صوتي/مرئي (اختياري)</label><input type="url" name="media_url" /></div>
+        <div class="field"><label>الملخص</label><textarea name="summary_ar" rows="2" required></textarea></div>
+        <button type="submit" class="btn btn-primary btn-sm">حفظ الدرس</button>
+      </form>
+
+      <!-- إضافة فتوى -->
+      <form action="/admin/fatwas" method="post" class="form-panel">
+        <h2 class="card-title" style="margin-bottom:1rem;">إضافة فتوى موثقة</h2>
+        <div class="field"><label>التصنيف</label><input type="text" name="category_ar" value="فقه العبادات" required /></div>
+        <div class="field"><label>المفتي / اللجنة</label><input type="text" name="scholar_name" value="لجنة الفتوى" required /></div>
+        <div class="field"><label>السؤال</label><textarea name="question_ar" rows="2" required></textarea></div>
+        <div class="field"><label>الجواب</label><textarea name="answer_ar" rows="3" required></textarea></div>
+        <button type="submit" class="btn btn-gold btn-sm">حفظ الفتوى</button>
+      </form>
+
+      <!-- إضافة عالم أو خبر -->
+      <form action="/admin/scholars" method="post" class="form-panel">
+        <h2 class="card-title" style="margin-bottom:1rem;">إضافة عالم / معلم</h2>
+        <div class="field"><label>الاسم</label><input type="text" name="name_ar" required /></div>
+        <div class="field"><label>التخصص</label><input type="text" name="specialty_ar" required /></div>
+        <div class="field"><label>البلد</label><input type="text" name="country_ar" value="العالم الإسلامي" required /></div>
+        <div class="field"><label>النبذة</label><textarea name="bio_ar" rows="3" required></textarea></div>
+        <button type="submit" class="btn btn-primary btn-sm">حفظ العالم</button>
+      </form>
+    </div>
+
+    <div class="cards-grid">
+      <form action="/admin/news" method="post" class="form-panel">
+        <h2 class="card-title" style="margin-bottom:1rem;">إضافة خبر / نشاط للمؤسسة</h2>
+        <div class="field"><label>العنوان</label><input type="text" name="title_ar" required /></div>
+        <div class="field"><label>الملخص</label><input type="text" name="summary_ar" required /></div>
+        <div class="field"><label>التفاصيل</label><textarea name="body_ar" rows="3" required></textarea></div>
+        <button type="submit" class="btn btn-primary btn-sm">نشر الخبر</button>
+      </form>
+
+      <div class="card">
+        <h2 class="card-title">ملخص المحتوى الحالي ({{ articles|length }} مقالات · {{ courses|length }} دورات · {{ projects|length }} مشاريع)</h2>
+        {% for a in articles %}
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;border-bottom:1px solid var(--border);padding:0.4rem 0;">
+            <span>{{ a.title_ar }}</span>
+            <form action="/admin/articles/{{ a.id }}/delete" method="post"><button type="submit" class="btn btn-outline btn-sm">حذف</button></form>
+          </div>
+        {% endfor %}
+        {% for c in courses %}
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;border-bottom:1px solid var(--border);padding:0.4rem 0;">
+            <span>{{ c.title_ar }}</span>
+            <form action="/admin/courses/{{ c.id }}/delete" method="post"><button type="submit" class="btn btn-outline btn-sm">حذف</button></form>
+          </div>
+        {% endfor %}
+        {% for p in projects %}
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;border-bottom:1px solid var(--border);padding:0.4rem 0;">
+            <span>{{ p.title_ar }}</span>
+            <form action="/admin/projects/{{ p.id }}/delete" method="post"><button type="submit" class="btn btn-outline btn-sm">حذف</button></form>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

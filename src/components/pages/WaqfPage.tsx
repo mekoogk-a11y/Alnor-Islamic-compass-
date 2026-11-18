@@ -136,59 +136,44 @@ export const WaqfPage: React.FC<WaqfPageProps> = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {WAQF_PROJECTS.map((project) => {
-            const collected = project.collectedAmount ?? project.currentAmount ?? 0;
-            const percentage = Math.min(100, Math.round((collected / project.targetAmount) * 100));
             return (
               <div
                 key={project.id}
-                className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4 text-right flex flex-col justify-between"
+                className="bg-[#FFFFFF] dark:bg-[#04382B] border border-[#DDD6C7] dark:border-[#C8A24A]/35 rounded-2xl p-6 shadow-md space-y-4 text-right flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded border border-amber-500/20">
+                    <span className="text-[11px] font-bold text-[#064E3B] dark:text-[#E5C97B] bg-[#EFECE3] dark:bg-[#022C22] px-2.5 py-0.5 rounded border border-[#C8A24A]/40">
                       {project.category}
                     </span>
-                    <span className="text-xs text-emerald-400 font-bold">
-                      سهم المشاركة: ${project.shareAmount || 50}
+                    <span className="text-xs text-[#047857] dark:text-[#34D399] font-bold">
+                      قيمة السهم المقترح: ${project.shareAmount || 50}
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-black text-white leading-snug">
+                  <h3 className="text-base sm:text-lg font-black font-amiri text-[#0F2920] dark:text-white leading-snug">
                     {project.title}
                   </h3>
 
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#38554B] dark:text-[#D1E7DD] leading-relaxed">
                     {project.description}
                   </p>
 
-                  <div className="text-xs text-slate-400 font-medium">
-                    الأثر المبارك: <strong className="text-white">{project.beneficiaries || `${project.beneficiariesCount || 1000} مستفيد`}</strong>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="space-y-1.5 pt-2">
-                    <div className="flex justify-between text-[11px] text-slate-400 font-mono">
-                      <span>تم جمع: ${collected.toLocaleString()}</span>
-                      <span>الهدف: ${project.targetAmount.toLocaleString()} ({percentage}%)</span>
-                    </div>
-                    <div className="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
-                      <div
-                        className="h-full bg-gradient-to-r from-amber-500 to-emerald-500 rounded-full transition-all duration-500"
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
+                  <div className="p-3 rounded-xl bg-[#FAF8F2] dark:bg-[#022C22] border border-[#DDD6C7] dark:border-[#C8A24A]/25 text-xs text-[#38554B] dark:text-[#D1E7DD]">
+                    <span className="font-bold text-[#064E3B] dark:text-[#E5C97B] block mb-0.5">نطاق المصرف الشرعي للبرنامج:</span>
+                    <span>متاح للمساهمة الموثقة وإصدار إشعار استلام رسمي عبر الإدارة المالية للمجمع.</span>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-                  <span className="text-slate-400 font-mono">سهم وقفي باسمك أو باسم والديك</span>
+                <div className="pt-3 border-t border-[#EFECE3] dark:border-[#C8A24A]/20 flex items-center justify-between text-xs">
+                  <span className="text-[#5C746B] dark:text-[#A3C4B8] font-semibold">سهم وقفي باسمك أو باسم والديك</span>
                   <button
                     onClick={() => {
-                      showToast(`للمساهمة في مشروع «${project.title}»، يرجى التحويل عبر أحد الحسابات البنكية الرسمية أعلاه، مع إرسال الإشعار إلى ${COMPLEX_INFO.officialEmail}`, 'info');
+                      showToast(`للمساهمة في مشروع «${project.title}»، يرجى التحويل عبر الحساب المعتمد (${OFFICIAL_DONATION_INFO.accountNumber}) وإرسال الإشعار عبر واتساب أو البريد ${COMPLEX_INFO.officialEmail}`, 'info');
                     }}
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl transition-all shadow-md flex items-center gap-1.5"
+                    className="bg-[#064E3B] hover:bg-[#047857] dark:bg-[#C8A24A] dark:text-[#022C22] text-white font-bold px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
                   >
-                    <span>ساهم الآن</span>
+                    <span>ساهم عبر القناة الرسمية</span>
                     <ArrowLeft className="w-3.5 h-3.5" />
                   </button>
                 </div>
