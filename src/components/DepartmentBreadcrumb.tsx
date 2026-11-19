@@ -26,6 +26,7 @@ const PAGE_METADATA: Record<NavigationPage, { ar: string; en: string; deptCode?:
   researchCenter: { ar: 'مركز البحوث والدراسات', en: 'Research & Studies Center', deptCode: '06' },
   aiScholar: { ar: 'مركز البحوث · الباحث العلمي الموثق', en: 'Research Center · Scholarly Assistant', deptCode: '06' },
   mediaCenter: { ar: 'المركز الإعلامي والنشر', en: 'Media & Publications Center', deptCode: '07' },
+  videoLibrary: { ar: 'المركز الإعلامي · المكتبة المرئية الإسلامية', en: 'Media Center · Islamic Video Library', deptCode: '07' },
   radio: { ar: 'المركز الإعلامي · إذاعة مكة 24/7', en: 'Media Center · Makkah Live Radio', deptCode: '07' },
   audioStudio: { ar: 'المركز الإعلامي · استوديو الصوت السوداني', en: 'Media Center · Audio Studio', deptCode: '07' },
   internationalRelations: { ar: 'مركز العلاقات الدولية', en: 'International Relations Center', deptCode: '08' },
@@ -48,25 +49,25 @@ export const DepartmentBreadcrumb: React.FC<DepartmentBreadcrumbProps> = ({ curr
   return (
     <nav
       aria-label={lang === 'ar' ? 'مسار التنقل داخل المجمع' : 'Campus Breadcrumb'}
-      className="rounded-2xl bg-[#FFFFFF] dark:bg-[#04382B] border border-[#DDD6C7] dark:border-[#C8A24A]/30 px-4 py-3 shadow-sm flex flex-wrap items-center justify-between gap-3"
+      className="sky-card-3d rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3"
     >
       <ol className="flex flex-wrap items-center gap-2 text-xs sm:text-sm font-semibold">
         <li>
           <button
             type="button"
             onClick={() => onNavigate('home')}
-            className="inline-flex items-center gap-1.5 text-[#064E3B] dark:text-[#C8A24A] hover:underline cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-[#12345A] dark:text-[#87CEEB] hover:text-[#0EA5A4] hover:underline cursor-pointer"
           >
-            <Home className="w-4 h-4" />
+            <Home className="w-4 h-4 text-[#0EA5A4]" />
             <span>{lang === 'ar' ? 'رحاب المجمع الرئيسية' : 'Central Campus'}</span>
           </button>
         </li>
-        <li aria-hidden="true" className="text-[#9E7B2B] dark:text-[#C8A24A]/70">
+        <li aria-hidden="true" className="text-[#0EA5A4] dark:text-[#D4AF37]">
           <ChevronLeft className={`w-4 h-4 ${isRtl ? '' : 'rotate-180'}`} />
         </li>
-        <li className="inline-flex items-center gap-2 text-[#0F2920] dark:text-[#FAF8F2] font-bold">
+        <li className="inline-flex items-center gap-2 text-[#12345A] dark:text-[#EAF8FF] font-bold">
           {meta.deptCode && (
-            <span className="px-2 py-0.5 rounded bg-[#064E3B] text-[#FAF8F2] dark:bg-[#C8A24A] dark:text-[#022C22] font-mono text-[11px]">
+            <span className="px-2 py-0.5 rounded bg-[#12345A] text-[#EAF8FF] dark:bg-[#0EA5A4] dark:text-white font-mono text-[11px]">
               {lang === 'ar' ? `مبنى ${meta.deptCode}` : `BLDG ${meta.deptCode}`}
             </span>
           )}
@@ -77,10 +78,10 @@ export const DepartmentBreadcrumb: React.FC<DepartmentBreadcrumbProps> = ({ curr
       <button
         type="button"
         onClick={() => onNavigate('home')}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F3EFE4] dark:bg-[#064E3B] border border-[#DDD6C7] dark:border-[#C8A24A]/35 text-[#064E3B] dark:text-[#FAF8F2] hover:bg-[#064E3B] hover:text-white dark:hover:bg-[#C8A24A] dark:hover:text-[#022C22] text-xs font-bold transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#EAF8FF] dark:bg-[#0F2747] border border-[#87CEEB]/70 dark:border-[#87CEEB]/30 text-[#12345A] dark:text-[#EAF8FF] hover:bg-[#12345A] hover:text-white dark:hover:bg-[#0EA5A4] text-xs font-bold transition-colors cursor-pointer"
       >
         <Compass className="w-3.5 h-3.5" />
-        <span>{lang === 'ar' ? 'العودة إلى خريطة المجمع' : 'Return to Campus Map'}</span>
+        <span>{lang === 'ar' ? 'العودة إلى أقسام المجمع' : 'Return to Portal Grid'}</span>
       </button>
     </nav>
   );

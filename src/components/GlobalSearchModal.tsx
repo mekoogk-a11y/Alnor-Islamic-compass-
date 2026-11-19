@@ -4,6 +4,7 @@ import { NavigationPage } from '../types';
 import { HADITH_DATA, SCHOLARS_DIRECTORY, ACADEMY_COURSES } from '../data/hadithAndScholarsData';
 import { SURAHS_INDEX } from '../data/islamicData';
 import { CAMPUS_BUILDINGS, RESEARCH_PUBLICATIONS, MEDIA_ITEMS } from '../data/campusData';
+import { PORTAL_SECTIONS } from '../data/portalSections';
 import { useLanguage } from '../context/LanguageContext';
 
 interface GlobalSearchModalProps {
@@ -61,6 +62,27 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       payload?: any;
     }> = [];
 
+    // 0. Search Portal 3D Sections
+    if (category === 'all' || category === 'campus') {
+      PORTAL_SECTIONS.forEach((sec) => {
+        if (
+          sec.titleAr.toLowerCase().includes(term) ||
+          sec.titleEn.toLowerCase().includes(term) ||
+          sec.subtitleAr.toLowerCase().includes(term) ||
+          sec.subtitleEn.toLowerCase().includes(term)
+        ) {
+          matchedItems.push({
+            id: `portal-${sec.slug}`,
+            title: isAr ? sec.titleAr : sec.titleEn,
+            subtitle: isAr ? sec.subtitleAr : sec.subtitleEn,
+            category: 'campus',
+            categoryLabel: isAr ? 'أقسام المجمع' : 'Complex Section',
+            page: sec.page,
+          });
+        }
+      });
+    }
+
     // 1. Search Campus Buildings, Research, Media, International Relations & Contact
     if (category === 'all' || category === 'campus') {
       CAMPUS_BUILDINGS.forEach((b) => {
@@ -112,39 +134,6 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           });
         }
       });
-
-      if (
-        term.includes('علاقات') ||
-        term.includes('شراكة') ||
-        term.includes('international') ||
-        term.includes('partner')
-      ) {
-        matchedItems.push({
-          id: 'campus-intl',
-          title: isAr ? 'مركز العلاقات والشراكات الدولية' : 'International Relations & Partnerships Center',
-          subtitle: isAr ? 'بوابة التعاون الدولي ونموذج طلب الشراكات المؤسسية' : 'Institutional partnership desk & global outreach',
-          category: 'campus',
-          categoryLabel: isAr ? 'العلاقات الدولية' : 'Intl Relations',
-          page: 'internationalRelations',
-        });
-      }
-
-      if (
-        term.includes('تواصل') ||
-        term.includes('اتصل') ||
-        term.includes('contact') ||
-        term.includes('بريد') ||
-        term.includes('واتساب')
-      ) {
-        matchedItems.push({
-          id: 'campus-contact',
-          title: isAr ? 'مكتب الاستقبال والتواصل الرسمي (اتصل بنا)' : 'Official Contact Us Desk',
-          subtitle: isAr ? 'قنوات الاتصال المعتمدة ونموذج المراسلة المباشرة لإدارة المجمع' : 'Direct verified channels & inquiry form',
-          category: 'campus',
-          categoryLabel: isAr ? 'اتصل بنا' : 'Contact Us',
-          page: 'contact',
-        });
-      }
     }
 
     // 2. Search Quran Surahs & Translations
@@ -166,17 +155,6 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           });
         }
       });
-
-      if ('ترجمة'.includes(term) || 'لغات'.includes(term) || 'translation'.includes(term) || '76'.includes(term)) {
-        matchedItems.push({
-          id: 'quran-translations-reader',
-          title: 'قارئ ترجمات معاني القرآن بـ 76 لغة عالمية',
-          subtitle: 'ربط مباشر مع مجمع الملك فهد لطباعة المصحف للمطالعة والبحث متعدد اللغات',
-          category: 'quran',
-          categoryLabel: 'ترجمات عالمية',
-          page: 'translationsReader',
-        });
-      }
     }
 
     // 3. Search Hadith
@@ -298,14 +276,14 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-14 sm:pt-24 px-4 bg-[#022C22]/75 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-14 sm:pt-24 px-4 bg-[#12345A]/65 backdrop-blur-md">
       <div
-        className={`w-full max-w-2xl bg-[#FFFFFF] dark:bg-[#022C22] border-2 border-[#C8A24A]/50 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[82vh] ${isRtl ? 'text-right' : 'text-left'}`}
+        className={`w-full max-w-2xl bg-[#FFFFFF] dark:bg-[#0B1F3A] border-2 border-[#87CEEB] dark:border-[#87CEEB]/40 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[82vh] ${isRtl ? 'text-right' : 'text-left'}`}
         dir={isRtl ? 'rtl' : 'ltr'}
       >
         {/* Search Input Bar */}
-        <div className="p-4 sm:p-5 border-b border-[#DDD6C7] dark:border-[#C8A24A]/30 flex items-center gap-3 bg-[#FAF8F2] dark:bg-[#04382B]">
-          <Search className="w-5 h-5 text-[#064E3B] dark:text-[#C8A24A] shrink-0" />
+        <div className="p-4 sm:p-5 border-b border-[#87CEEB]/40 dark:border-[#87CEEB]/25 flex items-center gap-3 bg-[#EAF8FF] dark:bg-[#0F2747]">
+          <Search className="w-5 h-5 text-[#0EA5A4] dark:text-[#87CEEB] shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -313,16 +291,16 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={
               isAr
-                ? 'ابحث في مباني المجمع، القرآن، السنة، الأبحاث، العلماء، والمشاريع الخيرية...'
-                : 'Search campus departments, Quran, Hadith, research, scholars...'
+                ? 'ابحث في أقسام المجمع، القرآن، السنة، الأبحاث، العلماء، والمشاريع الخيرية...'
+                : 'Search complex sections, Quran, Hadith, research, scholars...'
             }
-            className="w-full bg-transparent border-0 text-[#0F2920] dark:text-white placeholder-[#5C746B] dark:placeholder-[#A3C4B8] text-sm sm:text-base focus:outline-none focus:ring-0"
+            className="w-full bg-transparent border-0 text-[#12345A] dark:text-white placeholder-[#4A7298] dark:placeholder-[#84B4D6] text-sm sm:text-base focus:outline-none focus:ring-0"
           />
           {searchTerm && (
             <button
               type="button"
               onClick={() => setSearchTerm('')}
-              className="p-1 rounded-full text-[#5C746B] dark:text-[#D1E7DD] hover:text-[#064E3B] dark:hover:text-white transition cursor-pointer"
+              className="p-1 rounded-full text-[#2B547E] dark:text-[#B8DEF5] hover:text-[#12345A] dark:hover:text-white transition cursor-pointer"
               title={isAr ? 'مسح النص' : 'Clear'}
             >
               <X className="w-4 h-4" />
@@ -331,20 +309,20 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-2.5 py-1 text-xs rounded-lg border border-[#DDD6C7] dark:border-[#C8A24A]/35 text-[#064E3B] dark:text-[#FAF8F2] hover:bg-[#EFECE3] dark:hover:bg-[#064E3B] transition cursor-pointer font-bold"
+            className="px-2.5 py-1 text-xs rounded-lg border border-[#87CEEB] dark:border-[#87CEEB]/35 text-[#12345A] dark:text-[#EAF8FF] hover:bg-white dark:hover:bg-[#133158] transition cursor-pointer font-bold"
           >
             {isAr ? 'إغلاق' : 'Close'}
           </button>
         </div>
 
         {/* Filter Chips */}
-        <div className="flex items-center gap-2 p-3 px-5 border-b border-[#EFECE3] dark:border-[#C8A24A]/20 overflow-x-auto text-xs bg-[#FAF8F2] dark:bg-[#022C22] no-scrollbar">
-          <span className="text-[#5C746B] dark:text-[#A3C4B8] flex items-center gap-1 shrink-0 font-bold">
+        <div className="flex items-center gap-2 p-3 px-5 border-b border-[#87CEEB]/30 dark:border-[#87CEEB]/20 overflow-x-auto text-xs bg-[#EAF8FF]/60 dark:bg-[#0B1F3A] no-scrollbar">
+          <span className="text-[#2B547E] dark:text-[#B8DEF5] flex items-center gap-1 shrink-0 font-bold">
             <Filter className="w-3.5 h-3.5" /> {isAr ? 'الفرز:' : 'Filter:'}
           </span>
           {[
             { id: 'all', labelAr: 'الكل', labelEn: 'All' },
-            { id: 'campus', labelAr: 'مباني المجمع والبحوث', labelEn: 'Campus & Research' },
+            { id: 'campus', labelAr: 'الأقسام والبحوث', labelEn: 'Sections & Research' },
             { id: 'quran', labelAr: 'القرآن الكريم', labelEn: 'Quran' },
             { id: 'hadith', labelAr: 'السنة النبوية', labelEn: 'Hadith' },
             { id: 'dawah', labelAr: 'الدعوة', labelEn: 'Dawah' },
@@ -358,8 +336,8 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               onClick={() => setCategory(tab.id as FilterCategory)}
               className={`px-3 py-1 rounded-xl whitespace-nowrap transition font-bold cursor-pointer ${
                 category === tab.id
-                  ? 'bg-[#064E3B] text-white dark:bg-[#C8A24A] dark:text-[#022C22]'
-                  : 'bg-[#EFECE3] dark:bg-[#04382B] text-[#38554B] dark:text-[#D1E7DD] hover:bg-[#DDD6C7] dark:hover:bg-[#064E3B]'
+                  ? 'bg-[#12345A] text-white dark:bg-[#87CEEB] dark:text-[#091B33]'
+                  : 'bg-white dark:bg-[#102A4C] text-[#12345A] dark:text-[#EAF8FF] border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 hover:bg-[#EAF8FF]'
               }`}
             >
               {isAr ? tab.labelAr : tab.labelEn}
@@ -368,25 +346,25 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         </div>
 
         {/* Results List */}
-        <div className="overflow-y-auto p-3 divide-y divide-[#EFECE3] dark:divide-[#C8A24A]/15 max-h-[50vh]">
+        <div className="overflow-y-auto p-3 divide-y divide-[#87CEEB]/25 dark:divide-[#87CEEB]/15 max-h-[50vh]">
           {searchTerm.trim() === '' ? (
-            <div className="p-8 text-center text-[#38554B] dark:text-[#D1E7DD] space-y-3">
-              <Sparkles className="w-8 h-8 text-[#C8A24A] mx-auto" />
-              <p className="text-sm font-bold text-[#0F2920] dark:text-white">
-                {isAr ? 'محرك البحث المركزي لرحاب مجمع النور' : 'Central Al-Noor Campus Search'}
+            <div className="p-8 text-center text-[#2B547E] dark:text-[#B8DEF5] space-y-3">
+              <Sparkles className="w-8 h-8 text-[#0EA5A4] mx-auto" />
+              <p className="text-sm font-bold text-[#12345A] dark:text-white">
+                {isAr ? 'محرك البحث المركزي لمجمع النور الإسلامي العالمي' : 'Central Al-Noor Complex Search'}
               </p>
-              <p className="text-xs text-[#5C746B] dark:text-[#A3C4B8]">
+              <p className="text-xs text-[#4A7298] dark:text-[#84B4D6]">
                 {isAr
-                  ? 'اكتب اسم مبنى، أو آية، أو سورة، أو بحث علمي، أو موضوع خيري'
-                  : 'Type a campus building, Surah, Hadith, research paper, or service'}
+                  ? 'اكتب اسم قسم، أو سورة، أو حديث، أو دورة علمية، أو موضوع خيري'
+                  : 'Type a section, Surah, Hadith, research paper, or service'}
               </p>
               <div className="flex flex-wrap justify-center gap-2 pt-2 text-xs">
-                {['سورة الفاتحة', 'مركز البحوث', 'كفالة الأيتام', 'الأكاديمية', 'العلاقات الدولية'].map((suggest) => (
+                {['القرآن الكريم', 'مكتبة الفيديوهات', 'كفالة الأيتام', 'الأكاديمية', 'إذاعة مكة'].map((suggest) => (
                   <button
                     key={suggest}
                     type="button"
                     onClick={() => setSearchTerm(suggest)}
-                    className="px-2.5 py-1 bg-[#EFECE3] dark:bg-[#04382B] hover:bg-[#064E3B] hover:text-white text-[#0F2920] dark:text-[#FAF8F2] rounded-lg border border-[#DDD6C7] dark:border-[#C8A24A]/30 transition cursor-pointer font-semibold"
+                    className="px-2.5 py-1 bg-[#EAF8FF] dark:bg-[#102A4C] hover:bg-[#12345A] hover:text-white text-[#12345A] dark:text-[#EAF8FF] rounded-lg border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 transition cursor-pointer font-semibold"
                   >
                     {suggest}
                   </button>
@@ -394,11 +372,11 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               </div>
             </div>
           ) : results.length === 0 ? (
-            <div className="p-8 text-center text-[#38554B] dark:text-[#D1E7DD] space-y-2">
+            <div className="p-8 text-center text-[#2B547E] dark:text-[#B8DEF5] space-y-2">
               <p className="text-sm font-bold">
                 {isAr ? `لم يتم العثور على نتائج تطابق: "${searchTerm}"` : `No matching results for "${searchTerm}"`}
               </p>
-              <p className="text-xs text-[#5C746B] dark:text-[#A3C4B8]">
+              <p className="text-xs text-[#4A7298] dark:text-[#84B4D6]">
                 {isAr ? 'جرّب البحث بكلمات أخرى أو تغيير تصنيف الفرز.' : 'Try different keywords or clear the filter.'}
               </p>
             </div>
@@ -411,38 +389,38 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                   onNavigate(item.page, item.payload);
                   onClose();
                 }}
-                className="w-full text-start p-3 rounded-2xl hover:bg-[#FAF8F2] dark:hover:bg-[#04382B] border border-transparent hover:border-[#C8A24A]/40 transition flex items-start justify-between gap-3 group cursor-pointer"
+                className="w-full text-start p-3 rounded-2xl hover:bg-[#EAF8FF] dark:hover:bg-[#102A4C] border border-transparent hover:border-[#87CEEB]/60 transition flex items-start justify-between gap-3 group cursor-pointer"
               >
                 <div className="space-y-1 min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] px-2 py-0.5 rounded-lg font-bold bg-[#064E3B] text-[#E5C97B] dark:bg-[#C8A24A] dark:text-[#022C22]">
+                    <span className="text-[10px] px-2 py-0.5 rounded-lg font-bold bg-[#12345A] text-[#87CEEB] dark:bg-[#0EA5A4] dark:text-white">
                       {item.categoryLabel}
                     </span>
-                    <h4 className="text-sm font-bold text-[#0F2920] dark:text-white group-hover:text-[#047857] dark:group-hover:text-[#E5C97B] transition truncate">
+                    <h4 className="text-sm font-bold text-[#12345A] dark:text-white group-hover:text-[#0EA5A4] transition truncate">
                       {item.title}
                     </h4>
                   </div>
-                  <p className="text-xs text-[#38554B] dark:text-[#D1E7DD] line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] line-clamp-2 leading-relaxed">
                     {item.subtitle}
                   </p>
                 </div>
-                <ArrowRight className={`w-4 h-4 text-[#5C746B] group-hover:text-[#C8A24A] transition shrink-0 mt-1 ${isRtl ? 'rotate-180' : ''}`} />
+                <ArrowRight className={`w-4 h-4 text-[#4A7298] group-hover:text-[#0EA5A4] transition shrink-0 mt-1 ${isRtl ? 'rotate-180' : ''}`} />
               </button>
             ))
           )}
         </div>
 
         {/* Footer Shortcut Info */}
-        <div className="p-3 bg-[#FAF8F2] dark:bg-[#04382B] border-t border-[#DDD6C7] dark:border-[#C8A24A]/30 flex items-center justify-between text-[11px] text-[#5C746B] dark:text-[#A3C4B8] px-5">
+        <div className="p-3 bg-[#EAF8FF] dark:bg-[#0F2747] border-t border-[#87CEEB]/40 dark:border-[#87CEEB]/25 flex items-center justify-between text-[11px] text-[#2B547E] dark:text-[#B8DEF5] px-5">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-[#FFFFFF] dark:bg-[#022C22] border border-[#DDD6C7] dark:border-[#C8A24A]/30 rounded font-mono text-[10px]">
+              <kbd className="px-1.5 py-0.5 bg-white dark:bg-[#0B1F3A] border border-[#87CEEB]/60 rounded font-mono text-[10px]">
                 ESC
               </kbd>
               <span>{isAr ? 'للإغلاق' : 'Close'}</span>
             </span>
           </div>
-          <span className="text-[#064E3B] dark:text-[#E5C97B] font-bold">
+          <span className="text-[#12345A] dark:text-[#87CEEB] font-bold">
             {isAr ? 'مجمع النور الإسلامي العالمي' : 'Al Noor Global Complex'}
           </span>
         </div>

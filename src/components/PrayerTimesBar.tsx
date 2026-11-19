@@ -63,7 +63,7 @@ export const PrayerTimesBar: React.FC = () => {
   const currentCityObj = CITIES.find(c => c.key === selectedCity) || CITIES[0];
 
   return (
-    <div className="bg-[#F0EDE4] dark:bg-[#272B25] border-y border-[#E5DCCB] dark:border-[#3A4237] px-4 py-2 backdrop-blur-md text-xs text-[#343832] dark:text-[#F7F5EF] transition-colors">
+    <div className="bg-[#EAF8FF]/85 dark:bg-[#0F2747]/90 border-b border-white/80 dark:border-[#87CEEB]/25 px-4 py-2 backdrop-blur-md text-xs text-[#12345A] dark:text-[#EAF8FF] transition-colors">
       <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
         
         {/* Left: City Selector & Hijri Date */}
@@ -72,15 +72,15 @@ export const PrayerTimesBar: React.FC = () => {
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F7F5EF] dark:bg-[#1F221E] border border-[#D8CEBB] dark:border-[#3A4237] hover:border-[#394E43] dark:hover:border-[#B9A477] text-[#343832] dark:text-[#F7F5EF] transition-colors cursor-pointer shadow-sm"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-[#102A4C] border border-[#87CEEB]/70 dark:border-[#87CEEB]/30 hover:border-[#0EA5A4] text-[#12345A] dark:text-[#EAF8FF] transition-colors cursor-pointer shadow-sm"
             >
-              <MapPin className="w-3.5 h-3.5 text-[#394E43] dark:text-[#B9A477]" />
+              <MapPin className="w-3.5 h-3.5 text-[#0EA5A4] dark:text-[#87CEEB]" />
               <span className="font-bold">{currentCityObj.nameAr}</span>
-              <ChevronDown className="w-3 h-3 text-[#80887D]" />
+              <ChevronDown className="w-3 h-3 text-[#2B547E]" />
             </button>
 
             {dropdownOpen && (
-              <div className="absolute top-full mt-1.5 right-0 z-50 w-48 bg-[#FAF8F2] dark:bg-[#20241E] border border-[#D8CEBB] dark:border-[#4A5447] rounded-xl shadow-lg py-1 max-h-60 overflow-y-auto">
+              <div className="absolute top-full mt-1.5 right-0 z-50 w-48 bg-white dark:bg-[#0B1F3A] border border-[#87CEEB] dark:border-[#87CEEB]/35 rounded-xl shadow-lg py-1 max-h-60 overflow-y-auto">
                 {CITIES.map((city) => (
                   <button
                     key={city.key}
@@ -88,12 +88,12 @@ export const PrayerTimesBar: React.FC = () => {
                       setSelectedCity(city.key);
                       setDropdownOpen(false);
                     }}
-                    className={`w-full text-right px-3.5 py-1.5 text-xs hover:bg-[#E5DCCB] dark:hover:bg-[#2C322A] flex items-center justify-between ${
-                      city.key === selectedCity ? 'text-[#394E43] dark:text-[#B9A477] font-bold bg-[#E5DCCB]/60 dark:bg-[#2C322A]' : 'text-[#343832] dark:text-[#D8CEBB]'
+                    className={`w-full text-right px-3.5 py-1.5 text-xs hover:bg-[#EAF8FF] dark:hover:bg-[#133158] flex items-center justify-between cursor-pointer ${
+                      city.key === selectedCity ? 'text-[#0D7A7A] dark:text-[#87CEEB] font-bold bg-[#EAF8FF] dark:bg-[#133158]' : 'text-[#12345A] dark:text-[#EAF8FF]'
                     }`}
                   >
                     <span>{city.nameAr}</span>
-                    <span className="text-[10px] text-[#80887D]">{city.nameEn}</span>
+                    <span className="text-[10px] text-[#4A7298]">{city.nameEn}</span>
                   </button>
                 ))}
               </div>
@@ -102,12 +102,12 @@ export const PrayerTimesBar: React.FC = () => {
 
           {/* Hijri Date Display */}
           {hijriData && (
-            <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-[#5E655B] dark:text-[#D8CEBB]">
-              <span className="text-[#394E43] dark:text-[#B9A477] font-bold">
+            <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-[#2B547E] dark:text-[#B8DEF5]">
+              <span className="text-[#12345A] dark:text-[#87CEEB] font-bold">
                 {hijriData.day} {hijriData.monthNameAr} {hijriData.year} هـ
               </span>
               {hijriData.isSacredMonth && (
-                <span className="px-2 py-0.5 rounded-full bg-[#394E43]/10 dark:bg-[#394E43]/30 text-[#394E43] dark:text-[#B9A477] text-[10px] border border-[#394E43]/20 dark:border-[#B9A477]/30 font-medium">
+                <span className="px-2 py-0.5 rounded-full bg-[#0EA5A4]/15 dark:bg-[#0EA5A4]/25 text-[#0D7A7A] dark:text-[#5EEAD4] text-[10px] border border-[#0EA5A4]/30 font-medium">
                   من الأشهر الحُرُم
                 </span>
               )}
@@ -117,22 +117,22 @@ export const PrayerTimesBar: React.FC = () => {
 
         {/* Center: Prayer Times Pills */}
         {prayerData && (
-          <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1 scrollbar-none">
+          <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1 no-scrollbar">
             
             {/* Fajr */}
             <div className={`px-2.5 py-1 rounded-xl border flex items-center gap-1.5 text-[11px] transition-all ${
               prayerData.nextPrayer?.nameAr === 'الفجر' 
-                ? 'bg-[#394E43] border-[#B9A477]/50 text-[#F7F5EF] font-bold shadow-sm' 
-                : 'bg-[#F7F5EF] dark:bg-[#1F221E] border-[#E5DCCB] dark:border-[#3A4237] text-[#5E655B] dark:text-[#D8CEBB]'
+                ? 'bg-[#12345A] border-[#D4AF37]/70 text-white font-bold shadow-sm' 
+                : 'bg-white/90 dark:bg-[#102A4C] border-[#87CEEB]/55 dark:border-[#87CEEB]/25 text-[#2B547E] dark:text-[#B8DEF5]'
             }`}>
-              <Moon className="w-3 h-3 text-[#B9A477]" />
+              <Moon className="w-3 h-3 text-[#D4AF37]" />
               <span>الفجر:</span>
               <span className="font-mono">{prayerData.timings.Fajr}</span>
             </div>
 
             {/* Sunrise */}
-            <div className="px-2.5 py-1 rounded-xl bg-[#F7F5EF]/70 dark:bg-[#1F221E]/60 border border-[#E5DCCB] dark:border-[#3A4237] text-[#80887D] flex items-center gap-1.5 text-[11px] hidden md:flex">
-              <Sunrise className="w-3 h-3 text-[#B9A477]" />
+            <div className="px-2.5 py-1 rounded-xl bg-white/70 dark:bg-[#102A4C]/70 border border-[#87CEEB]/50 dark:border-[#87CEEB]/20 text-[#2B547E] dark:text-[#84B4D6] flex items-center gap-1.5 text-[11px] hidden md:flex">
+              <Sunrise className="w-3 h-3 text-[#D4AF37]" />
               <span>الشروق:</span>
               <span className="font-mono">{prayerData.timings.Sunrise}</span>
             </div>
@@ -140,10 +140,10 @@ export const PrayerTimesBar: React.FC = () => {
             {/* Dhuhr */}
             <div className={`px-2.5 py-1 rounded-xl border flex items-center gap-1.5 text-[11px] transition-all ${
               prayerData.nextPrayer?.nameAr === 'الظهر' 
-                ? 'bg-[#394E43] border-[#B9A477]/50 text-[#F7F5EF] font-bold shadow-sm' 
-                : 'bg-[#F7F5EF] dark:bg-[#1F221E] border-[#E5DCCB] dark:border-[#3A4237] text-[#5E655B] dark:text-[#D8CEBB]'
+                ? 'bg-[#12345A] border-[#D4AF37]/70 text-white font-bold shadow-sm' 
+                : 'bg-white/90 dark:bg-[#102A4C] border-[#87CEEB]/55 dark:border-[#87CEEB]/25 text-[#2B547E] dark:text-[#B8DEF5]'
             }`}>
-              <Sun className="w-3 h-3 text-[#B9A477]" />
+              <Sun className="w-3 h-3 text-[#D4AF37]" />
               <span>الظهر:</span>
               <span className="font-mono">{prayerData.timings.Dhuhr}</span>
             </div>
@@ -151,10 +151,10 @@ export const PrayerTimesBar: React.FC = () => {
             {/* Asr */}
             <div className={`px-2.5 py-1 rounded-xl border flex items-center gap-1.5 text-[11px] transition-all ${
               prayerData.nextPrayer?.nameAr === 'العصر' 
-                ? 'bg-[#394E43] border-[#B9A477]/50 text-[#F7F5EF] font-bold shadow-sm' 
-                : 'bg-[#F7F5EF] dark:bg-[#1F221E] border-[#E5DCCB] dark:border-[#3A4237] text-[#5E655B] dark:text-[#D8CEBB]'
+                ? 'bg-[#12345A] border-[#D4AF37]/70 text-white font-bold shadow-sm' 
+                : 'bg-white/90 dark:bg-[#102A4C] border-[#87CEEB]/55 dark:border-[#87CEEB]/25 text-[#2B547E] dark:text-[#B8DEF5]'
             }`}>
-              <Sun className="w-3 h-3 text-[#B9A477]" />
+              <Sun className="w-3 h-3 text-[#0EA5A4]" />
               <span>العصر:</span>
               <span className="font-mono">{prayerData.timings.Asr}</span>
             </div>
@@ -162,10 +162,10 @@ export const PrayerTimesBar: React.FC = () => {
             {/* Maghrib */}
             <div className={`px-2.5 py-1 rounded-xl border flex items-center gap-1.5 text-[11px] transition-all ${
               prayerData.nextPrayer?.nameAr === 'المغرب' 
-                ? 'bg-[#394E43] border-[#B9A477]/50 text-[#F7F5EF] font-bold shadow-sm' 
-                : 'bg-[#F7F5EF] dark:bg-[#1F221E] border-[#E5DCCB] dark:border-[#3A4237] text-[#5E655B] dark:text-[#D8CEBB]'
+                ? 'bg-[#12345A] border-[#D4AF37]/70 text-white font-bold shadow-sm' 
+                : 'bg-white/90 dark:bg-[#102A4C] border-[#87CEEB]/55 dark:border-[#87CEEB]/25 text-[#2B547E] dark:text-[#B8DEF5]'
             }`}>
-              <Sunset className="w-3 h-3 text-[#B9A477]" />
+              <Sunset className="w-3 h-3 text-[#D4AF37]" />
               <span>المغرب:</span>
               <span className="font-mono">{prayerData.timings.Maghrib}</span>
             </div>
@@ -173,10 +173,10 @@ export const PrayerTimesBar: React.FC = () => {
             {/* Isha */}
             <div className={`px-2.5 py-1 rounded-xl border flex items-center gap-1.5 text-[11px] transition-all ${
               prayerData.nextPrayer?.nameAr === 'العشاء' 
-                ? 'bg-[#394E43] border-[#B9A477]/50 text-[#F7F5EF] font-bold shadow-sm' 
-                : 'bg-[#F7F5EF] dark:bg-[#1F221E] border-[#E5DCCB] dark:border-[#3A4237] text-[#5E655B] dark:text-[#D8CEBB]'
+                ? 'bg-[#12345A] border-[#D4AF37]/70 text-white font-bold shadow-sm' 
+                : 'bg-white/90 dark:bg-[#102A4C] border-[#87CEEB]/55 dark:border-[#87CEEB]/25 text-[#2B547E] dark:text-[#B8DEF5]'
             }`}>
-              <Moon className="w-3 h-3 text-[#B9A477]" />
+              <Moon className="w-3 h-3 text-[#87CEEB]" />
               <span>العشاء:</span>
               <span className="font-mono">{prayerData.timings.Isha}</span>
             </div>
@@ -187,18 +187,18 @@ export const PrayerTimesBar: React.FC = () => {
         {/* Right: Next Prayer Countdown & Qibla */}
         <div className="flex items-center gap-3">
           {prayerData?.nextPrayer && (
-            <div className="flex items-center gap-1.5 text-[11px] bg-[#F7F5EF] dark:bg-[#1F221E] px-2.5 py-1 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237]">
-              <span className="text-[#80887D]">الصلاة القادمة:</span>
-              <span className="font-bold text-[#394E43] dark:text-[#B9A477]">{prayerData.nextPrayer.nameAr}</span>
-              <span className="text-[#657568] dark:text-[#A4B5A7] font-mono text-[10px]">({prayerData.nextPrayer.timeRemainingFormatted})</span>
+            <div className="flex items-center gap-1.5 text-[11px] bg-white/90 dark:bg-[#102A4C] px-2.5 py-1 rounded-xl border border-[#87CEEB]/65 dark:border-[#87CEEB]/30">
+              <span className="text-[#4A7298] dark:text-[#84B4D6]">الصلاة القادمة:</span>
+              <span className="font-bold text-[#12345A] dark:text-[#87CEEB]">{prayerData.nextPrayer.nameAr}</span>
+              <span className="text-[#0D7A7A] dark:text-[#5EEAD4] font-mono text-[10px]">({prayerData.nextPrayer.timeRemainingFormatted})</span>
             </div>
           )}
 
           {prayerData && (
-            <div className="hidden lg:flex items-center gap-1 text-[11px] text-[#5E655B] dark:text-[#D8CEBB]" title={`اتجاه القبلة: ${prayerData.qiblaDirection}°`}>
-              <Compass className="w-3.5 h-3.5 text-[#394E43] dark:text-[#B9A477]" />
+            <div className="hidden lg:flex items-center gap-1 text-[11px] text-[#2B547E] dark:text-[#B8DEF5]" title={`اتجاه القبلة: ${prayerData.qiblaDirection}°`}>
+              <Compass className="w-3.5 h-3.5 text-[#0EA5A4] dark:text-[#87CEEB]" />
               <span>القبلة:</span>
-              <span className="font-mono font-bold text-[#343832] dark:text-[#F7F5EF]">{prayerData.qiblaDirection}°</span>
+              <span className="font-mono font-bold text-[#12345A] dark:text-[#EAF8FF]">{prayerData.qiblaDirection}°</span>
             </div>
           )}
         </div>

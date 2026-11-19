@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { 
-  HelpCircle, Search, MessageCircle, Phone, BookOpen, 
-  Sparkles, CheckCircle2, ShieldCheck, ArrowRight, ArrowLeft,
-  ChevronDown, Heart, Send, Globe, Users, ExternalLink, Clock
+import {
+  HelpCircle, Search, MessageCircle,
+  CheckCircle2, ShieldCheck,
+  ChevronDown, Send, Users
 } from 'lucide-react';
 import { NavigationPage } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
+import { Sky3DIcon } from '../Sky3DIcon';
+import { SectionDynamicItems } from '../SectionDynamicItems';
 
 interface InquiryFaq {
   id: string;
@@ -93,8 +95,8 @@ interface DiscoverIslamPageProps {
 }
 
 export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate }) => {
-  const { lang, isRtl } = useLanguage();
-  
+  const { isRtl } = useLanguage();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [expandedFaqId, setExpandedFaqId] = useState<string | null>(DISCOVER_ISLAM_FAQS[0].id);
@@ -103,7 +105,7 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
 
   const filteredFaqs = DISCOVER_ISLAM_FAQS.filter((faq) => {
     const matchesCat = selectedCategory === 'all' || faq.category === selectedCategory;
-    const matchesQuery = 
+    const matchesQuery =
       faq.questionAr.toLowerCase().includes(searchQuery.toLowerCase()) ||
       faq.questionEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
       faq.answerAr.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -118,24 +120,24 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
   };
 
   return (
-    <div className="space-y-12 max-w-6xl mx-auto pb-16">
-      
-      {/* Hero Banner: Discover Islam / Ask About Islam */}
-      <section className="relative rounded-3xl overflow-hidden p-6 sm:p-12 shadow-2xl border border-[#D4AF37]/35 bg-gradient-to-br from-[#070D1E] via-[#0B132B] to-[#040814] text-white">
-        <div className="absolute inset-0 bg-noor-grid opacity-30 pointer-events-none" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#38BDF8]/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="space-y-12 max-w-6xl mx-auto pb-16" dir={isRtl ? 'rtl' : 'ltr'}>
 
+      {/* Sky-Blue 3D Hero Banner */}
+      <section className="relative rounded-3xl overflow-hidden p-6 sm:p-12 shadow-xl border border-[#87CEEB]/55 bg-gradient-to-br from-[#12345A] via-[#0E3F66] to-[#0EA5A4] text-white">
         <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#38BDF8]/15 border border-[#38BDF8]/40 text-[#BAE6FD] text-xs font-bold">
-            <HelpCircle className="w-3.5 h-3.5 text-[#38BDF8]" />
-            <span>بوابة الحوار والتعريف بالإسلام • Discover Islam & Scholarly Q&A</span>
+          <div className="flex items-center gap-3">
+            <Sky3DIcon slug="discoverIslam" tone="sky" size="md" />
+            <p className="text-xs font-bold text-[#87CEEB] flex items-center gap-1.5">
+              <HelpCircle className="w-4 h-4 text-[#F7E7B4]" />
+              <span>بوابة الحوار والتعريف بالإسلام · Discover Islam & Scholarly Q&A</span>
+            </p>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black font-amiri text-white leading-tight">
             اسأل عن الإسلام – هدايةٌ بالدليل والبرهان
           </h1>
 
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#D7F1FC] leading-relaxed">
             مرحباً بك في مركز الإجابة الموثقة لمجمع النور الإسلامي العالمي. هنا تجد إجابات رصينة وشافية عن أصول الإسلام، والقرآن، والرسالة المحمدية، مع إمكانية التواصل المباشر مع نخبة من العلماء والدعاة بعدة لغات عالمية.
           </p>
 
@@ -145,17 +147,18 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
               href="https://wa.me/249904499914?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A3%D8%B1%D8%BA%D8%A8%20%D9%81%D9%8A%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%A7%D9%84%D8%A5%D8%B3%D9%84%D8%A7%D9%85%20%D9%88%D8%A7%D9%84%D8%AD%D9%88%D8%A7%D8%B1%20%D9%85%D8%B9%20%D8%A3%D8%AD%D8%AF%20%D8%A7%D9%84%D8%AF%D8%B9%D8%A7%D8%A9"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-2 transition shadow-md"
+              className="px-5 py-2.5 rounded-2xl bg-[#25D366] hover:bg-[#1EBE5D] text-[#091B33] font-black text-xs flex items-center gap-2 transition shadow-md"
             >
               <MessageCircle className="w-4 h-4 fill-current" />
               <span>محادثة فورية مع داعية (واتساب: +249904499914)</span>
             </a>
 
             <button
+              type="button"
               onClick={() => onNavigate('newMuslims')}
-              className="px-5 py-2.5 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] border border-white/10 text-slate-200 text-xs font-bold transition flex items-center gap-2"
+              className="px-5 py-2.5 rounded-2xl bg-white/15 hover:bg-white/25 border border-[#87CEEB]/50 text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
             >
-              <Users className="w-4 h-4 text-[#D4AF37]" />
+              <Users className="w-4 h-4 text-[#F7E7B4]" />
               <span>دليل المهتدين الجدد</span>
             </button>
           </div>
@@ -163,16 +166,16 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
       </section>
 
       {/* Search and Filters Bar */}
-      <section className="rounded-2xl border border-white/10 bg-[#0B132B]/90 p-4 sm:p-6 shadow-xl space-y-4 backdrop-blur-md">
+      <section className="sky-card-3d rounded-3xl p-4 sm:p-6 space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className={`w-4 h-4 text-slate-400 absolute top-3.5 ${isRtl ? 'right-4' : 'left-4'}`} />
+            <Search className={`w-4 h-4 text-[#0EA5A4] absolute top-3.5 ${isRtl ? 'right-4' : 'left-4'}`} />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="ابحث عن مسألة أو سؤال (التوحيد، القرآن، المرأة، العدل، الإعجاز)..."
-              className={`w-full py-2.5 rounded-xl bg-[#070D1E] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF37] ${
+              className={`w-full py-2.5 rounded-xl bg-[#EAF8FF]/85 dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 text-xs text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4] ${
                 isRtl ? 'pr-11 pl-4' : 'pl-11 pr-4'
               }`}
             />
@@ -189,11 +192,12 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
             ].map((cat) => (
               <button
                 key={cat.id}
+                type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-2 rounded-xl font-bold whitespace-nowrap transition border ${
+                className={`px-3 py-2 rounded-xl font-bold whitespace-nowrap transition border cursor-pointer ${
                   selectedCategory === cat.id
-                    ? 'bg-[#D4AF37] text-slate-950 border-[#D4AF37] shadow-sm'
-                    : 'bg-[#070D1E] text-slate-300 border-white/10 hover:border-white/20'
+                    ? 'bg-[#12345A] text-white border-[#12345A] dark:bg-[#0EA5A4] dark:border-[#0EA5A4] shadow-sm'
+                    : 'bg-[#EAF8FF] dark:bg-[#0F2747] text-[#12345A] dark:text-[#B8DEF5] border-[#87CEEB]/50'
                 }`}
               >
                 {cat.label}
@@ -203,13 +207,13 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
         </div>
       </section>
 
-      {/* Accordion FAQ Answers (With Academic & Quranic Citations) */}
+      {/* Accordion FAQ Answers */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-black font-amiri text-white">
+          <h2 className="text-xl font-black font-amiri text-[#12345A] dark:text-white">
             الأسئلة الأكثر طرحاً مع الإجابات المعتمدة ({filteredFaqs.length})
           </h2>
-          <span className="text-xs text-slate-400">توثيق علمي متكامل</span>
+          <span className="text-xs font-bold text-[#0D7A7A] dark:text-[#87CEEB]">توثيق علمي متكامل</span>
         </div>
 
         <div className="space-y-3">
@@ -218,54 +222,55 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
             return (
               <div
                 key={faq.id}
-                className="rounded-2xl border border-white/10 bg-[#0B132B]/80 overflow-hidden transition-all shadow-md"
+                className="sky-card-3d rounded-3xl overflow-hidden"
               >
                 <button
+                  type="button"
                   onClick={() => setExpandedFaqId(isExpanded ? null : faq.id)}
-                  className="w-full p-5 text-right flex items-center justify-between gap-4 cursor-pointer hover:bg-white/[0.02]"
+                  className="w-full p-5 text-right flex items-center justify-between gap-4 cursor-pointer hover:bg-[#EAF8FF]/60 dark:hover:bg-[#14335B]/60 transition-colors"
                 >
                   <div className="space-y-1 text-right">
-                    <span className="text-[10px] font-bold text-[#D4AF37] px-2 py-0.5 rounded bg-[#D4AF37]/10 inline-block">
+                    <span className="text-[11px] font-bold text-[#0D7A7A] dark:text-[#87CEEB] block">
                       {faq.categoryLabelAr}
                     </span>
-                    <h3 className="text-sm sm:text-base font-bold text-white leading-relaxed">
+                    <h3 className="text-sm sm:text-base font-black text-[#12345A] dark:text-white leading-relaxed">
                       {faq.questionAr}
                     </h3>
-                    <p className="text-xs text-slate-400 font-sans" dir="ltr">
+                    <p className="text-xs text-[#4A7298] dark:text-[#B8DEF5] font-sans" dir="ltr">
                       {faq.questionEn}
                     </p>
                   </div>
 
                   <ChevronDown
-                    className={`w-5 h-5 text-[#D4AF37] shrink-0 transition-transform ${
+                    className={`w-5 h-5 text-[#0EA5A4] shrink-0 transition-transform ${
                       isExpanded ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
 
                 {isExpanded && (
-                  <div className="p-5 pt-0 space-y-4 border-t border-white/5 animate-fade-in text-slate-200">
-                    
+                  <div className="p-5 pt-0 space-y-4 border-t border-[#87CEEB]/35 dark:border-[#87CEEB]/20 animate-fade-in">
+
                     {/* Arabic Answer */}
                     <div className="space-y-2 pt-4">
-                      <h4 className="text-xs font-bold text-[#D4AF37]">الجواب العلمي المعتمد:</h4>
-                      <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                      <h4 className="text-xs font-black text-[#0D7A7A] dark:text-[#87CEEB]">الجواب العلمي المعتمد:</h4>
+                      <p className="text-xs sm:text-sm text-[#12345A] dark:text-[#EAF8FF] leading-relaxed font-sans">
                         {faq.answerAr}
                       </p>
                     </div>
 
                     {/* English Translation of Answer */}
-                    <div className="space-y-1 p-3.5 rounded-xl bg-[#070D1E] border border-white/5 text-xs text-slate-300" dir="ltr">
-                      <span className="text-[10px] text-slate-400 uppercase tracking-wider font-bold block">English Explanation:</span>
+                    <div className="space-y-1 p-3.5 rounded-2xl bg-[#EAF8FF]/85 dark:bg-[#0F2747] border border-[#87CEEB]/45 text-xs text-[#12345A] dark:text-[#EAF8FF]" dir="ltr">
+                      <span className="text-[10px] text-[#0D7A7A] dark:text-[#87CEEB] uppercase tracking-wider font-bold block">English Explanation:</span>
                       <p className="leading-relaxed">{faq.answerEn}</p>
                     </div>
 
-                    {/* Quranic Proof Callout */}
-                    <div className="p-4 rounded-xl bg-gradient-to-r from-[#D4AF37]/10 to-transparent border-r-4 border-[#D4AF37] space-y-1">
-                      <p className="font-amiri text-base sm:text-lg text-[#F3E8CB] font-bold">
+                    {/* Quranic Proof Callout (clean rounded border) */}
+                    <div className="scholarly-reading-paper p-4 rounded-2xl space-y-1">
+                      <p className="font-amiri text-base sm:text-lg text-[#12345A] font-bold">
                         {faq.quranProof}
                       </p>
-                      <span className="text-[11px] text-slate-400 font-mono block">
+                      <span className="text-[11px] text-[#2B547E] font-mono block font-bold">
                         {faq.reference}
                       </span>
                     </div>
@@ -279,33 +284,34 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
       </section>
 
       {/* Direct Scholar Question Form */}
-      <section className="rounded-3xl border border-[#D4AF37]/30 bg-[#0B132B]/90 p-6 sm:p-10 shadow-2xl space-y-6 backdrop-blur-md">
+      <section className="sky-card-3d rounded-3xl p-6 sm:p-10 space-y-6">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-[#D4AF37]/15 text-[#D4AF37] text-xs font-bold">
+          <p className="inline-flex items-center gap-2 text-[#0D7A7A] dark:text-[#87CEEB] text-xs font-bold">
             <Send className="w-3.5 h-3.5" />
             <span>نافذة الاستفسار المباشر</span>
-          </div>
-          <h3 className="text-xl sm:text-2xl font-black font-amiri text-white">
+          </p>
+          <h3 className="text-xl sm:text-2xl font-black font-amiri text-[#12345A] dark:text-white">
             لم تجد إجابة لسؤالك؟ أرسل استفسارك مباشرة لهيئة العلماء والدعاة
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
             يتولى فريق من الباحثين الشرعيين والمترجمين المعتمدين مراجعة سؤالك والرد عليك بخصوصية تامة.
           </p>
         </div>
 
         {questionSent ? (
-          <div className="p-6 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-center space-y-3">
-            <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
-            <h4 className="text-base font-bold text-white">تم استلام استفسارك بنجاح!</h4>
-            <p className="text-xs text-slate-300">
+          <div className="p-6 rounded-2xl bg-[#EAF8FF] dark:bg-[#0F2747] border border-[#0EA5A4] text-center space-y-3">
+            <CheckCircle2 className="w-12 h-12 text-[#0EA5A4] mx-auto" />
+            <h4 className="text-base font-bold text-[#12345A] dark:text-white">تم استلام استفسارك بنجاح!</h4>
+            <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
               سيقوم الباحث المختص بإعداد الإجابة الموثقة وإرسالها إليك. يمكنك أيضاً متابعة الإجابة فورياً عبر واتساب المجمع: +249904499914.
             </p>
             <button
+              type="button"
               onClick={() => {
                 setQuestionSent(false);
                 setCustomQuestion('');
               }}
-              className="px-5 py-2 rounded-xl bg-[#D4AF37] text-slate-950 text-xs font-bold"
+              className="px-5 py-2 rounded-xl bg-[#12345A] text-white text-xs font-bold cursor-pointer"
             >
               إرسال سؤال آخر
             </button>
@@ -317,13 +323,13 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
               value={customQuestion}
               onChange={(e) => setCustomQuestion(e.target.value)}
               placeholder="اكتب سؤالك أو موضوع استفسارك هنا بكل وضوح..."
-              className="w-full p-4 rounded-2xl bg-[#070D1E] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF37]"
+              className="w-full p-4 rounded-2xl bg-[#EAF8FF]/85 dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 text-xs text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
               required
             />
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-[11px] text-slate-400 flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span className="text-[11px] text-[#4A7298] dark:text-[#B8DEF5] flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#0EA5A4]" />
                 <span>خصوصية تامة، وأمانة علمية موثقة بنصوص الكتاب والسنة</span>
               </span>
 
@@ -334,7 +340,7 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2"
+                  className="px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-[#091B33] font-black text-xs flex items-center justify-center gap-2"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>إرسال عبر الواتساب</span>
@@ -342,7 +348,7 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
 
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#F59E0B] text-slate-950 font-bold text-xs shadow-md"
+                  className="px-6 py-2.5 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white font-bold text-xs shadow-md cursor-pointer transition-colors"
                 >
                   إرسال الاستفسار
                 </button>
@@ -351,6 +357,8 @@ export const DiscoverIslamPage: React.FC<DiscoverIslamPageProps> = ({ onNavigate
           </form>
         )}
       </section>
+
+      <SectionDynamicItems sectionSlug="discoverIslam" />
 
     </div>
   );

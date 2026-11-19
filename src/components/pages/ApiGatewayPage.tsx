@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Server, Cpu, Shield, Key, Activity, Terminal, 
-  Smartphone, Database, RefreshCw, CheckCircle2, 
-  AlertTriangle, Copy, Check, ArrowLeft, Play, 
-  Code, Globe, Zap, ExternalLink, Download, Layers 
+import {
+  Shield, Key, Activity, Terminal,
+  Smartphone, Database, RefreshCw, CheckCircle2,
+  Copy, Check, ArrowLeft, Play,
+  Zap, Download, Layers
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { ApiHealthStatus, ApiKeyRecord, ApiTelemetryMetric, NavigationPage } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
 import { useToast } from '../../context/ToastContext';
 import { ServiceStatusDashboard } from '../ServiceStatusDashboard';
+import { Sky3DIcon } from '../Sky3DIcon';
+import { SectionDynamicItems } from '../SectionDynamicItems';
 
 interface ApiGatewayPageProps {
   onNavigate: (page: NavigationPage) => void;
 }
 
 export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) => {
-  const { lang, isRtl } = useLanguage();
+  const { isRtl } = useLanguage();
   const { showToast } = useToast();
-  
+
   // Active Tab
   const [activeTab, setActiveTab] = useState<'health' | 'keys' | 'playground' | 'mobile' | 'telemetry'>('health');
-  
+
   // Health & Services State
   const [healthData, setHealthData] = useState<{ status: string; services: ApiHealthStatus[]; serverUptimeSeconds: number } | null>(null);
   const [isLoadingHealth, setIsLoadingHealth] = useState(false);
@@ -65,7 +67,7 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
 
   useEffect(() => {
     loadGatewayData();
-    const interval = setInterval(loadGatewayData, 20000); // 20s live polling
+    const interval = setInterval(loadGatewayData, 20000);
     return () => clearInterval(interval);
   }, []);
 
@@ -119,7 +121,7 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
         let body = {};
         try {
           body = JSON.parse(playgroundPayload);
-        } catch (e) {
+        } catch {
           showToast('صيغة JSON غير صالحة، يرجى التحقق من الحقول.', 'error');
           setIsSendingRequest(false);
           return;
@@ -149,45 +151,48 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
   };
 
   return (
-    <div className="space-y-10 max-w-7xl mx-auto pb-16">
-      
-      {/* Editorial Header */}
-      <section className="relative rounded-3xl overflow-hidden luxury-card border border-amber-500/30 p-6 sm:p-10 shadow-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950">
-        <div className="absolute inset-0 bg-islamic-pattern opacity-15 pointer-events-none" />
-        
+    <div className="space-y-10 max-w-7xl mx-auto pb-16" dir={isRtl ? 'rtl' : 'ltr'}>
+
+      {/* Sky-Blue 3D Editorial Header */}
+      <section className="relative rounded-3xl overflow-hidden border border-[#87CEEB]/55 p-6 sm:p-10 shadow-xl bg-gradient-to-br from-[#12345A] via-[#0F2F54] to-[#0EA5A4] text-white">
+        <div className="absolute inset-0 bg-islamic-pattern opacity-10 pointer-events-none" />
+
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-3xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-black flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span>منظومة API الموحدة • Enterprise API Gateway Architecture</span>
-              </span>
-              <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono">
-                v1.4.0 • Zero Client-Side Secrets
-              </span>
+          <div className="flex items-start gap-4 max-w-3xl">
+            <div className="hidden sm:block shrink-0">
+              <Sky3DIcon slug="apiGateway" tone="indigo" size="lg" />
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-black text-white font-amiri leading-tight">
-              بوابة واجهات الربط السحابي لمجمع النور الإسلامي
-            </h1>
+            <div className="space-y-2.5">
+              <p className="text-xs font-bold text-[#F7E7B4] flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5 text-[#D4AF37]" />
+                <span>منظومة API الموحدة · Enterprise API Gateway Architecture · Zero Client-Side Secrets</span>
+              </p>
 
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              بنية تحتية مركزية متكاملة لربط خدمات القرآن الكريم والتفاسير، مواقيت الصلاة الفلكية، الباحث المعرفي الذكي، أسهم الوقف الرقمي، وتطبيقات الهواتف الذكية (Android & iOS) مع حماية تامة للمفاتيح السرية ومعدل استهلاك مستقر.
-            </p>
+              <h1 className="text-2xl sm:text-4xl font-black text-white font-amiri leading-tight">
+                بوابة واجهات الربط السحابي لمجمع النور الإسلامي
+              </h1>
+
+              <p className="text-xs sm:text-sm text-[#D7F1FC] leading-relaxed">
+                بنية تحتية مركزية متكاملة لربط خدمات القرآن الكريم والتفاسير، مواقيت الصلاة الفلكية، الباحث المعرفي الذكي، أسهم الوقف الرقمي، وتطبيقات الهواتف الذكية (Android & iOS) مع حماية تامة للمفاتيح السرية ومعدل استهلاك مستقر.
+              </p>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
             <button
+              type="button"
               onClick={() => onNavigate('home')}
-              className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-400 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-2"
+              className="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-[#87CEEB]/50 text-white text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
             >
               <ArrowLeft className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
               <span>العودة للرئيسية</span>
             </button>
             <button
+              type="button"
               onClick={loadGatewayData}
               disabled={isLoadingHealth}
-              className="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 hover:bg-amber-400 text-xs font-black transition-all flex items-center gap-1.5"
+              className="px-4 py-2.5 rounded-xl bg-[#D4AF37] hover:bg-[#F7E7B4] text-[#12345A] text-xs font-black transition-all flex items-center gap-1.5 shadow-md cursor-pointer whitespace-nowrap"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLoadingHealth ? 'animate-spin' : ''}`} />
               <span>تحديث الحالة</span>
@@ -196,33 +201,33 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
         </div>
 
         {/* Global Key Metrics Bar */}
-        <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-6 border-t border-slate-800">
-          <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 block">حالة البوابة الكلية</span>
-            <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 mt-0.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+        <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-6 border-t border-white/15">
+          <div className="p-3.5 bg-[#0A223D]/70 rounded-2xl border border-[#87CEEB]/30">
+            <span className="text-[11px] text-[#B8DEF5] block">حالة البوابة الكلية</span>
+            <span className="text-xs font-bold text-[#6EE7B7] flex items-center gap-1.5 mt-0.5 tabular-nums">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#34D399]" />
               <span>100% Operational</span>
             </span>
           </div>
 
-          <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 block">الطلبات اليوم</span>
-            <span className="text-xs font-bold text-white font-mono mt-0.5">
+          <div className="p-3.5 bg-[#0A223D]/70 rounded-2xl border border-[#87CEEB]/30">
+            <span className="text-[11px] text-[#B8DEF5] block">الطلبات اليوم</span>
+            <span className="text-xs font-bold text-white font-mono tabular-nums mt-0.5 block">
               {telemetryData?.metrics.totalRequestsToday ? telemetryData.metrics.totalRequestsToday.toLocaleString() : '18,450'} reqs
             </span>
           </div>
 
-          <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 block">متوسط زمن الاستجابة</span>
-            <span className="text-xs font-bold text-amber-400 font-mono mt-0.5">
+          <div className="p-3.5 bg-[#0A223D]/70 rounded-2xl border border-[#87CEEB]/30">
+            <span className="text-[11px] text-[#B8DEF5] block">متوسط زمن الاستجابة</span>
+            <span className="text-xs font-bold text-[#F7E7B4] font-mono tabular-nums mt-0.5 block">
               ~42 ms (Cached)
             </span>
           </div>
 
-          <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-            <span className="text-[10px] text-slate-400 block">حماية المفاتيح</span>
-            <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 mt-0.5">
-              <Shield className="w-3 h-3 text-emerald-400" />
+          <div className="p-3.5 bg-[#0A223D]/70 rounded-2xl border border-[#87CEEB]/30">
+            <span className="text-[11px] text-[#B8DEF5] block">حماية المفاتيح</span>
+            <span className="text-xs font-bold text-[#87CEEB] flex items-center gap-1.5 mt-0.5">
+              <Shield className="w-3.5 h-3.5 text-[#0EA5A4]" />
               <span>Server-Side Isolated</span>
             </span>
           </div>
@@ -230,24 +235,25 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
       </section>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-800 overflow-x-auto pb-2 scrollbar-none">
+      <div className="flex items-center gap-2 border-b border-[#87CEEB]/50 dark:border-[#87CEEB]/25 overflow-x-auto pb-2.5 no-scrollbar">
         {[
-          { key: 'health', label: 'مصفوفة الخدمات السحابية (Services Matrix)', icon: Activity },
-          { key: 'keys', label: 'إدارة مفاتيح API (Key Management)', icon: Key },
-          { key: 'playground', label: 'المختبر التفاعلي (API Playground)', icon: Terminal },
-          { key: 'mobile', label: 'تطبيقات الموبايل (Android & iOS SDK)', icon: Smartphone },
-          { key: 'telemetry', label: 'سجلات الاستهلاك (Telemetry & Logs)', icon: Database },
+          { key: 'health', label: 'مصفوفة الخدمات السحابية', icon: Activity },
+          { key: 'keys', label: 'إدارة مفاتيح API', icon: Key },
+          { key: 'playground', label: 'المختبر التفاعلي', icon: Terminal },
+          { key: 'mobile', label: 'تطبيقات الموبايل (SDK)', icon: Smartphone },
+          { key: 'telemetry', label: 'سجلات الاستهلاك', icon: Database },
         ].map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
           return (
             <button
               key={tab.key}
+              type="button"
               onClick={() => setActiveTab(tab.key as any)}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer ${
+              className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap shrink-0 cursor-pointer ${
                 isActive
-                  ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20'
-                  : 'bg-slate-900/60 text-slate-400 hover:text-white hover:bg-slate-800'
+                  ? 'bg-[#12345A] text-white dark:bg-[#0EA5A4] shadow-md border border-[#D4AF37]/60'
+                  : 'sky-glass-panel text-[#12345A] dark:text-[#B8DEF5] hover:border-[#0EA5A4]'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -257,86 +263,81 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
         })}
       </div>
 
-      {/* =========================================================================
-          TAB 1: HEALTH & SERVICES MATRIX
-          ========================================================================= */}
+      {/* TAB 1: HEALTH & SERVICES MATRIX */}
       {activeTab === 'health' && (
         <section className="space-y-8">
           <ServiceStatusDashboard />
 
-          <div className="flex items-center justify-between pt-4 border-t border-slate-800">
-            <h2 className="text-base font-black text-white flex items-center gap-2">
-              <Layers className="w-4 h-4 text-amber-400" />
+          <div className="flex items-center justify-between pt-4 border-t border-[#87CEEB]/45 dark:border-[#87CEEB]/20">
+            <h2 className="text-base font-black text-[#12345A] dark:text-white flex items-center gap-2">
+              <Layers className="w-4 h-4 text-[#0EA5A4]" />
               <span>مصفوفة خدمات الـ Microservices وتفاصيل البروتوكولات</span>
             </h2>
-            <span className="text-xs text-slate-400 font-mono">
+            <span className="text-xs text-[#2B547E] dark:text-[#B8DEF5] font-mono tabular-nums font-bold">
               Gateway Uptime: {healthData?.serverUptimeSeconds ? Math.floor(healthData.serverUptimeSeconds / 60) : 124} minutes
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {(healthData?.services || []).map((service) => (
-              <div 
+              <div
                 key={service.serviceName}
-                className="p-5 rounded-2xl luxury-card border border-slate-800 hover:border-amber-500/30 transition-all space-y-4"
+                className="p-5 rounded-2xl sky-card-3d space-y-4"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between border-b border-[#87CEEB]/35 dark:border-[#87CEEB]/20 pb-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-                    <h3 className="text-sm font-black text-white">{service.serviceName}</h3>
+                    <CheckCircle2 className="w-4 h-4 text-[#0EA5A4] shrink-0" />
+                    <h3 className="text-sm font-black text-[#12345A] dark:text-white">{service.serviceName}</h3>
                   </div>
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  <span className="text-[11px] font-bold text-[#0D7A7A] dark:text-[#2DD4BF] font-mono">
                     {service.status.toUpperCase()}
                   </span>
                 </div>
 
                 <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between text-slate-400">
+                  <div className="flex items-center justify-between text-[#2B547E] dark:text-[#B8DEF5]">
                     <span>المزود الأساسي (Primary):</span>
-                    <span className="text-slate-200 font-medium">{service.primaryProvider}</span>
+                    <span className="text-[#12345A] dark:text-white font-bold">{service.primaryProvider}</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-400">
+                  <div className="flex items-center justify-between text-[#2B547E] dark:text-[#B8DEF5]">
                     <span>مزود الطوارئ (Fallback):</span>
-                    <span className="text-amber-400/90 font-medium">{service.fallbackProvider}</span>
+                    <span className="text-[#9E7818] dark:text-[#F7E7B4] font-bold">{service.fallbackProvider}</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-400">
+                  <div className="flex items-center justify-between text-[#2B547E] dark:text-[#B8DEF5]">
                     <span>زمن الاستجابة (Latency):</span>
-                    <span className="text-emerald-400 font-mono font-bold">{service.latencyMs} ms</span>
+                    <span className="text-[#0D7A7A] dark:text-[#2DD4BF] font-mono tabular-nums font-bold">{service.latencyMs} ms</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-400">
+                  <div className="flex items-center justify-between text-[#2B547E] dark:text-[#B8DEF5]">
                     <span>نسبة الجاهزية (Uptime):</span>
-                    <span className="text-white font-mono">{service.uptimePercentage}%</span>
+                    <span className="text-[#12345A] dark:text-white font-mono tabular-nums font-bold">{service.uptimePercentage}%</span>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500">
+                <div className="pt-3 border-t border-[#87CEEB]/35 dark:border-[#87CEEB]/20 flex items-center justify-between text-[11px] text-[#4A7298] dark:text-[#84B4D6]">
                   <span>آخر فحص:</span>
-                  <span className="font-mono">{new Date(service.lastChecked).toLocaleTimeString('ar-SA')}</span>
+                  <span className="font-mono tabular-nums">{new Date(service.lastChecked).toLocaleTimeString('ar-SA')}</span>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Architecture Resilience Notice */}
-          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 flex items-start gap-3">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="p-5 rounded-2xl sky-glass-panel text-xs text-[#2B547E] dark:text-[#B8DEF5] flex items-start gap-3">
+            <CheckCircle2 className="w-5 h-5 text-[#0EA5A4] shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              <strong className="text-slate-200">مبدأ عدم الاعتماد على نقطة فشل واحدة (Fault-Tolerant Circuit Breaker):</strong> في حال انقطاع أي خدمة خارجية من مزودي البيانات الفلكية أو الترجمات، يقوم محرك البوابة بالتحويل الفوري (Failover) إلى البيانات المعتمدة محلياً وذاكرة التخزين المؤقت، مما يضمن استمرارية الخدمة بنسبة 99.9% للمستخدمين في جميع أنحاء العالم.
+              <strong className="text-[#12345A] dark:text-white">مبدأ عدم الاعتماد على نقطة فشل واحدة (Fault-Tolerant Circuit Breaker):</strong> في حال انقطاع أي خدمة خارجية من مزودي البيانات الفلكية أو الترجمات، يقوم محرك البوابة بالتحويل الفوري (Failover) إلى البيانات المعتمدة محلياً وذاكرة التخزين المؤقت، مما يضمن استمرارية الخدمة بنسبة 99.9% للمستخدمين في جميع أنحاء العالم.
             </p>
           </div>
         </section>
       )}
 
-      {/* =========================================================================
-          TAB 2: API KEYS MANAGEMENT
-          ========================================================================= */}
+      {/* TAB 2: API KEYS MANAGEMENT */}
       {activeTab === 'keys' && (
         <section className="space-y-6">
-          
+
           {/* Create Key Form */}
-          <div className="p-6 rounded-2xl luxury-card border border-amber-500/20 bg-slate-900/60 space-y-4">
-            <h2 className="text-sm font-black text-white flex items-center gap-2">
-              <Key className="w-4 h-4 text-amber-400" />
+          <div className="p-6 rounded-3xl sky-card-3d space-y-4">
+            <h2 className="text-sm font-black text-[#12345A] dark:text-white flex items-center gap-2">
+              <Key className="w-4 h-4 text-[#0EA5A4]" />
               <span>توليد مفتاح API جديد ومقيد الصلاحيات (Scoped API Key)</span>
             </h2>
 
@@ -345,15 +346,15 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
                 type="text"
                 value={newKeyName}
                 onChange={(e) => setNewKeyName(e.target.value)}
-                placeholder="اسم التطبيق أو الشريك (مثال: Al-Noor Android Production)..."
-                className="bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400"
+                placeholder="اسم التطبيق أو الشريك (مثال: Al-Noor Android)..."
+                className="bg-[#EAF8FF] dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 rounded-xl px-3.5 py-2.5 text-xs text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                 required
               />
 
               <select
                 value={newKeyPlatform}
                 onChange={(e) => setNewKeyPlatform(e.target.value as any)}
-                className="bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 cursor-pointer"
+                className="bg-[#EAF8FF] dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 rounded-xl px-3.5 py-2.5 text-xs text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4] cursor-pointer"
               >
                 <option value="android">تطبيق أندرويد (Android App)</option>
                 <option value="ios">تطبيق آبل (iOS App)</option>
@@ -364,66 +365,68 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
               <button
                 type="submit"
                 disabled={isCreatingKey}
-                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs rounded-xl px-4 py-2.5 transition-all shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                className="bg-[#12345A] hover:bg-[#0EA5A4] text-white font-black text-xs rounded-xl px-4 py-2.5 transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <Key className="w-3.5 h-3.5" />
+                <Key className="w-3.5 h-3.5 text-[#F7E7B4]" />
                 <span>{isCreatingKey ? 'جاري التوليد...' : 'إصدار المفتاح السحابي'}</span>
               </button>
             </form>
           </div>
 
           {/* Active Keys Table */}
-          <div className="rounded-2xl border border-slate-800 overflow-hidden bg-slate-950/80">
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-              <span className="text-xs font-bold text-white">المفاتيح المعتمدة النشطة ({keysList.length})</span>
-              <span className="text-[11px] text-emerald-400 font-mono">Rate Limit: 120 req/min per key</span>
+          <div className="rounded-3xl sky-card-3d overflow-hidden">
+            <div className="p-4 border-b border-[#87CEEB]/40 dark:border-[#87CEEB]/20 flex items-center justify-between">
+              <span className="text-xs font-black text-[#12345A] dark:text-white">المفاتيح المعتمدة النشطة ({keysList.length})</span>
+              <span className="text-[11px] text-[#0D7A7A] dark:text-[#2DD4BF] font-mono tabular-nums font-bold">
+                Rate Limit: 120 req/min per key
+              </span>
             </div>
 
-            <div className="divide-y divide-slate-800/80">
+            <div className="divide-y divide-[#87CEEB]/30 dark:divide-[#87CEEB]/15">
               {keysList.map((k) => (
-                <div key={k.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-900/40 transition-colors">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-black text-white">{k.name}</span>
-                      <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                <div key={k.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#EAF8FF]/60 dark:hover:bg-[#0F2747]/50 transition-colors">
+                  <div className="space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      <span className="font-black text-[#12345A] dark:text-white">{k.name}</span>
+                      <span aria-hidden="true" className="text-[#4A7298]">·</span>
+                      <span className="text-[11px] uppercase font-mono text-[#2B547E] dark:text-[#B8DEF5]">
                         {k.platform}
                       </span>
-                      <span className={`text-[10px] px-2 py-0.5 rounded ${
-                        k.status === 'active' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'
+                      <span aria-hidden="true" className="text-[#4A7298]">·</span>
+                      <span className={`text-[11px] font-bold ${
+                        k.status === 'active' ? 'text-[#0D7A7A] dark:text-[#2DD4BF]' : 'text-rose-600 dark:text-rose-400'
                       }`}>
-                        {k.status}
+                        {k.status === 'active' ? 'نشط' : 'مُبطل'}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+                    <div className="flex items-center gap-2 text-xs font-mono text-[#2B547E] dark:text-[#B8DEF5]">
                       <span>Token:</span>
-                      <span className="text-amber-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                      <span className="text-[#12345A] dark:text-[#F7E7B4] bg-[#EAF8FF] dark:bg-[#0A223D] px-2.5 py-0.5 rounded-lg border border-[#87CEEB]/40">
                         {k.maskedKey}
                       </span>
                       <button
+                        type="button"
                         onClick={() => handleCopy(k.maskedKey, k.id)}
-                        className="p-1 hover:text-white"
+                        className="p-1 hover:text-[#0EA5A4] cursor-pointer"
                         title="نسخ المعرف"
                       >
-                        {copiedKeyId === k.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copiedKeyId === k.id ? <Check className="w-3.5 h-3.5 text-[#0EA5A4]" /> : <Copy className="w-3.5 h-3.5" />}
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-2 text-[10px] text-slate-500 pt-1">
-                      <span>الصلاحيات:</span>
-                      {k.scopes.map(s => (
-                        <span key={s} className="bg-slate-800/80 text-slate-400 px-1.5 py-0.5 rounded">
-                          {s}
-                        </span>
-                      ))}
+                    <div className="text-[11px] text-[#4A7298] dark:text-[#84B4D6]">
+                      <span>الصلاحيات: </span>
+                      <span className="font-mono">{k.scopes.join(' · ')}</span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
                     {k.status === 'active' && (
                       <button
+                        type="button"
                         onClick={() => handleRevokeKey(k.id)}
-                        className="text-xs text-red-400 hover:text-red-300 px-3 py-1.5 rounded-lg border border-red-500/30 hover:bg-red-500/10 transition-colors"
+                        className="text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 px-3 py-1.5 rounded-xl border border-rose-300 dark:border-rose-800 font-bold transition-colors cursor-pointer"
                       >
                         إبطال المفتاح
                       </button>
@@ -437,31 +440,29 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
         </section>
       )}
 
-      {/* =========================================================================
-          TAB 3: INTERACTIVE API PLAYGROUND
-          ========================================================================= */}
+      {/* TAB 3: INTERACTIVE API PLAYGROUND */}
       {activeTab === 'playground' && (
         <section className="space-y-6">
-          <div className="p-6 rounded-2xl luxury-card border border-amber-500/30 bg-slate-950/90 space-y-6">
+          <div className="p-6 rounded-3xl sky-card-3d space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <h2 className="text-sm font-black text-white flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-emerald-400" />
+                <h2 className="text-sm font-black text-[#12345A] dark:text-white flex items-center gap-2">
+                  <Terminal className="w-4 h-4 text-[#0EA5A4]" />
                   <span>المختبر التفاعلي لاختبار استجابة واجهات API الحية</span>
                 </h2>
-                <p className="text-xs text-slate-400">
-                  قم باختيار الـ Endpoint وتنفيذ طلب حقيقي مباشر لمراقبة بنية الـ Payload وسرعة المعالجة.
+                <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
+                  اختر الـ Endpoint ونفّذ طلباً حقيقياً مباشراً لمراقبة بنية الـ Payload وسرعة المعالجة.
                 </p>
               </div>
 
               {playgroundLatency !== null && (
-                <div className="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 text-xs font-mono">
-                  <span className="text-slate-400">Status:</span>
-                  <span className={playgroundStatus === 200 ? 'text-emerald-400 font-bold' : 'text-red-400'}>
-                    {playgroundStatus} OK
+                <div className="flex items-center gap-2 bg-[#EAF8FF] dark:bg-[#0A223D] px-3.5 py-1.5 rounded-xl border border-[#87CEEB]/50 text-xs font-mono tabular-nums">
+                  <span className="text-[#4A7298] dark:text-[#84B4D6]">Status:</span>
+                  <span className={playgroundStatus === 200 ? 'text-[#0D7A7A] dark:text-[#2DD4BF] font-bold' : 'text-rose-600 font-bold'}>
+                    {playgroundStatus}
                   </span>
-                  <span className="text-slate-600">|</span>
-                  <span className="text-amber-400">{playgroundLatency} ms</span>
+                  <span className="text-[#87CEEB]">·</span>
+                  <span className="text-[#12345A] dark:text-[#F7E7B4] font-bold">{playgroundLatency} ms</span>
                 </div>
               )}
             </div>
@@ -471,61 +472,67 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
               <select
                 value={selectedEndpoint}
                 onChange={(e) => setSelectedEndpoint(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400 flex-1 cursor-pointer font-mono"
+                className="bg-[#EAF8FF] dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 rounded-xl px-3.5 py-2.5 text-xs text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4] flex-1 cursor-pointer font-mono font-bold"
               >
                 <option value="/api/v1/prayer/times?city=makkah">GET /api/v1/prayer/times?city=makkah (مواقيت الصلاة الفلكية)</option>
                 <option value="/api/v1/prayer/hijri">GET /api/v1/prayer/hijri (التقويم الهجري وأم القرى)</option>
                 <option value="/api/v1/quran/surahs">GET /api/v1/quran/surahs (فهرس القرآن برسم المصحف)</option>
                 <option value="/api/v1/quran/translations">GET /api/v1/quran/translations (جهات الترجمة المعتمدة عالمياً)</option>
                 <option value="/api/v1/ai/scholar">POST /api/v1/ai/scholar (المساعد المعرفي الأكاديمي الموثق)</option>
-                <option value="/api/v1/donations/intent">POST /api/v1/donations/intent (إنشاء سهم وقفي تجريدي)</option>
+                <option value="/api/v1/donations/intent">POST /api/v1/donations/intent (إنشاء سهم وقفي)</option>
                 <option value="/api/v1/mobile/config">GET /api/v1/mobile/config (إعدادات تطبيقات الهواتف الذكية)</option>
                 <option value="/api/v1/health">GET /api/v1/health (فحص الجاهزية والخدمات)</option>
               </select>
 
               <button
+                type="button"
                 onClick={handleExecutePlayground}
                 disabled={isSendingRequest}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
+                className="bg-[#0EA5A4] hover:bg-[#0D7A7A] text-white font-black text-xs px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>{isSendingRequest ? 'جاري التنفيذ...' : 'إرسال الطلب (Send)'}</span>
+                <span>{isSendingRequest ? 'جاري التنفيذ...' : 'إرسال الطلب'}</span>
               </button>
             </div>
 
             {/* Request Body Editor (If POST) */}
             {(selectedEndpoint.includes('/ai/scholar') || selectedEndpoint.includes('/donations/intent')) && (
               <div className="space-y-1.5">
-                <span className="text-xs font-mono text-slate-400">Request JSON Body:</span>
+                <span className="text-xs font-mono text-[#2B547E] dark:text-[#B8DEF5] font-bold block">Request JSON Body:</span>
                 <textarea
                   value={playgroundPayload}
                   onChange={(e) => setPlaygroundPayload(e.target.value)}
                   rows={4}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs font-mono text-amber-200 focus:outline-none focus:border-amber-400"
+                  dir="ltr"
+                  className="w-full bg-[#0A223D] border border-[#87CEEB]/35 rounded-xl p-3 text-xs font-mono text-[#F7E7B4] focus:outline-none focus:border-[#0EA5A4]"
                 />
               </div>
             )}
 
             {/* Response Viewer */}
             <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span>استجابة الخادم الموحدة (Standardized JSON Envelope):</span>
+              <div className="flex items-center justify-between text-xs text-[#2B547E] dark:text-[#B8DEF5]">
+                <span className="font-bold">استجابة الخادم الموحدة (Standardized JSON Envelope):</span>
                 {playgroundResponse && (
                   <button
+                    type="button"
                     onClick={() => handleCopy(JSON.stringify(playgroundResponse, null, 2), 'response')}
-                    className="text-amber-400 hover:underline flex items-center gap-1"
+                    className="text-[#0D7A7A] dark:text-[#2DD4BF] hover:underline flex items-center gap-1 font-bold cursor-pointer"
                   >
                     <Copy className="w-3 h-3" />
-                    <span>نسخ النتيجة</span>
+                    <span>{copiedKeyId === 'response' ? 'تم النسخ' : 'نسخ النتيجة'}</span>
                   </button>
                 )}
               </div>
 
-              <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 max-h-80 overflow-y-auto font-mono text-xs text-emerald-300 whitespace-pre-wrap">
+              <div
+                dir="ltr"
+                className="bg-[#0A223D] rounded-2xl border border-[#87CEEB]/35 p-4 max-h-80 overflow-y-auto font-mono text-xs text-[#EAF8FF] whitespace-pre-wrap"
+              >
                 {playgroundResponse ? (
                   JSON.stringify(playgroundResponse, null, 2)
                 ) : (
-                  <span className="text-slate-500">انقر على "إرسال الطلب" لاختبار الـ Endpoint والحصول على الاستجابة الحية.</span>
+                  <span className="text-[#84B4D6]">انقر على "إرسال الطلب" لاختبار الـ Endpoint والحصول على الاستجابة الحية.</span>
                 )}
               </div>
             </div>
@@ -534,23 +541,19 @@ export const ApiGatewayPage: React.FC<ApiGatewayPageProps> = ({ onNavigate }) =>
         </section>
       )}
 
-      {/* =========================================================================
-          TAB 4: MOBILE APPS SDK SPECS (Android Kotlin & iOS Swift)
-          ========================================================================= */}
+      {/* TAB 4: MOBILE APPS SDK SPECS */}
       {activeTab === 'mobile' && (
         <section className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
+
             {/* Android Kotlin (Retrofit + Coroutines) */}
-            <div className="p-6 rounded-2xl luxury-card border border-slate-800 bg-slate-950/90 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold text-xs uppercase font-mono">Android Kotlin SDK</span>
-                </div>
-                <span className="text-[10px] text-slate-400 font-mono">Retrofit 2.11 + Coroutines</span>
+            <div className="p-6 rounded-3xl sky-card-3d space-y-4">
+              <div className="flex items-center justify-between border-b border-[#87CEEB]/35 dark:border-[#87CEEB]/20 pb-3">
+                <span className="text-[#0D7A7A] dark:text-[#2DD4BF] font-black text-xs uppercase font-mono">Android Kotlin SDK</span>
+                <span className="text-[11px] text-[#4A7298] dark:text-[#B8DEF5] font-mono">Retrofit 2.11 + Coroutines</span>
               </div>
 
-              <pre className="p-4 bg-slate-900 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-200 overflow-x-auto leading-relaxed">
+              <pre dir="ltr" className="p-4 bg-[#0A223D] rounded-2xl border border-[#87CEEB]/30 text-[11px] font-mono text-[#EAF8FF] overflow-x-auto leading-relaxed">
 {`// 1. Al-Noor API Interface
 interface AlNoorApiService {
     @GET("api/v1/prayer/times")
@@ -572,7 +575,7 @@ class PrayerRepository(private val api: AlNoorApiService) {
             val response = api.getPrayerTimes(city)
             response.body()?.data ?: getLocalFallbackTimes(city)
         } catch (e: Exception) {
-            getLocalFallbackTimes(city) // Offline safe
+            getLocalFallbackTimes(city)
         }
     }
 }`}
@@ -580,18 +583,16 @@ class PrayerRepository(private val api: AlNoorApiService) {
             </div>
 
             {/* iOS Swift (URLSession + Async/Await) */}
-            <div className="p-6 rounded-2xl luxury-card border border-slate-800 bg-slate-950/90 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-blue-400 font-bold text-xs uppercase font-mono">iOS Swift SDK</span>
-                </div>
-                <span className="text-[10px] text-slate-400 font-mono">iOS 15.0+ Swift Concurrency</span>
+            <div className="p-6 rounded-3xl sky-card-3d space-y-4">
+              <div className="flex items-center justify-between border-b border-[#87CEEB]/35 dark:border-[#87CEEB]/20 pb-3">
+                <span className="text-[#12345A] dark:text-[#87CEEB] font-black text-xs uppercase font-mono">iOS Swift SDK</span>
+                <span className="text-[11px] text-[#4A7298] dark:text-[#B8DEF5] font-mono">iOS 15.0+ Swift Concurrency</span>
               </div>
 
-              <pre className="p-4 bg-slate-900 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-200 overflow-x-auto leading-relaxed">
+              <pre dir="ltr" className="p-4 bg-[#0A223D] rounded-2xl border border-[#87CEEB]/30 text-[11px] font-mono text-[#EAF8FF] overflow-x-auto leading-relaxed">
 {`// 1. Swift Concurrency Client
 actor AlNoorClient {
-    private let baseURL = URL(string: "https://api.alnoor.org/api/v1")!
+    private let baseURL = URL(string: "https://www.mojamaalnor.com/api/v1")!
     private let apiKey: String
 
     init(apiKey: String) {
@@ -617,12 +618,13 @@ actor AlNoorClient {
           </div>
 
           {/* Download OpenAPI Spec */}
-          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex items-center justify-between text-xs">
+          <div className="p-5 rounded-2xl sky-glass-panel flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
             <div className="space-y-0.5">
-              <span className="font-bold text-white block">مواصفة OpenAPI 3.0 المعتمدة (Swagger Ready)</span>
-              <span className="text-slate-400 text-[11px]">يمكن استيرادها مباشرة في Postman و Insomnia و Android Studio</span>
+              <span className="font-black text-[#12345A] dark:text-white block">مواصفة OpenAPI 3.0 المعتمدة (Swagger Ready)</span>
+              <span className="text-[#2B547E] dark:text-[#B8DEF5] text-[11px]">يمكن استيرادها مباشرة في Postman و Insomnia و Android Studio</span>
             </div>
             <button
+              type="button"
               onClick={() => {
                 const spec = {
                   openapi: '3.0.0',
@@ -635,76 +637,75 @@ actor AlNoorClient {
                 a.href = url;
                 a.download = 'alnoor-api-openapi3.json';
                 a.click();
+                URL.revokeObjectURL(url);
               }}
-              className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold flex items-center gap-1.5 transition-colors"
+              className="px-4 py-2.5 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Download className="w-3.5 h-3.5 text-[#F7E7B4]" />
               <span>تحميل OpenAPI Spec</span>
             </button>
           </div>
         </section>
       )}
 
-      {/* =========================================================================
-          TAB 5: TELEMETRY & LIVE TRAFFIC LOGS
-          ========================================================================= */}
+      {/* TAB 5: TELEMETRY & LIVE TRAFFIC LOGS */}
       {activeTab === 'telemetry' && (
         <section className="space-y-6">
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-1">
-              <span className="text-xs text-slate-400">إجمالي الطلبات المسجلة</span>
-              <span className="text-2xl font-black font-mono text-white block">
+            <div className="p-5 rounded-2xl sky-card-3d space-y-1">
+              <span className="text-xs text-[#2B547E] dark:text-[#B8DEF5] font-bold">إجمالي الطلبات المسجلة</span>
+              <span className="text-2xl font-black font-mono tabular-nums text-[#12345A] dark:text-white block">
                 {telemetryData?.recentLogs.length ? telemetryData.recentLogs.length + 18450 : 18450}
               </span>
-              <span className="text-[10px] text-emerald-400">طبيعي • لا يوجد ضغط زائد</span>
+              <span className="text-[11px] text-[#0D7A7A] dark:text-[#2DD4BF] font-bold">طبيعي · لا يوجد ضغط زائد</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-1">
-              <span className="text-xs text-slate-400">نسبة نجاح الكاش (Cache Hit Ratio)</span>
-              <span className="text-2xl font-black font-mono text-amber-300 block">
+            <div className="p-5 rounded-2xl sky-card-3d space-y-1">
+              <span className="text-xs text-[#2B547E] dark:text-[#B8DEF5] font-bold">نسبة نجاح الكاش (Cache Hit Ratio)</span>
+              <span className="text-2xl font-black font-mono tabular-nums text-[#9E7818] dark:text-[#F7E7B4] block">
                 87.4%
               </span>
-              <span className="text-[10px] text-slate-400">يقلل استهلاك السيرفر وقواعد البيانات</span>
+              <span className="text-[11px] text-[#4A7298] dark:text-[#B8DEF5]">يقلل استهلاك الخادم وقواعد البيانات</span>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-1">
-              <span className="text-xs text-slate-400">معدل الأخطاء (Error Rate)</span>
-              <span className="text-2xl font-black font-mono text-emerald-400 block">
+            <div className="p-5 rounded-2xl sky-card-3d space-y-1">
+              <span className="text-xs text-[#2B547E] dark:text-[#B8DEF5] font-bold">معدل الأخطاء (Error Rate)</span>
+              <span className="text-2xl font-black font-mono tabular-nums text-[#0D7A7A] dark:text-[#2DD4BF] block">
                 0.02%
               </span>
-              <span className="text-[10px] text-emerald-400">ضمن المعايير العالمية الموصى بها</span>
+              <span className="text-[11px] text-[#0D7A7A] dark:text-[#2DD4BF] font-bold">ضمن المعايير العالمية الموصى بها</span>
             </div>
           </div>
 
           {/* Live Request Stream */}
-          <div className="rounded-2xl border border-slate-800 overflow-hidden bg-slate-950">
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-              <span className="text-xs font-bold text-white flex items-center gap-2">
-                <Activity className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-                <span>أحدث سجلات الطلبات في الزمن الحقيقي (Live Gateway Stream)</span>
+          <div className="rounded-3xl sky-card-3d overflow-hidden">
+            <div className="p-4 border-b border-[#87CEEB]/40 dark:border-[#87CEEB]/20 flex items-center justify-between">
+              <span className="text-xs font-black text-[#12345A] dark:text-white flex items-center gap-2">
+                <Activity className="w-4 h-4 text-[#0EA5A4]" />
+                <span>أحدث سجلات الطلبات في الزمن الحقيقي</span>
               </span>
-              <span className="text-[10px] text-slate-500 font-mono">Last 20 transactions</span>
+              <span className="text-[11px] text-[#4A7298] dark:text-[#84B4D6] font-mono">Last 20 transactions</span>
             </div>
 
-            <div className="divide-y divide-slate-800/80 font-mono text-xs">
+            <div className="divide-y divide-[#87CEEB]/30 dark:divide-[#87CEEB]/15 font-mono text-xs">
               {(telemetryData?.recentLogs || []).map((log, idx) => (
-                <div key={idx} className="p-3 flex items-center justify-between hover:bg-slate-900/40 text-slate-300">
+                <div key={idx} className="p-3.5 flex items-center justify-between hover:bg-[#EAF8FF]/60 dark:hover:bg-[#0F2747]/50 text-[#12345A] dark:text-[#EAF8FF]">
                   <div className="flex items-center gap-3">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      log.method === 'GET' ? 'bg-blue-500/20 text-blue-300' : 'bg-emerald-500/20 text-emerald-300'
+                    <span className={`text-[11px] font-black ${
+                      log.method === 'GET' ? 'text-[#0D7A7A] dark:text-[#87CEEB]' : 'text-[#9E7818] dark:text-[#F7E7B4]'
                     }`}>
                       {log.method}
                     </span>
-                    <span className="text-white">{log.path}</span>
+                    <span className="font-bold">{log.path}</span>
                   </div>
 
-                  <div className="flex items-center gap-4 text-xs">
-                    <span className="text-emerald-400">{log.latencyMs} ms</span>
-                    <span className={log.statusCode === 200 ? 'text-emerald-400' : 'text-red-400'}>
+                  <div className="flex items-center gap-4 text-xs tabular-nums">
+                    <span className="text-[#0D7A7A] dark:text-[#2DD4BF]">{log.latencyMs} ms</span>
+                    <span className={log.statusCode === 200 ? 'text-[#0D7A7A] dark:text-[#2DD4BF] font-bold' : 'text-rose-600 font-bold'}>
                       {log.statusCode}
                     </span>
-                    <span className="text-slate-500 text-[10px] hidden sm:inline">
+                    <span className="text-[#4A7298] dark:text-[#84B4D6] text-[10px] hidden sm:inline">
                       {new Date(log.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
@@ -716,6 +717,7 @@ actor AlNoorClient {
         </section>
       )}
 
+      <SectionDynamicItems sectionSlug="apiGateway" />
     </div>
   );
 };

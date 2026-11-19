@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Activity, CheckCircle2, AlertTriangle, XCircle, RefreshCw, 
-  Server, Database, Cpu, Shield, Clock, Wifi, Zap, ExternalLink 
+import {
+  Activity,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  RefreshCw,
+  Server,
+  Database,
+  Cpu,
+  Shield,
+  Clock,
+  Wifi,
+  Zap,
+  ExternalLink,
 } from 'lucide-react';
 
 interface ServiceStatusEntry {
@@ -12,20 +23,20 @@ interface ServiceStatusEntry {
   note?: string;
 }
 
-interface GatewayHealthData {
-  status: string;
-  serviceMap?: Record<string, ServiceStatusEntry>;
-  services: ApiHealthStatusEntry[] | Record<string, ServiceStatusEntry>;
-  nodeEnvironment: string;
-  serverUptimeSeconds: number;
-}
-
 interface ApiHealthStatusEntry {
   serviceId: string;
   status: string;
   latencyMs: number;
   uptimePercentage: number;
   lastChecked: string;
+}
+
+interface GatewayHealthData {
+  status: string;
+  serviceMap?: Record<string, ServiceStatusEntry>;
+  services: ApiHealthStatusEntry[] | Record<string, ServiceStatusEntry>;
+  nodeEnvironment: string;
+  serverUptimeSeconds: number;
 }
 
 export const ServiceStatusDashboard: React.FC = () => {
@@ -62,7 +73,7 @@ export const ServiceStatusDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchHealthStatus();
-    const interval = setInterval(fetchHealthStatus, 30000); // 30s auto-refresh
+    const interval = setInterval(fetchHealthStatus, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -72,26 +83,26 @@ export const ServiceStatusDashboard: React.FC = () => {
     return `${hours} ساعة و ${minutes} دقيقة`;
   };
 
-  const getStatusBadge = (status: 'operational' | 'degraded' | 'down') => {
+  const renderStatusLabel = (status: 'operational' | 'degraded' | 'down') => {
     switch (status) {
       case 'operational':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-950/60 text-emerald-300 border border-emerald-500/30">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>يعمل بكفاءة عالية</span>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-[#0D7A7A] dark:text-[#2DD4BF] shrink-0">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>يعمل بكفاءة</span>
           </span>
         );
       case 'degraded':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-950/60 text-amber-300 border border-amber-500/30">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-            <span>يتطلب تهيئة أو أداء جزئي</span>
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-[#B45309] dark:text-[#FBBF24] shrink-0">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span>أداء جزئي</span>
           </span>
         );
       case 'down':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-950/60 text-rose-300 border border-rose-500/30">
-            <XCircle className="w-3.5 h-3.5 text-rose-400" />
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-[#DC2626] dark:text-[#FCA5A5] shrink-0">
+            <XCircle className="w-4 h-4 shrink-0" />
             <span>متوقف مؤقتاً</span>
           </span>
         );
@@ -104,43 +115,43 @@ export const ServiceStatusDashboard: React.FC = () => {
       nameAr: 'بوابة API المركزية (Central Gateway)',
       desc: 'إدارة الطلبات، التوجيه، تحديد معدل الاستهلاك، وفحص الهوية',
       icon: Server,
-      type: 'Microservices & Routing'
+      type: 'Microservices & Routing',
     },
     {
       id: 'cloudsql-postgres',
       nameAr: 'قاعدة بيانات Cloud SQL (PostgreSQL)',
-      desc: 'قاعدة البيانات العلائقية الرئيسية في منطقة europe-west1 مع Drizzle ORM',
+      desc: 'قاعدة البيانات العلائقية الرئيسية مع Drizzle ORM لحفظ السجلات والأقسام',
       icon: Database,
-      type: 'Persistent Storage'
+      type: 'Persistent Storage',
     },
     {
       id: 'redis-cache',
       nameAr: 'طبقة التخزين المؤقت الذاكرية (Memory Cache)',
       desc: 'تسريع مواقيت الصلاة والتقويم الهجري والفهارس القرآنية',
       icon: Zap,
-      type: 'Low-Latency Cache'
+      type: 'Low-Latency Cache',
     },
     {
       id: 'firebase-auth',
       nameAr: 'خدمة التوثيق والهوية (Firebase Auth)',
       desc: 'إدارة حسابات الطلاب والمشايخ وتسجيل الدخول الموحد',
       icon: Shield,
-      type: 'Identity & Access'
+      type: 'Identity & Access',
     },
     {
       id: 'gemini-ai-engine',
       nameAr: 'محرك البحث الشرعي والتوليد الصوتي (Gemini AI & TTS)',
       desc: 'المساعد الأكاديمي، البحث العلمي، وتوليد الصوت الإعلاني السوداني',
       icon: Cpu,
-      type: 'Intelligence & Speech'
+      type: 'Intelligence & Speech',
     },
     {
       id: 'makkah-radio-stream',
       nameAr: 'خادم البث الإذاعي الحي المباشر (Makkah Radio 24/7)',
       desc: 'بث صوتي عالي النقاء لأذان وتلاوات المسجد الحرام من مكة المكرمة',
       icon: Wifi,
-      type: 'Global Audio Streaming'
-    }
+      type: 'Global Audio Streaming',
+    },
   ];
 
   const resolveServiceStatus = (id: string): ServiceStatusEntry => {
@@ -161,30 +172,47 @@ export const ServiceStatusDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header Bar */}
-      <div className="rounded-2xl bg-[#0B132B] border border-[#D4AF37]/30 p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className={`w-3 h-3 rounded-full ${fetchError ? 'bg-rose-400' : 'bg-emerald-400 animate-ping'}`} />
-            <h3 className="text-lg font-bold text-[#F8FAFC] font-amiri flex items-center gap-2">
-              <Activity className="w-5 h-5 text-[#D4AF37]" />
+      <div className="sky-card-3d rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2.5">
+            <span
+              className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                fetchError ? 'bg-[#DC2626]' : 'bg-[#0EA5A4] animate-ping'
+              }`}
+              aria-hidden="true"
+            />
+            <h3 className="text-lg sm:text-xl font-black text-[#12345A] dark:text-[#EAF8FF] font-amiri flex items-center gap-2">
+              <Activity className="w-5 h-5 text-[#0EA5A4] shrink-0" />
               <span>لوحة مراقبة حالة الخدمات والأنظمة (Service Health Monitor)</span>
             </h3>
           </div>
-          <p className="text-xs text-[#94A3B8]">
-            متابعة فورية ومباشرة للاتصال بقواعد بيانات Cloud SQL، الذاكرة المخبأة، ومحرك التوليد الصوتي والـ API Gateway
+          <p className="text-xs sm:text-sm text-[#2B547E] dark:text-[#B8DEF5]">
+            متابعة فورية للاتصال بقواعد بيانات Cloud SQL، الذاكرة المخبأة، ومحرك التوليد الصوتي وبوابة الخدمات
           </p>
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <div className="text-left text-[11px] text-[#94A3B8]">
-            <div>زمن الاستجابة: <span className="font-mono text-emerald-400 font-bold">{pingLatency !== null ? `${pingLatency}ms` : '--'}</span></div>
-            <div>آخر تحديث: <span className="font-mono text-[#E2E8F0]">{lastRefreshed.toLocaleTimeString('ar-SA')}</span></div>
+          <div className="text-left text-xs text-[#2B547E] dark:text-[#B8DEF5] space-y-0.5 tabular-nums">
+            <div>
+              زمن الاستجابة:{' '}
+              <span className="font-mono text-[#0D7A7A] dark:text-[#2DD4BF] font-bold">
+                {pingLatency !== null ? `${pingLatency}ms` : '--'}
+              </span>
+            </div>
+            <div>
+              آخر تحديث:{' '}
+              <span className="font-mono text-[#12345A] dark:text-[#EAF8FF] font-semibold">
+                {lastRefreshed.toLocaleTimeString('ar-SA')}
+              </span>
+            </div>
           </div>
           <button
+            type="button"
             onClick={fetchHealthStatus}
             disabled={isLoading}
-            className="p-2.5 rounded-xl bg-[#111C3D] hover:bg-[#1E2E5D] border border-[#D4AF37]/40 text-[#D4AF37] transition-all cursor-pointer disabled:opacity-50"
+            className="min-h-[42px] min-w-[42px] p-2.5 rounded-xl bg-[#12345A] hover:bg-[#0E3F66] text-white transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center shadow-sm"
             title="تحديث الحالة الآن"
+            aria-label="تحديث الحالة الآن"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
@@ -192,61 +220,67 @@ export const ServiceStatusDashboard: React.FC = () => {
       </div>
 
       {fetchError && (
-        <div className="rounded-xl bg-rose-950/40 border border-rose-500/40 p-3.5 text-xs text-rose-200 flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+        <div className="rounded-2xl bg-[#FEF2F2] dark:bg-[#450A0A]/70 border border-[#DC2626]/35 p-4 text-xs sm:text-sm text-[#B91C1C] dark:text-[#FCA5A5] flex items-center gap-2.5 font-semibold">
+          <AlertTriangle className="w-4 h-4 shrink-0" />
           <span>{fetchError}</span>
         </div>
       )}
 
       {/* Grid of Monitored Services */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {servicesConfig.map((srv) => {
           const srvData = resolveServiceStatus(srv.id);
           const IconComponent = srv.icon;
           const dotColor =
             srvData.status === 'operational'
-              ? 'bg-emerald-400'
+              ? 'bg-[#0EA5A4]'
               : srvData.status === 'degraded'
-              ? 'bg-amber-400'
-              : 'bg-rose-400';
+              ? 'bg-[#D97706]'
+              : 'bg-[#DC2626]';
 
           return (
             <div
               key={srv.id}
-              className="rounded-2xl bg-[#0B132B]/80 border border-[#D4AF37]/20 hover:border-[#D4AF37]/50 p-5 space-y-4 transition-all shadow-md group"
+              className="sky-card-3d rounded-3xl p-5 flex flex-col justify-between gap-4 group"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-[#111C3D] border border-[#D4AF37]/30 flex items-center justify-center text-[#D4AF37] group-hover:scale-105 transition-transform">
-                    <IconComponent className="w-5 h-5" />
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-11 h-11 rounded-2xl bg-[#EAF8FF] dark:bg-[#0A223D] border border-[#12345A]/15 dark:border-[#87CEEB]/25 flex items-center justify-center text-[#12345A] dark:text-[#87CEEB] group-hover:scale-105 transition-transform shrink-0 shadow-xs">
+                      <IconComponent className="w-5 h-5 text-[#0EA5A4]" />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="text-xs sm:text-sm font-black text-[#12345A] dark:text-[#EAF8FF] leading-snug">
+                        {srv.nameAr}
+                      </h4>
+                      <span className="text-[11px] text-[#4A7298] dark:text-[#84B4D6] font-mono block truncate">
+                        {srv.type}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-[#F8FAFC] leading-snug">
-                      {srv.nameAr}
-                    </h4>
-                    <span className="text-[10px] text-[#D4AF37] font-mono">
-                      {srv.type}
-                    </span>
-                  </div>
+                  {renderStatusLabel(srvData.status)}
                 </div>
-                {getStatusBadge(srvData.status)}
+
+                <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed line-clamp-2">
+                  {srvData.note || srv.desc}
+                </p>
               </div>
 
-              <p className="text-[11px] text-[#94A3B8] leading-relaxed line-clamp-2">
-                {srvData.note || srv.desc}
-              </p>
-
-              <div className="pt-3 border-t border-[#D4AF37]/10 grid grid-cols-2 gap-2 text-[11px]">
+              <div className="pt-3 border-t border-[#12345A]/12 dark:border-[#87CEEB]/15 grid grid-cols-2 gap-2 text-xs tabular-nums">
                 <div className="space-y-0.5">
-                  <span className="text-[#64748B] block text-[10px]">زمن الاستجابة</span>
-                  <span className="font-mono text-[#F8FAFC] font-bold flex items-center gap-1">
-                    <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+                  <span className="text-[#4A7298] dark:text-[#84B4D6] block text-[11px] font-semibold">
+                    زمن الاستجابة
+                  </span>
+                  <span className="font-mono text-[#12345A] dark:text-[#EAF8FF] font-bold flex items-center gap-1.5">
+                    <span className={`w-2 h-2 rounded-full ${dotColor}`} aria-hidden="true" />
                     {srvData.latencyMs}ms
                   </span>
                 </div>
                 <div className="space-y-0.5 text-left">
-                  <span className="text-[#64748B] block text-[10px]">نسبة الجاهزية</span>
-                  <span className="font-mono text-emerald-400 font-bold">
+                  <span className="text-[#4A7298] dark:text-[#84B4D6] block text-[11px] font-semibold">
+                    نسبة الجاهزية
+                  </span>
+                  <span className="font-mono text-[#0D7A7A] dark:text-[#2DD4BF] font-bold">
                     {srvData.uptimePercentage}%
                   </span>
                 </div>
@@ -257,34 +291,34 @@ export const ServiceStatusDashboard: React.FC = () => {
       </div>
 
       {/* Global Infrastructure Summary Bar */}
-      <div className="rounded-2xl bg-[#0B132B] border border-[#D4AF37]/20 p-4 flex flex-wrap items-center justify-between gap-4 text-xs">
-        <div className="flex items-center gap-4 text-[#94A3B8]">
+      <div className="sky-glass-panel rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 text-xs">
+        <div className="flex flex-wrap items-center gap-4 text-[#2B547E] dark:text-[#B8DEF5] tabular-nums">
           <span className="flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-[#D4AF37]" />
+            <Clock className="w-4 h-4 text-[#D4AF37] shrink-0" />
             <span>وقت تشغيل الخادم:</span>
-            <strong className="text-[#F8FAFC] font-mono">
+            <strong className="text-[#12345A] dark:text-[#EAF8FF] font-mono">
               {healthData?.serverUptimeSeconds ? formatUptime(healthData.serverUptimeSeconds) : 'مستمر 24/7'}
             </strong>
           </span>
-          <span className="hidden sm:inline-block text-[#D4AF37]/30">•</span>
+          <span className="hidden sm:inline-block text-[#12345A]/25 dark:text-[#87CEEB]/30" aria-hidden="true">
+            ·
+          </span>
           <span className="flex items-center gap-1.5">
-            <Shield className="w-4 h-4 text-emerald-400" />
+            <Shield className="w-4 h-4 text-[#0EA5A4] shrink-0" />
             <span>شهادة التشفير:</span>
-            <strong className="text-emerald-400 font-mono">TLS 1.3 Active</strong>
+            <strong className="text-[#0D7A7A] dark:text-[#2DD4BF] font-mono">TLS 1.3 Active</strong>
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <a
-            href="/api/v1/health"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3 py-1.5 rounded-xl bg-[#111C3D] hover:bg-[#1E2E5D] text-[#D4AF37] border border-[#D4AF37]/30 text-xs font-bold flex items-center gap-1.5 transition-colors"
-          >
-            <span>عرض استجابة JSON للـ Health Check</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
-        </div>
+        <a
+          href="/api/v1/health"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-4 py-2 rounded-xl bg-[#12345A] hover:bg-[#0E3F66] text-white text-xs font-bold flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0"
+        >
+          <span>عرض استجابة JSON للـ Health Check</span>
+          <ExternalLink className="w-3.5 h-3.5 text-[#D4AF37]" />
+        </a>
       </div>
     </div>
   );

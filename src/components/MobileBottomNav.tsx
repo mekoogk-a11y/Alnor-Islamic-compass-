@@ -33,7 +33,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPage, o
   };
 
   return (
-    <nav className="xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#022C22]/95 backdrop-blur-lg border-t border-[#C8A24A]/40 px-2 py-1.5 shadow-2xl safe-area-inset-bottom">
+    <nav className="xl:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#12345A]/95 dark:bg-[#091B33]/95 backdrop-blur-lg border-t border-[#87CEEB]/35 px-2 py-1.5 shadow-2xl safe-area-inset-bottom">
       <div className="flex items-center justify-around max-w-lg mx-auto">
         {items.map((item) => {
           const Icon = item.icon;
@@ -43,13 +43,13 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ currentPage, o
               key={item.id}
               type="button"
               onClick={() => handleClick(item.id)}
-              className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl transition-all cursor-pointer ${
+              className={`flex flex-col items-center justify-center py-1 px-2 min-h-[44px] rounded-xl transition-all cursor-pointer ${
                 isActive
-                  ? 'text-[#E5C97B] font-black scale-105'
-                  : 'text-[#D1E7DD] hover:text-white'
+                  ? 'text-[#87CEEB] font-black scale-105'
+                  : 'text-[#EAF8FF]/85 hover:text-white'
               }`}
             >
-              <div className={`p-1 rounded-lg ${isActive ? 'bg-[#064E3B] border border-[#C8A24A]/50' : ''}`}>
+              <div className={`p-1 rounded-lg ${isActive ? 'bg-[#0EA5A4]/25 border border-[#87CEEB]/50' : ''}`}>
                 <Icon className={`w-4 h-4 ${isActive ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
               </div>
               <span className="text-[10px] mt-0.5 whitespace-nowrap">

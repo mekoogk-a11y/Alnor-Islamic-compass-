@@ -24,6 +24,7 @@ export type NavigationPage =
   | 'register'
   | 'researchCenter'
   | 'mediaCenter'
+  | 'videoLibrary'
   | 'internationalRelations'
   | 'contact';
 
@@ -669,3 +670,56 @@ export interface DawahLecture {
   viewsCount?: string;
   topics: string[];
 }
+
+// ==========================================
+// CLOUDFLARE STREAM VIDEO MANAGEMENT TYPES
+// ==========================================
+
+export type VideoCategory =
+  | 'quran_recitations'
+  | 'islamic_lectures'
+  | 'quran_memorization'
+  | 'educational_courses'
+  | 'charity_activities'
+  | 'official_intro';
+
+export type VideoUploadStatus =
+  | 'pending_upload'
+  | 'uploading'
+  | 'processing'
+  | 'ready'
+  | 'error';
+
+export type VideoPublicationStatus =
+  | 'draft'
+  | 'published'
+  | 'unpublished';
+
+export interface VideoRecord {
+  id: number;
+  publicId: string;
+  titleAr: string;
+  titleEn: string;
+  description: string;
+  category: VideoCategory;
+  thumbnailUrl: string | null;
+  streamVideoId: string;
+  playbackUrl: string | null;
+  previewUrl: string | null;
+  durationSeconds: number;
+  fileSizeBytes: number;
+  mimeType: string;
+  originalFileName: string;
+  fileFingerprint: string;
+  uploadUrlExpiresAt: string | null;
+  uploadStatus: VideoUploadStatus;
+  processingProgress: number;
+  publicationStatus: VideoPublicationStatus;
+  errorMessage: string | null;
+  adminUid: string;
+  adminEmail: string;
+  viewsCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+

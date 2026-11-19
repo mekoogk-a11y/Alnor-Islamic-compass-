@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  Sparkles, Globe, Share2, Copy, Download, Check, Send, 
-  BookOpen, Heart, ShieldCheck, ArrowRight, ArrowLeft, 
-  MessageCircle, ExternalLink, QrCode, Award, CheckCircle2 
+import {
+  Sparkles, Globe, Copy, Check, Send,
+  BookOpen, ShieldCheck, Award
 } from 'lucide-react';
 import { NavigationPage } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
+import { Sky3DIcon } from '../Sky3DIcon';
+import { SectionDynamicItems } from '../SectionDynamicItems';
 
 interface DawahTopic {
   id: string;
@@ -202,8 +203,8 @@ interface NoorAmbassadorPageProps {
 }
 
 export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNavigate }) => {
-  const { lang, isRtl } = useLanguage();
-  
+  const { isRtl } = useLanguage();
+
   const [selectedTopic, setSelectedTopic] = useState<DawahTopic>(DAWAH_TOPICS[0]);
   const [selectedLangCode, setSelectedLangCode] = useState<string>('en');
   const [ambassadorName, setAmbassadorName] = useState<string>('');
@@ -217,7 +218,7 @@ export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNaviga
     `*${currentContent.title}*\n\n` +
     `${currentContent.content}\n\n` +
     `📖 *${currentContent.quranVerse}* (${currentContent.quranRef})\n\n` +
-    `🌐 Read more & explore verified Islamic wisdom: https://alnoor-complex.org\n` +
+    `🌐 Read more & explore verified Islamic wisdom: https://www.mojamaalnor.com\n` +
     (ambassadorName ? `Shared by Noor Ambassador: ${ambassadorName}` : '');
 
   const handleCopy = () => {
@@ -226,47 +227,47 @@ export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNaviga
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const handleShareWhatsApp = () => {
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
-  };
+  const whatsappShareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
 
   return (
-    <div className="space-y-12 max-w-6xl mx-auto pb-16">
-      
-      {/* Hero Banner: Noor Ambassador */}
-      <section className="relative rounded-3xl overflow-hidden p-6 sm:p-12 shadow-2xl border border-[#D4AF37]/35 bg-gradient-to-br from-[#070D1E] via-[#0B132B] to-[#040814] text-white">
-        <div className="absolute inset-0 bg-noor-grid opacity-30 pointer-events-none" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none" />
-        
+    <div className="space-y-12 max-w-6xl mx-auto pb-16" dir={isRtl ? 'rtl' : 'ltr'}>
+
+      {/* Sky-Blue 3D Hero Banner */}
+      <section className="relative rounded-3xl overflow-hidden p-6 sm:p-12 shadow-xl border border-[#87CEEB]/55 bg-gradient-to-br from-[#12345A] via-[#0E3F66] to-[#0EA5A4] text-white">
         <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/40 text-[#F3E8CB] text-xs font-bold">
-            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>برنامج سفير النور • Noor Global Ambassador</span>
+          <div className="flex items-center gap-3">
+            <Sky3DIcon slug="noorAmbassador" tone="gold" size="md" />
+            <p className="text-xs font-bold text-[#87CEEB] flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-[#F7E7B4]" />
+              <span>برنامج سفير النور · Noor Global Ambassador</span>
+            </p>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black font-amiri text-white leading-tight">
             كُن سفيراً للنور وانشر رسالة الهداية بلغات العالم
           </h1>
 
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#D7F1FC] leading-relaxed">
             قال رسول الله ﷺ: «بَلِّغُوا عَنِّي وَلَوْ آيَةً». يتيح لك هذا القسم إنشاء بطاقات دعوية رقمية موثقة بلغات عالمية ومشاركتها بضغطة زر مع أصدقائك وزملائك حول العالم لدعوتهم بالحكمة والموعظة الحسنة.
           </p>
 
           <div className="flex items-center gap-3 pt-2 flex-wrap">
             <button
+              type="button"
               onClick={() => {
                 const el = document.getElementById('card-builder');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#D4AF37] to-[#F59E0B] text-slate-950 font-black text-xs sm:text-sm transition shadow-lg shadow-amber-500/20"
+              className="px-6 py-3 rounded-2xl bg-[#D4AF37] hover:bg-[#F7E7B4] text-[#12345A] font-black text-xs sm:text-sm transition shadow-md cursor-pointer"
             >
               ابدأ بإنشاء بطاقة دعوية الآن
             </button>
             <button
+              type="button"
               onClick={() => onNavigate('discoverIslam')}
-              className="px-5 py-3 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] border border-white/10 text-slate-200 text-xs font-bold transition flex items-center gap-2"
+              className="px-5 py-3 rounded-2xl bg-white/15 hover:bg-white/25 border border-[#87CEEB]/50 text-white text-xs font-bold transition flex items-center gap-2 cursor-pointer"
             >
-              <Globe className="w-4 h-4 text-[#38BDF8]" />
+              <Globe className="w-4 h-4 text-[#87CEEB]" />
               <span>استكشف بوابة اسأل عن الإسلام</span>
             </button>
           </div>
@@ -274,35 +275,35 @@ export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNaviga
       </section>
 
       {/* Main Interactive Card Builder */}
-      <section id="card-builder" className="rounded-3xl border border-[#D4AF37]/30 bg-[#0B132B]/90 p-6 sm:p-10 shadow-2xl space-y-8 backdrop-blur-md">
-        
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <section id="card-builder" className="sky-card-3d rounded-3xl p-6 sm:p-10 space-y-8">
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#87CEEB]/40 dark:border-[#87CEEB]/20 pb-6">
           <div>
-            <h2 className="text-xl sm:text-2xl font-black font-amiri text-white">
+            <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#12345A] dark:text-white">
               لوحة تخصيص البطاقة الدعوية العالمية
             </h2>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
               اختر موضوع الرسالة واللغة المستهدفة ثم شارك البطاقة مباشرة
             </p>
           </div>
 
           {/* Ambassador Name Input */}
           <div className="flex items-center gap-2">
-            <label className="text-xs text-slate-300 font-bold whitespace-nowrap">اسم السفير:</label>
+            <label className="text-xs text-[#12345A] dark:text-[#EAF8FF] font-bold whitespace-nowrap">اسم السفير:</label>
             <input
               type="text"
               value={ambassadorName}
               onChange={(e) => setAmbassadorName(e.target.value)}
               placeholder="اكتب اسمك ليظهر على البطاقة..."
-              className="px-3.5 py-2 rounded-xl bg-[#070D1E] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#D4AF37] w-56"
+              className="px-3.5 py-2 rounded-xl bg-[#EAF8FF]/85 dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 text-xs text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4] w-56"
             />
           </div>
         </div>
 
         {/* Step 1: Select Topic */}
         <div className="space-y-3">
-          <label className="text-xs font-bold text-[#F3E8CB] flex items-center gap-2">
-            <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
+          <label className="text-xs font-black text-[#12345A] dark:text-[#87CEEB] flex items-center gap-2">
+            <BookOpen className="w-3.5 h-3.5 text-[#0EA5A4]" />
             <span>1. اختر موضوع الرسالة الدعوية:</span>
           </label>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -311,16 +312,21 @@ export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNaviga
               return (
                 <button
                   key={topic.id}
+                  type="button"
                   onClick={() => setSelectedTopic(topic)}
-                  className={`p-4 rounded-2xl text-right transition border flex flex-col justify-between gap-2 text-start ${
+                  className={`p-4 rounded-2xl transition border flex flex-col justify-between gap-2 text-start cursor-pointer ${
                     isSelected
-                      ? 'bg-[#0F172A] border-[#D4AF37] shadow-lg ring-1 ring-[#D4AF37]'
-                      : 'bg-[#070D1E]/70 border-white/5 hover:border-white/20'
+                      ? 'bg-[#12345A] text-white border-[#D4AF37] shadow-lg'
+                      : 'bg-[#EAF8FF]/80 dark:bg-[#0F2747] border-[#87CEEB]/50 dark:border-[#87CEEB]/25 text-[#12345A] dark:text-white hover:border-[#0EA5A4]'
                   }`}
                 >
-                  <h3 className="text-xs font-black text-white">{topic.titleAr}</h3>
-                  <span className="text-[10px] text-slate-400">{topic.titleEn}</span>
-                  <p className="text-[11px] text-slate-300 mt-1 line-clamp-2">{topic.summaryAr}</p>
+                  <h3 className="text-xs font-black">{topic.titleAr}</h3>
+                  <span className={`text-[10px] ${isSelected ? 'text-[#87CEEB]' : 'text-[#4A7298] dark:text-[#B8DEF5]'}`}>
+                    {topic.titleEn}
+                  </span>
+                  <p className={`text-[11px] mt-1 line-clamp-2 ${isSelected ? 'text-[#D7F1FC]' : 'text-[#2B547E] dark:text-[#B8DEF5]'}`}>
+                    {topic.summaryAr}
+                  </p>
                 </button>
               );
             })}
@@ -329,8 +335,8 @@ export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNaviga
 
         {/* Step 2: Select Language */}
         <div className="space-y-3">
-          <label className="text-xs font-bold text-[#F3E8CB] flex items-center gap-2">
-            <Globe className="w-3.5 h-3.5 text-[#38BDF8]" />
+          <label className="text-xs font-black text-[#12345A] dark:text-[#87CEEB] flex items-center gap-2">
+            <Globe className="w-3.5 h-3.5 text-[#0EA5A4]" />
             <span>2. اختر لغة المخاطب:</span>
           </label>
           <div className="flex items-center gap-2 flex-wrap">
@@ -339,11 +345,12 @@ export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNaviga
               return (
                 <button
                   key={l.code}
+                  type="button"
                   onClick={() => setSelectedLangCode(l.code)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border ${
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border cursor-pointer ${
                     isSelected
-                      ? 'bg-[#D4AF37] text-slate-950 border-[#D4AF37] shadow-md'
-                      : 'bg-[#070D1E] text-slate-300 border-white/10 hover:border-white/20'
+                      ? 'bg-[#12345A] text-white border-[#12345A] dark:bg-[#0EA5A4] shadow-md'
+                      : 'bg-[#EAF8FF] dark:bg-[#0F2747] text-[#12345A] dark:text-[#B8DEF5] border-[#87CEEB]/50'
                   }`}
                 >
                   <span>{l.flag}</span>
@@ -356,40 +363,37 @@ export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNaviga
         </div>
 
         {/* Live Presentation Card Preview */}
-        <div className="space-y-3 pt-4 border-t border-white/10">
+        <div className="space-y-3 pt-4 border-t border-[#87CEEB]/40 dark:border-[#87CEEB]/20">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-300 flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span className="text-xs font-bold text-[#12345A] dark:text-[#EAF8FF] flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-[#0EA5A4]" />
               <span>معاينة البطاقة الدعوية الموثقة:</span>
             </span>
-            <span className="text-[11px] text-[#D4AF37] font-mono">
-              اللغة: {currentLang.nameNative} • {currentLang.flag}
+            <span className="text-[11px] text-[#0D7A7A] dark:text-[#87CEEB] font-mono font-bold">
+              اللغة: {currentLang.nameNative} · {currentLang.flag}
             </span>
           </div>
 
           {/* The High-End Digital Card */}
-          <div className="relative rounded-3xl p-8 sm:p-12 bg-gradient-to-br from-[#0F172A] via-[#0B132B] to-[#070D1E] border-2 border-[#D4AF37]/40 shadow-2xl text-white space-y-6 overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-[#38BDF8]/5 rounded-full blur-2xl pointer-events-none" />
-
-            <div className="relative z-10 flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="relative rounded-3xl p-8 sm:p-12 bg-gradient-to-br from-[#12345A] via-[#0E3F66] to-[#0A223D] border-2 border-[#D4AF37]/65 shadow-xl text-white space-y-6 overflow-hidden">
+            <div className="relative z-10 flex items-center justify-between border-b border-white/15 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#D4AF37] text-slate-950 flex items-center justify-center font-bold font-cinzel">
+                <div className="w-10 h-10 rounded-2xl bg-[#D4AF37] text-[#12345A] flex items-center justify-center font-black font-cinzel">
                   NG
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold font-mono tracking-widest text-[#F3E8CB] uppercase">
+                  <h4 className="text-xs font-bold font-mono tracking-widest text-[#F7E7B4] uppercase">
                     NOOR GLOBAL – A WORLD OF LIGHT
                   </h4>
-                  <span className="text-[10px] text-slate-400">
-                    مجمع النور الإسلامي العالمي • International Islamic Message
+                  <span className="text-[10px] text-[#87CEEB]">
+                    مجمع النور الإسلامي العالمي · International Islamic Message
                   </span>
                 </div>
               </div>
 
               {ambassadorName && (
                 <div className="text-right">
-                  <span className="text-[10px] text-[#D4AF37] font-bold block">سفير النور المعتمد</span>
+                  <span className="text-[10px] text-[#F7E7B4] font-bold block">سفير النور المعتمد</span>
                   <span className="text-xs font-bold text-white">{ambassadorName}</span>
                 </div>
               )}
@@ -397,61 +401,65 @@ export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNaviga
 
             {/* Card Content in Selected World Language */}
             <div className="relative z-10 space-y-4" dir="ltr">
-              <h3 className="text-2xl sm:text-3xl font-black font-cinzel text-[#F3E8CB] leading-tight">
+              <h3 className="text-2xl sm:text-3xl font-black font-cinzel text-[#F7E7B4] leading-tight">
                 {currentContent.title}
               </h3>
 
-              <p className="text-sm sm:text-base text-slate-200 leading-relaxed font-sans">
+              <p className="text-sm sm:text-base text-[#EAF8FF] leading-relaxed font-sans">
                 {currentContent.content}
               </p>
 
-              {/* Quran Verse Quote Callout */}
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#070D1E]/80 border-l-4 border-[#D4AF37] text-slate-100 space-y-1 shadow-inner">
+              {/* Quran Verse Quote Callout (clean rounded border) */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#0A223D]/80 border border-[#D4AF37]/50 text-white space-y-1 shadow-inner">
                 <p className="italic text-base sm:text-lg font-serif">
                   {currentContent.quranVerse}
                 </p>
-                <span className="text-xs font-bold text-[#D4AF37] block">
+                <span className="text-xs font-bold text-[#F7E7B4] block">
                   — The Holy Quran, {currentContent.quranRef}
                 </span>
               </div>
             </div>
 
             {/* Footer of Card */}
-            <div className="relative z-10 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+            <div className="relative z-10 pt-4 border-t border-white/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#BCE7FB]">
               <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-[#D4AF37]" />
-                <span>Learn more at: <strong className="text-white">https://alnoor-complex.org</strong></span>
+                <Globe className="w-4 h-4 text-[#F7E7B4]" />
+                <span>Learn more at: <strong className="text-white">https://www.mojamaalnor.com</strong></span>
               </div>
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Verified Scholarly Content • Al-Noor Global Complex</span>
+                <ShieldCheck className="w-4 h-4 text-[#5EEAD4]" />
+                <span>Verified Scholarly Content · Al-Noor Global Complex</span>
               </div>
             </div>
           </div>
 
           {/* Action Sharing Buttons */}
           <div className="flex items-center gap-3 pt-4 flex-wrap">
-            <button
-              onClick={handleShareWhatsApp}
-              className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-2 transition shadow-md cursor-pointer"
+            <a
+              href={whatsappShareUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-5 py-3 rounded-xl bg-[#25D366] hover:bg-[#1EBE5D] text-[#091B33] font-black text-xs flex items-center gap-2 transition shadow-md cursor-pointer"
             >
               <Send className="w-4 h-4" />
               <span>مشاركة فورية عبر واتساب</span>
-            </button>
+            </a>
 
             <button
+              type="button"
               onClick={handleCopy}
-              className="px-5 py-3 rounded-xl bg-[#070D1E] hover:bg-[#1E293B] border border-[#D4AF37]/40 text-[#F3E8CB] font-bold text-xs flex items-center gap-2 transition cursor-pointer"
+              className="px-5 py-3 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white font-bold text-xs flex items-center gap-2 transition cursor-pointer"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-[#D4AF37]" />}
+              {copied ? <Check className="w-4 h-4 text-[#5EEAD4]" /> : <Copy className="w-4 h-4 text-[#F7E7B4]" />}
               <span>{copied ? 'تم نسخ النص الكامل!' : 'نسخ نص الرسالة'}</span>
             </button>
 
             <button
+              type="button"
               onClick={() => setCertificateIssued(true)}
-              className="px-5 py-3 rounded-xl bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 border border-[#D4AF37]/40 text-[#F3E8CB] font-bold text-xs flex items-center gap-2 transition cursor-pointer"
+              className="px-5 py-3 rounded-xl bg-[#D4AF37] hover:bg-[#F7E7B4] text-[#12345A] font-black text-xs flex items-center gap-2 transition cursor-pointer shadow-sm"
             >
-              <Award className="w-4 h-4 text-[#D4AF37]" />
+              <Award className="w-4 h-4" />
               <span>إصدار شهادة سفير النور الفخرية</span>
             </button>
           </div>
@@ -459,22 +467,23 @@ export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNaviga
 
         {/* Certificate Modal */}
         {certificateIssued && (
-          <div className="p-6 rounded-2xl bg-gradient-to-r from-[#D4AF37]/10 to-[#38BDF8]/10 border border-[#D4AF37]/50 space-y-4 animate-fade-in">
+          <div className="p-6 rounded-2xl bg-[#EAF8FF] dark:bg-[#0F2747] border border-[#D4AF37] space-y-4 animate-fade-in">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Award className="w-6 h-6 text-[#D4AF37]" />
-                <h4 className="text-base font-black font-amiri text-white">
+                <h4 className="text-base font-black font-amiri text-[#12345A] dark:text-white">
                   شهادة شرفية: سفير النور لنشر رسالة الإسلام
                 </h4>
               </div>
               <button
+                type="button"
                 onClick={() => setCertificateIssued(false)}
-                className="text-xs text-slate-400 hover:text-white"
+                className="text-xs text-[#4A7298] hover:text-[#12345A] dark:text-[#B8DEF5] cursor-pointer font-bold"
               >
                 ✕ إغلاق
               </button>
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed">
               تقديراً لمشاركتك المباركة في إيصال هداية القرآن الكريم ورحمة الإسلام للعالم، يمنحك مجمع النور الإسلامي العالمي هذه الوثيقة الفخرية كسفير للنور. بارك الله في جهودك وجعلها في ميزان حسناتك.
             </p>
           </div>
@@ -484,36 +493,38 @@ export const NoorAmbassadorPage: React.FC<NoorAmbassadorPageProps> = ({ onNaviga
 
       {/* Ambassador Global Charter */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="p-6 rounded-2xl bg-[#0B132B]/80 border border-white/10 space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-[#D4AF37]/10 text-[#D4AF37] flex items-center justify-center font-bold">
+        <div className="sky-card-3d p-6 rounded-3xl space-y-2">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#F7E7B4] to-[#D4AF37] text-[#12345A] flex items-center justify-center font-black">
             1
           </div>
-          <h4 className="text-sm font-bold text-white">الحكمة والموعظة الحسنة</h4>
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <h4 className="text-sm font-black text-[#12345A] dark:text-white">الحكمة والموعظة الحسنة</h4>
+          <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed">
             الالتزام بالأسلوب القرآني الكريم في الخطاب بالحلم والرفق، وعرض محاسن الإسلام وجماله للعالمين.
           </p>
         </div>
 
-        <div className="p-6 rounded-2xl bg-[#0B132B]/80 border border-white/10 space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-[#38BDF8]/10 text-[#38BDF8] flex items-center justify-center font-bold">
+        <div className="sky-card-3d p-6 rounded-3xl space-y-2">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#87CEEB] to-[#0284C7] text-white flex items-center justify-center font-black">
             2
           </div>
-          <h4 className="text-sm font-bold text-white">التوثيق العلمي الأصيل</h4>
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <h4 className="text-sm font-black text-[#12345A] dark:text-white">التوثيق العلمي الأصيل</h4>
+          <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed">
             جميع المواد والترجمات معتمدة رسمياً ومراجعة من كبار علماء مجمع النور ومجمع المدينة المنورة.
           </p>
         </div>
 
-        <div className="p-6 rounded-2xl bg-[#0B132B]/80 border border-white/10 space-y-2">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold">
+        <div className="sky-card-3d p-6 rounded-3xl space-y-2">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5EEAD4] to-[#0EA5A4] text-[#12345A] flex items-center justify-center font-black">
             3
           </div>
-          <h4 className="text-sm font-bold text-white">الأثر المستدام حول العالم</h4>
-          <p className="text-xs text-slate-400 leading-relaxed">
+          <h4 className="text-sm font-black text-[#12345A] dark:text-white">الأثر المستدام حول العالم</h4>
+          <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed">
             كل بطاقة تشاركها قد تكون سبباً في هداية قلب وإزالة شبهة وإيصال نور الحق لمن يبحث عنه.
           </p>
         </div>
       </section>
+
+      <SectionDynamicItems sectionSlug="noorAmbassador" />
 
     </div>
   );

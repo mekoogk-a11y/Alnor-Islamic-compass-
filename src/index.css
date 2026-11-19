@@ -3,56 +3,51 @@
 
 :root {
   /* =========================================================================
-     AL NOOR GLOBAL ISLAMIC CHARITABLE COMPLEX – DIGITAL CAMPUS DESIGN SYSTEM
-     Emerald Green · Dark Sanctuary Green · Ivory & White · Stone · Subtle Gold
+     AL NOOR GLOBAL ISLAMIC CHARITABLE COMPLEX – 3D SKY-BLUE DESIGN SYSTEM
+     Clear Sky Blue (#87CEEB) · Light Sky (#EAF8FF) · Deep Navy (#12345A)
+     Turquoise (#0EA5A4) · Crisp White (#FFFFFF) · Soft Gold (#D4AF37)
      ========================================================================= */
 
-  /* Core Campus Palette */
-  --color-emerald-deep: #064E3B;
-  --color-emerald-dark: #022C22;
-  --color-emerald-mid: #047857;
-  --color-emerald-soft: #ECFDF5;
+  --color-sky-main: #87CEEB;
+  --color-sky-light: #EAF8FF;
+  --color-sky-mist: #D8F1FD;
+  --color-navy-deep: #12345A;
+  --color-navy-dark: #0A223D;
+  --color-turquoise: #0EA5A4;
+  --color-turquoise-deep: #0D7A7A;
+  --color-gold-soft: #D4AF37;
+  --color-gold-warm: #C8A24A;
 
-  --color-gold-subtle: #C8A24A;
-  --color-gold-classic: #B48D35;
-  --color-gold-light: #F3E8CB;
-
-  --color-ivory-page: #FAF8F2;
-  --color-ivory-surface: #FFFFFF;
-  --color-stone-warm: #EFECE3;
-  --color-stone-border: #DDD6C7;
-  --color-stone-muted: #D4CCB9;
-
-  /* Semantic Theme Tokens (Default: Campus Architectural Ivory & Emerald Daylight) */
-  --bg-main: #FAF8F2;
-  --bg-surface: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-subtle: #F3EFE4;
-  --border-fine: rgba(6, 78, 59, 0.14);
-  --border-strong: rgba(6, 78, 59, 0.28);
-  --border-gold: rgba(200, 162, 74, 0.55);
-  --text-main: #0F2920;
-  --text-muted: #38554B;
-  --text-faint: #5C746B;
-  --accent-primary: #064E3B;
-  --accent-secondary: #047857;
-  --accent-gold: #C8A24A;
+  /* Semantic Theme Tokens (Default: Luminous Sky-Blue Daylight) */
+  --bg-main: #87CEEB;
+  --bg-surface: #EAF8FF;
+  --bg-card: rgba(255, 255, 255, 0.90);
+  --bg-subtle: #DDF3FE;
+  --border-fine: rgba(18, 52, 90, 0.14);
+  --border-strong: rgba(18, 52, 90, 0.25);
+  --border-gold: rgba(212, 175, 55, 0.65);
+  --text-main: #12345A;
+  --text-muted: #2B547E;
+  --text-faint: #4A7298;
+  --accent-primary: #12345A;
+  --accent-secondary: #0EA5A4;
+  --accent-gold: #D4AF37;
 }
 
 .dark {
-  --bg-main: #022C22;
-  --bg-surface: #04382B;
-  --bg-card: #064E3B;
-  --bg-subtle: #053E2F;
-  --border-fine: rgba(200, 162, 74, 0.22);
-  --border-strong: rgba(200, 162, 74, 0.42);
+  --bg-main: #091B33;
+  --bg-surface: #0F2747;
+  --bg-card: rgba(16, 42, 76, 0.90);
+  --bg-subtle: #133158;
+  --border-fine: rgba(135, 206, 235, 0.20);
+  --border-strong: rgba(135, 206, 235, 0.36);
   --border-gold: rgba(212, 175, 55, 0.55);
-  --text-main: #FAF8F2;
-  --text-muted: #D1E7DD;
-  --text-faint: #A3C4B8;
-  --accent-primary: #C8A24A;
-  --accent-secondary: #34D399;
-  --accent-gold: #D4AF37;
+  --text-main: #EAF8FF;
+  --text-muted: #B8DEF5;
+  --text-faint: #84B4D6;
+  --accent-primary: #87CEEB;
+  --accent-secondary: #2DD4BF;
+  --accent-gold: #E5C97B;
 }
 
 @layer base {
@@ -64,11 +59,17 @@
   body {
     font-family: 'Cairo', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--bg-main);
+    background-image: linear-gradient(180deg, #87CEEB 0%, #A9DEF5 48%, #CBEBFB 100%);
+    background-attachment: fixed;
     color: var(--text-main);
-    font-size: 1.0625rem; /* 17px readable scholarly baseline */
+    font-size: 1.0625rem;
     line-height: 1.8;
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dark body {
+    background-image: linear-gradient(180deg, #091B33 0%, #0E2544 50%, #123157 100%);
   }
 
   button:focus-visible,
@@ -76,7 +77,7 @@
   input:focus-visible,
   select:focus-visible,
   textarea:focus-visible {
-    outline: 2px solid #C8A24A;
+    outline: 2px solid #0EA5A4;
     outline-offset: 2px;
   }
 }
@@ -98,58 +99,151 @@
   font-family: 'Cinzel', serif;
 }
 
-/* Sacred Geometric Islamic Architectural Pattern */
+/* Sacred Sky-Blue & Gold Islamic Geometric Lattice */
 .bg-islamic-pattern {
   background-image:
-    radial-gradient(circle at 25% 25%, rgba(200, 162, 74, 0.14) 1.5px, transparent 1.5px),
-    radial-gradient(circle at 75% 75%, rgba(6, 78, 59, 0.12) 1.5px, transparent 1.5px);
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.35) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 75% 75%, rgba(18, 52, 90, 0.12) 1.5px, transparent 1.5px);
   background-size: 32px 32px;
 }
 
 .dark .bg-islamic-pattern {
   background-image:
-    radial-gradient(circle at 25% 25%, rgba(212, 175, 55, 0.14) 1.5px, transparent 1.5px),
-    radial-gradient(circle at 75% 75%, rgba(52, 211, 153, 0.08) 1.5px, transparent 1.5px);
+    radial-gradient(circle at 25% 25%, rgba(135, 206, 235, 0.14) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 75% 75%, rgba(212, 175, 55, 0.10) 1.5px, transparent 1.5px);
   background-size: 32px 32px;
+}
+
+/* =========================================================================
+   THREE-DIMENSIONAL (3D) FLOATING SKY-BLUE GLASSMORPHISM UTILITIES
+   ========================================================================= */
+.sky-card-3d {
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.94) 0%, rgba(234, 248, 255, 0.90) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 20px 38px -16px rgba(18, 52, 90, 0.24),
+    0 8px 18px -6px rgba(14, 165, 164, 0.14),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.98),
+    inset 0 -3px 6px rgba(135, 206, 235, 0.22);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.25s ease;
+}
+
+.sky-card-3d:hover {
+  transform: translateY(-5px) scale(1.01);
+  border-color: rgba(212, 175, 55, 0.72);
+  box-shadow:
+    0 28px 48px -16px rgba(18, 52, 90, 0.30),
+    0 12px 24px -8px rgba(14, 165, 164, 0.22),
+    inset 0 2px 0 rgba(255, 255, 255, 1),
+    inset 0 -3px 8px rgba(14, 165, 164, 0.16);
+}
+
+.dark .sky-card-3d {
+  background: linear-gradient(155deg, rgba(16, 42, 76, 0.92) 0%, rgba(11, 31, 58, 0.94) 100%);
+  border: 1px solid rgba(135, 206, 235, 0.24);
+  box-shadow:
+    0 20px 38px -16px rgba(0, 0, 0, 0.55),
+    0 6px 16px -6px rgba(14, 165, 164, 0.20),
+    inset 0 1px 0 rgba(135, 206, 235, 0.22);
+}
+
+.dark .sky-card-3d:hover {
+  border-color: rgba(212, 175, 55, 0.75);
+  box-shadow:
+    0 28px 50px -14px rgba(0, 0, 0, 0.65),
+    0 10px 26px -6px rgba(135, 206, 235, 0.24),
+    inset 0 1.5px 0 rgba(234, 248, 255, 0.32);
+}
+
+.sky-glass-panel {
+  background: rgba(234, 248, 255, 0.86);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  box-shadow:
+    0 18px 42px -18px rgba(18, 52, 90, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.dark .sky-glass-panel {
+  background: rgba(15, 39, 71, 0.88);
+  border: 1px solid rgba(135, 206, 235, 0.22);
+  box-shadow:
+    0 18px 42px -16px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(135, 206, 235, 0.16);
 }
 
 /* Architectural Campus Pavilion Card */
 .campus-card {
-  background-color: var(--bg-card);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.94), rgba(234, 248, 255, 0.90));
   color: var(--text-main);
-  border: 1px solid var(--border-fine);
-  box-shadow: 0 6px 24px -6px rgba(6, 78, 59, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 14px 32px -12px rgba(18, 52, 90, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .campus-card:hover {
   border-color: var(--border-gold);
-  box-shadow: 0 14px 36px -10px rgba(6, 78, 59, 0.16);
-  transform: translateY(-2px);
+  box-shadow: 0 20px 42px -12px rgba(18, 52, 90, 0.26);
+  transform: translateY(-3px);
 }
 
-/* Stone Courtyard Surface */
-.campus-stone-surface {
-  background-color: var(--bg-subtle);
-  border: 1px solid var(--border-fine);
+.dark .campus-card {
+  background: linear-gradient(155deg, rgba(16, 42, 76, 0.92), rgba(11, 31, 58, 0.94));
+  border-color: rgba(135, 206, 235, 0.24);
 }
 
-/* Scholarly Daylight Reading Surface (Comfortable, Pristine Ivory) */
+/* Scholarly Reading Paper (Clean Crisp Ivory-Sky Contrast for Mushaf & Hadith) */
 .scholarly-reading-paper {
-  background-color: #FAF8F2;
-  color: #142B22;
-  border: 1px solid #DDD6C7;
-  box-shadow: 0 4px 24px -4px rgba(6, 78, 59, 0.08);
+  background: linear-gradient(180deg, #FFFFFF 0%, #EAF8FF 100%);
+  color: #12345A;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 20px 44px -16px rgba(18, 52, 90, 0.22),
+    inset 0 1.5px 0 rgba(255, 255, 255, 1);
 }
 
-/* Architectural Pointed Arch Top Accent */
-.campus-arch-top {
-  border-top: 3px solid #C8A24A;
+.dark .scholarly-reading-paper {
+  background: linear-gradient(180deg, #102A4C 0%, #0C213D 100%);
+  color: #EAF8FF;
+  border: 1px solid rgba(135, 206, 235, 0.25);
 }
 
-/* Subtle Gold Gradient Accent */
+/* Gentle 3D Float & Page Entrance Animations */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.page-enter-transition {
+  animation: pageEnter 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 .text-gold-gradient {
-  background: linear-gradient(135deg, #F3E8CB 0%, #C8A24A 50%, #9E7B2B 100%);
+  background: linear-gradient(135deg, #F7E7B4 0%, #D4AF37 50%, #A98324 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -162,22 +256,21 @@
   scrollbar-width: none;
 }
 
-/* Custom Scrollbar for Smooth Reading */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-subtle);
+  background: var(--bg-surface);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #064E3B;
+  background: #12345A;
   border-radius: 4px;
-  border: 1px solid rgba(200, 162, 74, 0.35);
+  border: 1px solid rgba(135, 206, 235, 0.45);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #C8A24A;
+  background: #0EA5A4;
 }

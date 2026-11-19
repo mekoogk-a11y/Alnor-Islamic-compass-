@@ -16,8 +16,16 @@ import {
   SUPPORTED_CITIES 
 } from './server/api/prayerEngine.js';
 import { paymentAdapter } from './server/api/paymentAdapter.js';
+import { createVideoRouter } from './server/api/videoRouter.js';
+import { getCloudflareConfig } from './server/api/cloudflareStream.js';
 import { requireAuth, requireAdmin, AuthRequest } from './src/middleware/auth.ts';
 import { getOrCreateUser, getUserByUid, getUserEnrollments, getUserOrphanSponsorships } from './src/db/users.ts';
+import {
+  listSectionItemsBySlug,
+  listAllSectionItems,
+  createSectionItemRecord,
+  deleteSectionItemRecord,
+} from './src/db/sectionItems.ts';
 import { pool } from './src/db/index.ts';
 
 dotenv.config();
@@ -29,7 +37,12 @@ const app = express();
 const PORT = 3000;
 
 app.disable('x-powered-by');
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({
+  limit: '10mb',
+  verify: (req: any, _res, buf) => {
+    req.rawBody = buf;
+  },
+}));
 
 // HTTP Security Headers
 app.use((_req: Request, res: Response, next) => {
@@ -216,6 +229,15 @@ app.get('/api/v1/health', async (_req: Request, res: Response) => {
       uptimePercentage: 99.95,
       lastChecked: now,
     },
+    'cloudflare-stream-video': {
+      status: getCloudflareConfig() ? ('operational' as const) : ('degraded' as const),
+      latencyMs: getCloudflareConfig() ? 95 : 0,
+      uptimePercentage: getCloudflareConfig() ? 99.99 : 0,
+      lastChecked: now,
+      note: getCloudflareConfig()
+        ? 'بوابة Cloudflare Stream (Direct TUS + HLS) مفعلة'
+        : 'مفاتيح CLOUDFLARE_ACCOUNT_ID و CLOUDFLARE_API_TOKEN غير مضافة في Settings > Secrets',
+    },
   };
 
   const overallStatus =
@@ -226,6 +248,7 @@ app.get('/api/v1/health', async (_req: Request, res: Response) => {
     services: healthMatrix,
     serviceMap,
     geminiConfigured: hasGeminiKey,
+    cloudflareStreamConfigured: Boolean(getCloudflareConfig()),
     postgresConnected: pgStatus === 'operational',
     nodeEnvironment: process.env.NODE_ENV || 'development',
     serverUptimeSeconds: Math.floor(process.uptime()),
@@ -673,6 +696,9 @@ app.post('/api/v1/videos/batch', requireAuth, requireAdmin, (req: Request, res: 
     message: 'تمت الفهرسة بنجاح في مجمع النور'
   });
 });
+
+// Mount Cloudflare Stream Video Management & Public HLS Library API (v1)
+app.use('/api/v1', createVideoRouter());
 
 // =========================================================================
 // ORPHANS CARE & SPONSORSHIP API (v1)
@@ -1184,6 +1210,81 @@ app.get('/api/v1/campus/admin-submissions', requireAuth, requireAdmin, (_req: Re
     partnerships: partnershipApplications,
     contacts: contactSubmissions,
   });
+});
+
+// =========================================================================
+// DYNAMIC SECTION ITEMS API (PostgreSQL-backed Admin Section Publishing)
+// =========================================================================
+
+// GET /api/v1/sections/items/all - List all published section items
+app.get('/api/v1/sections/items/all', async (_req: Request, res: Response) => {
+  try {
+    const items = await listAllSectionItems();
+    return sendApiResponse(res, items, { provider: 'Al-Noor Cloud SQL Section Content' });
+  } catch (error) {
+    console.error('Error listing all section items:', error);
+    return sendApiError(res, 500, 'SECTION_ITEMS_ERROR', 'تعذر تحميل عناصر الأقسام من قاعدة البيانات');
+  }
+});
+
+// GET /api/v1/sections/:section/items - List items for a specific section slug
+app.get('/api/v1/sections/:section/items', async (req: Request, res: Response) => {
+  try {
+    const section = String(req.params.section || '').trim();
+    if (!section) {
+      return sendApiError(res, 400, 'SECTION_REQUIRED', 'معرف القسم مطلوب');
+    }
+    const items = await listSectionItemsBySlug(section);
+    return sendApiResponse(res, items, { provider: 'Al-Noor Cloud SQL Section Content' });
+  } catch (error) {
+    console.error('Error listing section items:', error);
+    return sendApiError(res, 500, 'SECTION_ITEMS_ERROR', 'تعذر تحميل محتوى القسم');
+  }
+});
+
+// POST /api/v1/admin/section-items - Admin creates dynamic content in any section
+app.post('/api/v1/admin/section-items', requireAuth, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const { section, title, body = '', url = '' } = req.body || {};
+    if (!section || !title) {
+      return sendApiError(res, 400, 'MISSING_FIELDS', 'يرجى تحديد القسم وكتابة العنوان');
+    }
+    const safeUrl = String(url || '').trim();
+    if (safeUrl && !/^https?:\/\//i.test(safeUrl) && !safeUrl.startsWith('/')) {
+      return sendApiError(res, 400, 'INVALID_URL', 'الرابط يجب أن يبدأ بـ http:// أو https:// أو /');
+    }
+
+    const created = await createSectionItemRecord({
+      section: String(section),
+      title: String(title),
+      body: String(body || ''),
+      url: safeUrl,
+      adminUid: req.user?.uid || 'admin',
+    });
+
+    return sendApiResponse(res, created, { provider: 'Al-Noor Admin Section Publisher' });
+  } catch (error) {
+    console.error('Error creating section item:', error);
+    return sendApiError(res, 500, 'SECTION_CREATE_ERROR', 'تعذر حفظ عنصر القسم الجديد');
+  }
+});
+
+// DELETE /api/v1/admin/section-items/:id - Admin deletes a dynamic section item
+app.delete('/api/v1/admin/section-items/:id', requireAuth, requireAdmin, async (req: AuthRequest, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return sendApiError(res, 400, 'INVALID_ID', 'معرف العنصر غير صالح');
+    }
+    const deleted = await deleteSectionItemRecord(id);
+    if (!deleted) {
+      return sendApiError(res, 404, 'NOT_FOUND', 'العنصر غير موجود');
+    }
+    return sendApiResponse(res, { id, deleted: true });
+  } catch (error) {
+    console.error('Error deleting section item:', error);
+    return sendApiError(res, 500, 'SECTION_DELETE_ERROR', 'تعذر حذف عنصر القسم');
+  }
 });
 
 // =========================================================================

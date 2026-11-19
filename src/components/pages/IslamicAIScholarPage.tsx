@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  Sparkles, Send, ShieldAlert, BookOpen, Scroll, CheckCircle, 
-  HelpCircle, RefreshCw, Copy, ShieldCheck, AlertCircle, Bookmark 
+import {
+  Sparkles, Send, ShieldAlert, CheckCircle,
+  RefreshCw, Copy, ShieldCheck, AlertCircle
 } from 'lucide-react';
 import { NavigationPage } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
+import { Sky3DIcon } from '../Sky3DIcon';
+import { SectionDynamicItems } from '../SectionDynamicItems';
 
 interface IslamicAIScholarPageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -19,7 +21,6 @@ export const IslamicAIScholarPage: React.FC<IslamicAIScholarPageProps> = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  // Pre-configured questions for swift research
   const sampleQuestions = [
     {
       field: 'علوم القرآن والتفسير',
@@ -81,40 +82,47 @@ export const IslamicAIScholarPage: React.FC<IslamicAIScholarPageProps> = () => {
 
   return (
     <div className="space-y-8" dir={isRtl ? 'rtl' : 'ltr'}>
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-emerald-950/80 to-slate-900 border border-emerald-900/50 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
-        <div className="max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 px-3.5 py-1 rounded-full text-xs font-bold text-amber-400">
-            <Sparkles className="w-4 h-4" />
-            <span>المساعد المعرفي الأكاديمي الموثق • الذكاء الاصطناعي الإسلامي الرشيد</span>
+      {/* Sky-Blue 3D Header Banner */}
+      <div className="bg-gradient-to-br from-[#12345A] via-[#0F3F6B] to-[#0EA5A4] border border-[#87CEEB]/55 rounded-3xl p-6 sm:p-10 shadow-xl relative overflow-hidden text-white">
+        <div className="absolute inset-0 bg-islamic-pattern opacity-10 pointer-events-none" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-start gap-5 max-w-4xl">
+          <div className="hidden sm:block shrink-0">
+            <Sky3DIcon slug="aiScholar" tone="ocean" size="lg" />
           </div>
 
-          <h1 className="text-2xl sm:text-4xl font-black text-white leading-tight">
-            بحثٌ علمي إسلامي رصين موثق بالأدلة والمراجع المعتمدة
-          </h1>
+          <div className="space-y-4">
+            <p className="text-xs font-bold text-[#F7E7B4] flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-[#87CEEB]" />
+              <span>المساعد المعرفي الأكاديمي الموثق · الذكاء الاصطناعي الإسلامي الرشيد</span>
+            </p>
 
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-            محرك معرفي إسلامي منضبط بالضوابط الشرعية، يستند إلى نصوص الوحيين وأقوال أئمة الهدى المعتبرين، لمساعدة طلبة العلم والباحثين في تيسير الفهم وتوثيق المسائل.
-          </p>
+            <h1 className="text-2xl sm:text-4xl font-black font-amiri text-white leading-tight">
+              بحثٌ علمي إسلامي رصين موثق بالأدلة والمراجع المعتمدة
+            </h1>
 
-          {/* Ethical Guardrail Disclaimer */}
-          <div className="p-3.5 bg-amber-950/30 border border-amber-600/40 rounded-2xl flex items-start gap-3 text-xs text-amber-200">
-            <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <span className="font-bold block text-amber-300">تنويه شرعي وأكاديمي واجب:</span>
-              <p className="text-[11px] leading-relaxed text-amber-200/90">
-                هذا المساعد أداة بحثية وتعليمية لتوثيق المسائل ونصوص العلماء، ولا يغني عن مراجعة المجالس الإفتائية الرسمية في النوازل الفردية والمسائل القضائية والطلاق والنزاعات الأسرية والمالية المعقدة.
-              </p>
+            <p className="text-xs sm:text-sm text-[#D7F1FC] leading-relaxed">
+              محرك معرفي إسلامي منضبط بالضوابط الشرعية، يستند إلى نصوص الوحيين وأقوال أئمة الهدى المعتبرين، لمساعدة طلبة العلم والباحثين في تيسير الفهم وتوثيق المسائل.
+            </p>
+
+            {/* Ethical Guardrail Disclaimer */}
+            <div className="p-4 bg-[#FFF9E6] dark:bg-[#102A4C] border border-[#D4AF37]/60 rounded-2xl flex items-start gap-3 text-xs text-[#12345A] dark:text-[#EAF8FF]">
+              <ShieldAlert className="w-5 h-5 text-[#9E7818] dark:text-[#F7E7B4] shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <span className="font-black block text-[#12345A] dark:text-[#F7E7B4]">تنويه شرعي وأكاديمي واجب:</span>
+                <p className="text-[11px] leading-relaxed text-[#2B547E] dark:text-[#B8DEF5]">
+                  هذا المساعد أداة بحثية وتعليمية لتوثيق المسائل ونصوص العلماء، ولا يغني عن مراجعة المجالس الإفتائية الرسمية في النوازل الفردية والمسائل القضائية والطلاق والنزاعات الأسرية والمالية المعقدة.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Interaction Card */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+      <div className="sky-card-3d rounded-3xl p-6 sm:p-8 space-y-6">
         {/* Field Selector */}
         <div className="space-y-2">
-          <label className="block text-xs font-bold text-slate-300">
+          <label className="block text-xs font-black text-[#12345A] dark:text-[#EAF8FF]">
             اختر الحقل الشرعي للبحث:
           </label>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar">
@@ -130,10 +138,10 @@ export const IslamicAIScholarPage: React.FC<IslamicAIScholarPageProps> = () => {
                 key={field}
                 type="button"
                 onClick={() => setSelectedField(field)}
-                className={`px-3 py-1.5 rounded-xl font-bold whitespace-nowrap transition ${
+                className={`px-3.5 py-2 rounded-xl font-bold whitespace-nowrap transition cursor-pointer ${
                   selectedField === field
-                    ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
-                    : 'bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200'
+                    ? 'bg-[#12345A] text-white dark:bg-[#0EA5A4] shadow-sm'
+                    : 'bg-[#EAF8FF] dark:bg-[#0F2747] border border-[#87CEEB]/50 text-[#12345A] dark:text-[#B8DEF5] hover:border-[#0EA5A4]'
                 }`}
               >
                 {field}
@@ -144,29 +152,28 @@ export const IslamicAIScholarPage: React.FC<IslamicAIScholarPageProps> = () => {
 
         {/* Query Input */}
         <div className="space-y-3">
-          <label className="block text-xs font-bold text-slate-300">
+          <label className="block text-xs font-black text-[#12345A] dark:text-[#EAF8FF]">
             اطرح مسألتك العلمية أو استفسارك الأكاديمي:
           </label>
-          <div className="relative">
-            <textarea
-              rows={3}
-              value={inputQuery}
-              onChange={(e) => setInputQuery(e.target.value)}
-              placeholder="مثال: ما هي الفروق الفقهية بين زكاة المال وزكاة الفطر، وما هي أدلتها وشروط وجوبها؟"
-              className="w-full p-4 bg-slate-950 border border-slate-800 rounded-2xl text-white text-xs sm:text-sm focus:outline-none focus:border-amber-500 resize-none leading-relaxed"
-            />
-          </div>
+          <textarea
+            rows={3}
+            value={inputQuery}
+            onChange={(e) => setInputQuery(e.target.value)}
+            placeholder="مثال: ما هي الفروق الفقهية بين زكاة المال وزكاة الفطر، وما هي أدلتها وشروط وجوبها؟"
+            className="w-full p-4 bg-[#EAF8FF] dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 rounded-2xl text-[#12345A] dark:text-white text-xs sm:text-sm focus:outline-none focus:border-[#0EA5A4] resize-none leading-relaxed"
+          />
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
-            <div className="flex items-center gap-2 text-xs text-slate-400">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <div className="flex items-center gap-2 text-xs text-[#2B547E] dark:text-[#B8DEF5] font-medium">
+              <ShieldCheck className="w-4 h-4 text-[#0EA5A4]" />
               <span>الإجابات تخضع للتدقيق والتوثيق بالأدلة الشرعية</span>
             </div>
 
             <button
+              type="button"
               onClick={() => handleAsk()}
               disabled={isLoading || !inputQuery.trim()}
-              className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs sm:text-sm rounded-xl transition shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full sm:w-auto px-6 py-2.5 bg-[#12345A] hover:bg-[#0EA5A4] text-white font-black text-xs sm:text-sm rounded-xl transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
               {isLoading ? (
                 <>
@@ -184,23 +191,24 @@ export const IslamicAIScholarPage: React.FC<IslamicAIScholarPageProps> = () => {
         </div>
 
         {/* Quick Sample Queries */}
-        <div className="pt-2 border-t border-slate-800/80 space-y-2">
-          <span className="text-[11px] text-slate-400 font-medium block">
+        <div className="pt-3 border-t border-[#87CEEB]/40 dark:border-[#87CEEB]/20 space-y-2.5">
+          <span className="text-[11px] text-[#2B547E] dark:text-[#B8DEF5] font-bold block">
             نماذج لبحوث ومسائل علمية جاهزة للاستعراض الفوري:
           </span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {sampleQuestions.map((item, idx) => (
               <button
                 key={idx}
+                type="button"
                 onClick={() => {
                   setSelectedField(item.field);
                   setInputQuery(item.q);
                   handleAsk(item.q);
                 }}
-                className="p-2.5 bg-slate-950 hover:bg-emerald-950/40 border border-slate-800 hover:border-emerald-700/60 rounded-xl text-right text-xs text-slate-300 transition flex items-center justify-between group"
+                className="p-3 bg-[#EAF8FF]/85 dark:bg-[#0F2747] hover:border-[#0EA5A4] border border-[#87CEEB]/50 dark:border-[#87CEEB]/25 rounded-xl text-right text-xs text-[#12345A] dark:text-[#EAF8FF] transition flex items-center justify-between group cursor-pointer"
               >
-                <span className="line-clamp-1 group-hover:text-amber-300">{item.q}</span>
-                <span className="text-[10px] text-slate-500 font-mono shrink-0 ml-2">[{item.field}]</span>
+                <span className="line-clamp-1 font-bold group-hover:text-[#0EA5A4]">{item.q}</span>
+                <span className="text-[10px] text-[#4A7298] dark:text-[#84B4D6] shrink-0 mr-2">· {item.field}</span>
               </button>
             ))}
           </div>
@@ -209,43 +217,43 @@ export const IslamicAIScholarPage: React.FC<IslamicAIScholarPageProps> = () => {
 
       {/* Answer Presentation */}
       {errorMsg && (
-        <div className="p-4 bg-red-950/60 border border-red-800 text-red-200 text-xs rounded-2xl flex items-center gap-3">
-          <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/60 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 text-xs font-bold rounded-2xl flex items-center gap-3">
+          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {responseAnswer && (
-        <div className="bg-slate-900 border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-800/60">
-                {selectedField}
-              </span>
-              <span className="text-xs text-slate-400">توثيق مجمع النور الأكاديمي</span>
+        <div className="scholarly-reading-paper rounded-3xl p-6 sm:p-8 shadow-xl space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#87CEEB]/40 dark:border-[#87CEEB]/20 pb-4">
+            <div className="flex items-center gap-2 text-xs">
+              <span className="font-black text-[#0D7A7A] dark:text-[#2DD4BF]">{selectedField}</span>
+              <span aria-hidden="true" className="text-[#4A7298]">·</span>
+              <span className="text-[#2B547E] dark:text-[#B8DEF5]">توثيق مجمع النور الأكاديمي</span>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition"
-              >
-                {copied ? <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? 'تم النسخ' : 'نسخ الإجابة'}</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#EAF8FF] dark:bg-[#0F2747] border border-[#87CEEB]/60 text-xs font-bold text-[#12345A] dark:text-white transition cursor-pointer"
+            >
+              {copied ? <CheckCircle className="w-3.5 h-3.5 text-[#0EA5A4]" /> : <Copy className="w-3.5 h-3.5 text-[#0EA5A4]" />}
+              <span>{copied ? 'تم النسخ' : 'نسخ الإجابة'}</span>
+            </button>
           </div>
 
-          <div className="text-xs sm:text-sm text-slate-200 leading-[2.2] whitespace-pre-line font-sans">
+          <div className="text-xs sm:text-sm text-[#12345A] dark:text-[#EAF8FF] leading-[2.15] whitespace-pre-line font-sans">
             {responseAnswer}
           </div>
 
-          <div className="pt-4 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="pt-4 border-t border-[#87CEEB]/35 dark:border-[#87CEEB]/20 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[#2B547E] dark:text-[#B8DEF5]">
             <span>تم التأصيل بالاستناد إلى القرآن الكريم والسنة النبوية وأمهات كتب السلف</span>
-            <span className="text-amber-400 font-medium">مجمع النور الإسلامي العالمي</span>
+            <span className="text-[#9E7818] dark:text-[#F7E7B4] font-bold">مجمع النور الإسلامي العالمي</span>
           </div>
         </div>
       )}
+
+      <SectionDynamicItems sectionSlug="aiScholar" />
     </div>
   );
 };

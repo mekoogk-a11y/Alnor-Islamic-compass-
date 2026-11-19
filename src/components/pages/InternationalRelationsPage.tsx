@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import { NavigationPage } from '../../types';
 import { useLanguage } from '../../context/LanguageContext';
+import { Sky3DIcon } from '../Sky3DIcon';
+import { SectionDynamicItems } from '../SectionDynamicItems';
 
 interface InternationalRelationsPageProps {
   onNavigate: (page: NavigationPage) => void;
@@ -65,11 +67,14 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
 
   return (
     <div className="space-y-10" dir={isRtl ? 'rtl' : 'ltr'}>
-      {/* Header Banner */}
-      <section className="rounded-3xl bg-gradient-to-l from-[#064E3B] to-[#022C22] text-[#FAF8F2] border border-[#C8A24A]/50 shadow-xl p-6 sm:p-10 space-y-4">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xl bg-[#022C22] border border-[#C8A24A]/50 text-xs font-bold text-[#E5C97B]">
-          <Globe2 className="w-4 h-4" />
-          <span>{isAr ? 'المبنى 08 · مركز العلاقات والشراكات الدولية' : 'Building 08 · International Relations Center'}</span>
+      {/* Sky-Blue 3D Header Banner */}
+      <section className="rounded-3xl bg-gradient-to-br from-[#12345A] via-[#0E3F66] to-[#0EA5A4] text-white border border-[#87CEEB]/55 shadow-xl p-6 sm:p-10 space-y-4">
+        <div className="flex items-center gap-3">
+          <Sky3DIcon slug="internationalRelations" tone="sky" size="md" />
+          <span className="text-xs font-bold text-[#87CEEB] flex items-center gap-1.5">
+            <Globe2 className="w-4 h-4 text-[#F7E7B4]" />
+            <span>{isAr ? 'المبنى 08 · مركز العلاقات والشراكات الدولية' : 'Building 08 · International Relations Center'}</span>
+          </span>
         </div>
 
         <h1 className="text-2xl sm:text-4xl font-black font-amiri text-white leading-tight">
@@ -78,7 +83,7 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
             : 'International Relations, Institutional Partnerships & Global Cooperation'}
         </h1>
 
-        <p className="text-xs sm:text-sm text-[#D1E7DD] leading-relaxed max-w-3xl">
+        <p className="text-xs sm:text-sm text-[#D7F1FC] leading-relaxed max-w-3xl">
           {isAr
             ? 'نبني جسور التعاون العلمي والخيري مع الجامعات الإسلامية والمراكز القرآنية والهيئات الإنسانية المعتمدة، وندير برامج التعريف الحضاري بالإسلام ورعاية المهتدين الجدد بلغات العالم.'
             : 'Building academic and humanitarian partnerships with Islamic universities, Quranic institutes, and charitable organizations worldwide, alongside global dialogue and new Muslim support.'}
@@ -88,7 +93,7 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
           <button
             type="button"
             onClick={() => onNavigate('discoverIslam')}
-            className="px-4 py-2 rounded-xl bg-[#C8A24A] text-[#022C22] text-xs font-black flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2.5 rounded-2xl bg-[#D4AF37] hover:bg-[#F7E7B4] text-[#12345A] text-xs font-black flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
           >
             <MessageCircle className="w-4 h-4" />
             <span>{isAr ? 'بوابة اسأل عن الإسلام' : 'Ask About Islam Portal'}</span>
@@ -96,17 +101,17 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
           <button
             type="button"
             onClick={() => onNavigate('newMuslims')}
-            className="px-4 py-2 rounded-xl bg-[#FAF8F2]/10 hover:bg-[#FAF8F2]/20 border border-[#C8A24A]/40 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2.5 rounded-2xl bg-white/15 hover:bg-white/25 border border-[#87CEEB]/50 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
           >
-            <Compass className="w-4 h-4 text-[#E5C97B]" />
+            <Compass className="w-4 h-4 text-[#F7E7B4]" />
             <span>{isAr ? 'رعاية المهتدين الجدد' : 'New Muslims Academy'}</span>
           </button>
           <button
             type="button"
             onClick={() => onNavigate('noorAmbassador')}
-            className="px-4 py-2 rounded-xl bg-[#FAF8F2]/10 hover:bg-[#FAF8F2]/20 border border-[#C8A24A]/40 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2.5 rounded-2xl bg-white/15 hover:bg-white/25 border border-[#87CEEB]/50 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors"
           >
-            <Sparkles className="w-4 h-4 text-[#E5C97B]" />
+            <Sparkles className="w-4 h-4 text-[#87CEEB]" />
             <span>{isAr ? 'برنامج سفير النور العالمي' : 'Noor Global Ambassador'}</span>
           </button>
         </div>
@@ -139,14 +144,14 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
         ].map((card, i) => {
           const Icon = card.icon;
           return (
-            <div key={i} className="p-6 rounded-2xl bg-[#FFFFFF] dark:bg-[#04382B] border border-[#DDD6C7] dark:border-[#C8A24A]/30 space-y-2.5 shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-[#064E3B] text-[#E5C97B] flex items-center justify-center">
+            <div key={i} className="sky-card-3d p-6 rounded-3xl space-y-2.5">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#12345A] to-[#0EA5A4] text-white flex items-center justify-center shadow-sm">
                 <Icon className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-black font-amiri text-[#0F2920] dark:text-white">
+              <h2 className="text-lg font-black font-amiri text-[#12345A] dark:text-white">
                 {isAr ? card.titleAr : card.titleEn}
               </h2>
-              <p className="text-xs sm:text-sm text-[#38554B] dark:text-[#D1E7DD] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed">
                 {isAr ? card.descAr : card.descEn}
               </p>
             </div>
@@ -155,12 +160,12 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
       </section>
 
       {/* Partnership Application Form */}
-      <section className="rounded-3xl bg-[#FFFFFF] dark:bg-[#04382B] border border-[#DDD6C7] dark:border-[#C8A24A]/35 p-6 sm:p-10 shadow-md max-w-4xl mx-auto space-y-6">
-        <div className="space-y-1 border-b border-[#DDD6C7] dark:border-[#C8A24A]/25 pb-4">
-          <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#064E3B] dark:text-[#E5C97B]">
+      <section className="sky-card-3d rounded-3xl p-6 sm:p-10 max-w-4xl mx-auto space-y-6">
+        <div className="space-y-1 border-b border-[#87CEEB]/40 dark:border-[#87CEEB]/20 pb-4">
+          <h2 className="text-xl sm:text-2xl font-black font-amiri text-[#12345A] dark:text-[#87CEEB]">
             {isAr ? 'نموذج تقديم طلب شراكة أو تعاون مؤسسي' : 'Institutional Partnership Application Form'}
           </h2>
-          <p className="text-xs text-[#38554B] dark:text-[#D1E7DD]">
+          <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
             {isAr
               ? 'ترسل الطلبات مباشرة إلى مكتب العلاقات الدولية بالمجمع للمراجعة الرسمية والتواصل معكم.'
               : 'Submitted proposals are logged directly with the International Relations Directorate for official review.'}
@@ -168,19 +173,19 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
         </div>
 
         {submitResult ? (
-          <div className="p-6 rounded-2xl bg-[#ECFDF5] dark:bg-[#022C22] border border-[#047857]/40 text-center space-y-3">
-            <CheckCircle2 className="w-10 h-10 text-[#047857] dark:text-[#34D399] mx-auto" />
-            <h3 className="text-lg font-black font-amiri text-[#064E3B] dark:text-white">
+          <div className="p-6 rounded-2xl bg-[#EAF8FF] dark:bg-[#0F2747] border border-[#0EA5A4]/50 text-center space-y-3">
+            <CheckCircle2 className="w-10 h-10 text-[#0EA5A4] mx-auto" />
+            <h3 className="text-lg font-black font-amiri text-[#12345A] dark:text-white">
               {isAr ? 'تم استلام طلب الشراكة بنجاح' : 'Partnership Application Received'}
             </h3>
-            <p className="text-xs text-[#38554B] dark:text-[#D1E7DD]">
+            <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
               {isAr ? 'الرقم المرجعي للمتابعة:' : 'Reference Tracking Code:'}{' '}
-              <span className="font-mono font-black text-[#064E3B] dark:text-[#E5C97B]">{submitResult.trackingCode}</span>
+              <span className="font-mono font-black text-[#12345A] dark:text-[#F7E7B4]">{submitResult.trackingCode}</span>
             </p>
             <button
               type="button"
               onClick={() => setSubmitResult(null)}
-              className="px-4 py-2 rounded-xl bg-[#064E3B] text-white text-xs font-bold cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white text-xs font-bold cursor-pointer transition-colors"
             >
               {isAr ? 'تقديم طلب آخر' : 'Submit Another Request'}
             </button>
@@ -196,65 +201,65 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="font-bold text-[#0F2920] dark:text-[#FAF8F2] block">
+                <label className="font-bold text-[#12345A] dark:text-[#EAF8FF] block">
                   {isAr ? 'اسم المؤسسة أو الجمعية *' : 'Institution / Organization Name *'}
                 </label>
                 <input
                   type="text"
                   value={orgName}
                   onChange={(e) => setOrgName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F2] dark:bg-[#022C22] border border-[#DDD6C7] dark:border-[#C8A24A]/35 text-[#0F2920] dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#EAF8FF]/85 dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 text-[#12345A] dark:text-white"
                   required
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-[#0F2920] dark:text-[#FAF8F2] block">
+                <label className="font-bold text-[#12345A] dark:text-[#EAF8FF] block">
                   {isAr ? 'الدولة والمدينة' : 'Country & City'}
                 </label>
                 <input
                   type="text"
                   value={country}
                   onChange={(e) => setCountry(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F2] dark:bg-[#022C22] border border-[#DDD6C7] dark:border-[#C8A24A]/35 text-[#0F2920] dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#EAF8FF]/85 dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 text-[#12345A] dark:text-white"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-[#0F2920] dark:text-[#FAF8F2] block">
+                <label className="font-bold text-[#12345A] dark:text-[#EAF8FF] block">
                   {isAr ? 'اسم الممثل المسؤول *' : 'Representative Name *'}
                 </label>
                 <input
                   type="text"
                   value={contactName}
                   onChange={(e) => setContactName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F2] dark:bg-[#022C22] border border-[#DDD6C7] dark:border-[#C8A24A]/35 text-[#0F2920] dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#EAF8FF]/85 dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 text-[#12345A] dark:text-white"
                   required
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="font-bold text-[#0F2920] dark:text-[#FAF8F2] block">
+                <label className="font-bold text-[#12345A] dark:text-[#EAF8FF] block">
                   {isAr ? 'البريد الإلكتروني الرسمي *' : 'Official Email *'}
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F2] dark:bg-[#022C22] border border-[#DDD6C7] dark:border-[#C8A24A]/35 text-[#0F2920] dark:text-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#EAF8FF]/85 dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 text-[#12345A] dark:text-white"
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold text-[#0F2920] dark:text-[#FAF8F2] block">
+              <label className="font-bold text-[#12345A] dark:text-[#EAF8FF] block">
                 {isAr ? 'مجال التعاون المقترح' : 'Cooperation Area'}
               </label>
               <select
                 value={cooperationType}
                 onChange={(e) => setCooperationType(e.target.value as any)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F2] dark:bg-[#022C22] border border-[#DDD6C7] dark:border-[#C8A24A]/35 text-[#0F2920] dark:text-white"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#EAF8FF]/85 dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 text-[#12345A] dark:text-white"
               >
                 <option value="educational">{isAr ? 'شراكة تعليمية ومقارئ قرآنية' : 'Educational & Quranic Partnership'}</option>
                 <option value="charitable">{isAr ? 'شراكة خيرية وإنسانية وأوقاف' : 'Charitable & Humanitarian Partnership'}</option>
@@ -264,14 +269,14 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
             </div>
 
             <div className="space-y-1">
-              <label className="font-bold text-[#0F2920] dark:text-[#FAF8F2] block">
+              <label className="font-bold text-[#12345A] dark:text-[#EAF8FF] block">
                 {isAr ? 'تفاصيل مقترح التعاون *' : 'Cooperation Proposal Details *'}
               </label>
               <textarea
                 rows={4}
                 value={proposal}
                 onChange={(e) => setProposal(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF8F2] dark:bg-[#022C22] border border-[#DDD6C7] dark:border-[#C8A24A]/35 text-[#0F2920] dark:text-white"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#EAF8FF]/85 dark:bg-[#0F2747] border border-[#87CEEB]/60 dark:border-[#87CEEB]/25 text-[#12345A] dark:text-white"
                 required
               />
             </div>
@@ -279,7 +284,7 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-3 rounded-xl bg-[#064E3B] hover:bg-[#047857] dark:bg-[#C8A24A] dark:hover:bg-[#DFBE68] text-white dark:text-[#022C22] font-black text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-60"
+              className="px-6 py-3 rounded-2xl bg-[#12345A] hover:bg-[#0EA5A4] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-60 shadow-md"
             >
               <Send className="w-4 h-4" />
               <span>{isSubmitting ? (isAr ? 'جاري الإرسال...' : 'Submitting...') : (isAr ? 'إرسال طلب الشراكة' : 'Submit Partnership Application')}</span>
@@ -287,6 +292,8 @@ export const InternationalRelationsPage: React.FC<InternationalRelationsPageProp
           </form>
         )}
       </section>
+
+      <SectionDynamicItems sectionSlug="internationalRelations" />
     </div>
   );
 };

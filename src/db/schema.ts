@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { integer, pgTable, serial, text, timestamp, boolean } from 'drizzle-orm/pg-core';
+import { bigint, integer, pgTable, serial, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 
 // Users table linked directly to Firebase Auth UID
 export const users = pgTable('users', {
@@ -133,6 +133,59 @@ export const userBookmarks = pgTable('user_bookmarks', {
   savedAt: timestamp('saved_at').defaultNow().notNull(),
 });
 
+// Cloudflare Stream Video Management & Adaptive Streaming Catalog
+export const videos = pgTable('videos', {
+  id: serial('id').primaryKey(),
+  publicId: text('public_id').notNull().unique(),
+  titleAr: text('title_ar').notNull(),
+  titleEn: text('title_en').notNull(),
+  description: text('description').default('').notNull(),
+  category: text('category').notNull(), // 'quran_recitations' | 'islamic_lectures' | 'quran_memorization' | 'educational_courses' | 'charity_activities' | 'official_intro'
+  thumbnailUrl: text('thumbnail_url'),
+  streamVideoId: text('stream_video_id').notNull().unique(),
+  playbackUrl: text('playback_url'),
+  previewUrl: text('preview_url'),
+  durationSeconds: integer('duration_seconds').default(0).notNull(),
+  fileSizeBytes: bigint('file_size_bytes', { mode: 'number' }).default(0).notNull(),
+  mimeType: text('mime_type').default('video/mp4').notNull(),
+  originalFileName: text('original_file_name').default('').notNull(),
+  fileFingerprint: text('file_fingerprint').notNull(),
+  uploadUrlExpiresAt: timestamp('upload_url_expires_at'),
+  uploadStatus: text('upload_status').default('pending_upload').notNull(), // 'pending_upload' | 'uploading' | 'processing' | 'ready' | 'error'
+  processingProgress: integer('processing_progress').default(0).notNull(),
+  publicationStatus: text('publication_status').default('draft').notNull(), // 'draft' | 'published' | 'unpublished'
+  errorMessage: text('error_message'),
+  adminId: integer('admin_id').references(() => users.id),
+  adminUid: text('admin_uid').notNull(),
+  adminEmail: text('admin_email').notNull(),
+  viewsCount: integer('views_count').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Audit trail for video uploads, Cloudflare webhooks, and publication changes
+export const videoAuditLogs = pgTable('video_audit_logs', {
+  id: serial('id').primaryKey(),
+  videoId: integer('video_id').references(() => videos.id, { onDelete: 'cascade' }),
+  streamVideoId: text('stream_video_id'),
+  eventType: text('event_type').notNull(),
+  actorUid: text('actor_uid'),
+  details: text('details'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Dynamic admin-managed items linked to any portal section slug
+export const sectionItems = pgTable('section_items', {
+  id: serial('id').primaryKey(),
+  section: text('section').notNull(),
+  title: text('title').notNull(),
+  body: text('body').default('').notNull(),
+  url: text('url').default('').notNull(),
+  adminUid: text('admin_uid').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // User Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   enrollments: many(enrollments),
@@ -141,9 +194,26 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   quizSubmissions: many(quizSubmissions),
   certificates: many(certificates),
   bookmarks: many(userBookmarks),
+  videos: many(videos),
   newMuslimProgress: one(newMuslimsProgress, {
     fields: [users.id],
     references: [newMuslimsProgress.userId],
+  }),
+}));
+
+// Video Relations
+export const videosRelations = relations(videos, ({ one, many }) => ({
+  admin: one(users, {
+    fields: [videos.adminId],
+    references: [users.id],
+  }),
+  auditLogs: many(videoAuditLogs),
+}));
+
+export const videoAuditLogsRelations = relations(videoAuditLogs, ({ one }) => ({
+  video: one(videos, {
+    fields: [videoAuditLogs.videoId],
+    references: [videos.id],
   }),
 }));
 
@@ -178,4 +248,5 @@ export const certificatesRelations = relations(certificates, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
 

@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
-import { 
-  Download, Globe, Search, BookOpen, Check, Copy, 
-  ExternalLink, ShieldCheck, Eye, X, FileText, Sparkles, 
-  ChevronRight, Award, Bookmark, ArrowDownToLine, Share2
+import {
+  Download,
+  Globe,
+  Search,
+  BookOpen,
+  Check,
+  Copy,
+  ShieldCheck,
+  Eye,
+  X,
+  FileText,
+  ArrowDownToLine,
 } from 'lucide-react';
 import { QURAN_TRANSLATION_EDITIONS } from '../data/quranTranslationsData';
 import { QuranTranslationEdition } from '../types';
-import { useLanguage } from '../context/LanguageContext';
 
 interface QuranTranslationsCenterProps {
   initialLanguage?: string;
 }
 
 export const QuranTranslationsCenter: React.FC<QuranTranslationsCenterProps> = ({ initialLanguage }) => {
-  const { lang, isRtl } = useLanguage();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialLanguage || '');
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [previewEdition, setPreviewEdition] = useState<QuranTranslationEdition | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -38,7 +44,7 @@ export const QuranTranslationsCenter: React.FC<QuranTranslationsCenterProps> = (
     const region = getRegionForCode(edition.languageCode);
     const matchesRegion = selectedRegion === 'all' || region === selectedRegion;
     const q = searchQuery.toLowerCase().trim();
-    const matchesSearch = 
+    const matchesSearch =
       !q ||
       edition.languageNameAr.toLowerCase().includes(q) ||
       edition.languageNameNative.toLowerCase().includes(q) ||
@@ -54,6 +60,11 @@ export const QuranTranslationsCenter: React.FC<QuranTranslationsCenterProps> = (
     navigator.clipboard.writeText(edition.pdfDownloadUrl);
     setCopiedId(edition.id);
     setTimeout(() => setCopiedId(null), 2500);
+  };
+
+  const handleMarkDownload = (editionId: string) => {
+    setDownloadSuccessId(editionId);
+    setTimeout(() => setDownloadSuccessId(null), 3500);
   };
 
   const handleDownloadTxt = (edition: QuranTranslationEdition) => {
@@ -74,17 +85,20 @@ ${edition.pdfDownloadUrl}
 ====================================================================
 
 نماذج من الآيات المترجمة المعتمدة:
-${edition.sampleAyahs.map(a => `
+${edition.sampleAyahs
+  .map(
+    (a) => `
 [${a.surahNameAr} - آية ${a.ayahNumber}]
 النص القرآني:
 ${a.arabicText}
 
 الترجمة المعتمدة (${edition.languageNameNative}):
 ${a.translationText}
-`).join('\n--------------------------------------------------------------------\n')}
+`
+  )
+  .join('\n--------------------------------------------------------------------\n')}
 ====================================================================
 مجمع النور الإسلامي العالمي - نورٌ يهدي، وعلمٌ يبني
-https://alnoor-complex.org
 ====================================================================`;
 
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -95,90 +109,76 @@ https://alnoor-complex.org
     a.click();
     URL.revokeObjectURL(url);
 
-    setDownloadSuccessId(edition.id);
-    setTimeout(() => setDownloadSuccessId(null), 3000);
-  };
-
-  const handleTriggerPdfDownload = (edition: QuranTranslationEdition) => {
-    // Open direct PDF download in new tab
-    window.open(edition.pdfDownloadUrl, '_blank', 'noopener,noreferrer');
-    setDownloadSuccessId(edition.id);
-    setTimeout(() => setDownloadSuccessId(null), 3500);
+    handleMarkDownload(edition.id);
   };
 
   return (
     <div className="space-y-8">
-      
       {/* Hero Banner for Translations Center */}
-      <div className="rounded-3xl p-6 sm:p-10 border border-[#E5DCCB] dark:border-[#3A4237] bg-gradient-to-br from-[#F0EDE4] via-[#F7F5EF] to-[#E5DCCB] dark:from-[#272B25] dark:via-[#1F221E] dark:to-[#2F362C] shadow-sm relative overflow-hidden">
+      <div className="rounded-3xl p-6 sm:p-10 bg-gradient-to-br from-[#0A223D] via-[#12345A] to-[#0E3F66] text-white border border-[#D4AF37]/40 shadow-xl relative overflow-hidden">
         <div className="absolute inset-0 bg-islamic-pattern opacity-10 pointer-events-none" />
-        
+
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3 max-w-3xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3.5 py-1 rounded-full bg-[#394E43] text-[#F7F5EF] text-xs font-black flex items-center gap-1.5 shadow-xs">
-                <Globe className="w-3.5 h-3.5 text-[#B9A477]" />
-                <span>مركز تحميل ترجمات معاني القرآن الكريم الأصلية المعتمدة</span>
-              </span>
-              <span className="px-3 py-1 rounded-full bg-[#FAF8F2] dark:bg-[#343832] border border-[#B9A477]/40 text-[#394E43] dark:text-[#E5DCCB] text-xs font-mono font-bold">
-                نسخ مجمع الملك فهد لطباعة المصحف الشريف بالمدينة المنورة 🇸🇦
-              </span>
+            <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-[#F7E7B4]">
+              <Globe className="w-4 h-4 text-[#D4AF37]" />
+              <span>مركز تحميل ترجمات معاني القرآن الكريم الأصلية المعتمدة</span>
+              <span aria-hidden="true">·</span>
+              <span className="text-[#87CEEB]">نسخ مجمع الملك فهد لطباعة المصحف الشريف</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-black text-[#343832] dark:text-[#F7F5EF] font-amiri leading-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-white font-amiri leading-tight">
               تحميل وقراءة ترجمات معاني القرآن الكريم بمختلف اللغات العالمية
             </h2>
 
-            <p className="text-xs sm:text-sm text-[#657568] dark:text-[#D8CEBB] leading-relaxed">
-              نوفر لك النسخ الأصلية الكاملة والمحققة الصادرة عن <strong>مجمع الملك فهد لطباعة المصحف الشريف بالمدينة المنورة</strong> والمؤسسات الإسلامية الدولية المعتمدة، بصيغتي PDF عالية الدقة والنص الرقمي، خالية تماماً من الأخطاء والتحريفات، ومتاحة للتحميل المباشر والمجاني لوجه الله تعالى.
+            <p className="text-xs sm:text-sm text-[#D8F1FD] leading-relaxed">
+              نوفر لك النسخ الأصلية الكاملة والمحققة الصادرة عن{' '}
+              <strong>مجمع الملك فهد لطباعة المصحف الشريف بالمدينة المنورة</strong> والمؤسسات الإسلامية
+              الدولية المعتمدة، بصيغتي PDF عالية الدقة والنص الرقمي، ومتاحة للتحميل المباشر والمجاني لوجه الله
+              تعالى.
             </p>
           </div>
 
-          <div className="shrink-0 flex flex-col sm:flex-row md:flex-col gap-2">
-            <div className="p-3.5 bg-[#FAF8F2] dark:bg-[#272B25] rounded-2xl border border-[#D8CEBB] dark:border-[#3A4237] text-center shadow-2xs">
-              <span className="text-xl sm:text-2xl font-black text-[#394E43] dark:text-[#B9A477] block font-mono">
+          <div className="shrink-0">
+            <div className="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-[#87CEEB]/30 text-center min-w-[140px] tabular-nums">
+              <span className="text-2xl sm:text-3xl font-black text-[#F7E7B4] block font-mono">
                 {QURAN_TRANSLATION_EDITIONS.length}
               </span>
-              <span className="text-[11px] text-[#657568] dark:text-[#D8CEBB] font-bold">
-                نسخة لغوية معتمدة للتحميل
-              </span>
+              <span className="text-xs text-[#EAF8FF] font-bold block mt-0.5">نسخة لغوية معتمدة</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Search & Region Filter Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#FAF8F2] dark:bg-[#272B25] p-4 rounded-2xl border border-[#E5DCCB] dark:border-[#3A4237] shadow-2xs">
-        
-        {/* Search input */}
+      <div className="sky-glass-panel flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-[#80887D] absolute right-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#0EA5A4] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="ابحث عن لغة (الإنجليزية، الفرنسية، الأردية، الصينية، المترجم...)"
-            className="w-full pr-10 pl-4 py-2.5 rounded-xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#D8CEBB] dark:border-[#343832] text-xs text-[#343832] dark:text-[#F7F5EF] focus:outline-hidden focus:border-[#394E43] transition-colors"
+            className="w-full min-h-[42px] pr-10 pl-4 py-2 rounded-xl bg-white dark:bg-[#0A223D] border border-[#12345A]/15 dark:border-[#87CEEB]/25 text-xs sm:text-sm text-[#12345A] dark:text-[#EAF8FF] focus:outline-none focus:border-[#0EA5A4] transition-colors"
           />
         </div>
 
-        {/* Region tabs */}
         <div className="flex flex-wrap items-center gap-1.5">
           {regionFilters.map((tab) => (
             <button
               key={tab.id}
+              type="button"
               onClick={() => setSelectedRegion(tab.id)}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`min-h-[38px] px-3 py-1.5 rounded-xl text-xs font-bold transition-colors cursor-pointer whitespace-nowrap ${
                 selectedRegion === tab.id
-                  ? 'bg-[#394E43] text-[#F7F5EF] shadow-2xs'
-                  : 'bg-[#F0EDE4] dark:bg-[#1F221E] text-[#657568] dark:text-[#D8CEBB] hover:bg-[#E5DCCB]'
+                  ? 'bg-[#12345A] text-white shadow-sm'
+                  : 'bg-white/80 dark:bg-[#0F2747] text-[#2B547E] dark:text-[#B8DEF5] hover:bg-white dark:hover:bg-[#133158]'
               }`}
             >
               {tab.label}
             </button>
           ))}
         </div>
-
       </div>
 
       {/* Translations Grid Cards */}
@@ -186,135 +186,128 @@ https://alnoor-complex.org
         {filteredEditions.map((edition) => (
           <div
             key={edition.id}
-            className="rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] hover:border-[#394E43] dark:hover:border-[#B9A477] p-6 flex flex-col justify-between gap-5 transition-all shadow-2xs hover:shadow-sm group"
+            className="sky-card-3d rounded-3xl p-6 flex flex-col justify-between gap-5 group"
           >
-            
-            {/* Top Badge & Flag */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl p-1 bg-[#F0EDE4] dark:bg-[#1F221E] rounded-xl border border-[#D8CEBB] dark:border-[#343832]">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="text-2xl p-1.5 bg-[#EAF8FF] dark:bg-[#0A223D] rounded-xl border border-[#12345A]/12 dark:border-[#87CEEB]/20 shrink-0">
                     {edition.flagEmoji}
                   </span>
-                  <div>
-                    <h3 className="text-sm font-black text-[#343832] dark:text-[#F7F5EF]">
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-black text-[#12345A] dark:text-[#EAF8FF] truncate">
                       {edition.languageNameAr}
                     </h3>
-                    <span className="text-xs text-[#657568] dark:text-[#D8CEBB] font-medium font-sans">
-                      {edition.languageNameNative} ({edition.languageCode.toUpperCase()})
+                    <span className="text-xs text-[#4A7298] dark:text-[#84B4D6] font-medium block truncate">
+                      {edition.languageNameNative} · {edition.languageCode.toUpperCase()}
                     </span>
                   </div>
                 </div>
 
-                <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-[#657568]/15 dark:bg-[#657568]/30 text-[#394E43] dark:text-[#A4B5A7]">
+                <span className="text-[11px] font-mono tabular-nums font-bold text-[#0D7A7A] dark:text-[#2DD4BF] shrink-0">
                   {edition.fileSizeBytes}
                 </span>
               </div>
 
-              {/* Title & Accreditation */}
               <div className="space-y-1.5 pt-1">
-                <h4 className="text-sm font-bold text-[#394E43] dark:text-[#F7F5EF] font-amiri leading-snug line-clamp-2">
+                <h4 className="text-sm font-bold text-[#12345A] dark:text-[#EAF8FF] font-amiri leading-snug line-clamp-2">
                   {edition.titleAr}
                 </h4>
-                <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB] font-sans italic line-clamp-1">
+                <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] italic line-clamp-1">
                   {edition.titleNative}
                 </p>
               </div>
 
               {/* Accreditation Box */}
-              <div className="p-3 bg-[#F0EDE4] dark:bg-[#1F221E] rounded-2xl border border-[#D8CEBB] dark:border-[#3A4237] space-y-1 text-xs">
-                <div className="flex items-center gap-1.5 text-[#394E43] dark:text-[#B9A477] font-bold">
-                  <ShieldCheck className="w-4 h-4 text-[#B9A477]" />
+              <div className="p-3.5 bg-[#EAF8FF]/80 dark:bg-[#0A223D]/70 rounded-2xl border border-[#12345A]/12 dark:border-[#87CEEB]/20 space-y-1.5 text-xs">
+                <div className="flex items-center gap-1.5 text-[#12345A] dark:text-[#F7E7B4] font-bold">
+                  <ShieldCheck className="w-4 h-4 text-[#0EA5A4] shrink-0" />
                   <span>جهة التحقيق والاعتماد:</span>
                 </div>
-                <p className="text-[11px] text-[#5E655B] dark:text-[#D8CEBB] leading-relaxed">
+                <p className="text-[11px] text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed">
                   {edition.accreditation}
                 </p>
-                <div className="text-[10px] text-[#80887D] pt-1 border-t border-[#E5DCCB] dark:border-[#343832] flex items-center justify-between">
-                  <span>المترجم: {edition.translator.slice(0, 30)}...</span>
-                  <span className="font-mono">{edition.pagesCount} صفحة</span>
+                <div className="text-[11px] text-[#4A7298] dark:text-[#84B4D6] pt-1.5 border-t border-[#12345A]/10 dark:border-[#87CEEB]/15 flex items-center justify-between gap-2 tabular-nums">
+                  <span className="truncate">المترجم: {edition.translator}</span>
+                  <span className="font-mono shrink-0">{edition.pagesCount} صفحة</span>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-2 pt-2 border-t border-[#E5DCCB] dark:border-[#343832]">
-              
-              {/* Primary Download Button */}
-              <button
-                onClick={() => handleTriggerPdfDownload(edition)}
-                className="w-full py-2.5 px-4 rounded-xl bg-[#394E43] hover:bg-[#2D3E35] text-[#F7F5EF] text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+            <div className="space-y-2.5 pt-3 border-t border-[#12345A]/10 dark:border-[#87CEEB]/15">
+              <a
+                href={edition.pdfDownloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => handleMarkDownload(edition.id)}
+                className="w-full min-h-[42px] py-2.5 px-4 rounded-xl bg-[#12345A] hover:bg-[#0E3F66] text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-sm"
                 title="تنزيل النسخة الأصلية المصورة المعتمدة بصيغة PDF"
               >
-                <ArrowDownToLine className="w-4 h-4 text-[#B9A477]" />
+                <ArrowDownToLine className="w-4 h-4 text-[#D4AF37]" />
                 <span>تنزيل النسخة الأصلية (PDF مجاناً)</span>
-              </button>
+              </a>
 
-              {/* Secondary Actions */}
               <div className="grid grid-cols-2 gap-2">
-                
-                {/* Preview in browser */}
                 <button
+                  type="button"
                   onClick={() => setPreviewEdition(edition)}
-                  className="py-2 px-3 rounded-xl bg-[#F0EDE4] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#343832] border border-[#D8CEBB] dark:border-[#3A4237] text-xs font-bold text-[#343832] dark:text-[#F7F5EF] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="min-h-[40px] py-2 px-3 rounded-xl bg-[#EAF8FF] dark:bg-[#0A223D] hover:bg-[#D8F1FD] dark:hover:bg-[#133158] border border-[#12345A]/15 dark:border-[#87CEEB]/25 text-xs font-bold text-[#12345A] dark:text-[#EAF8FF] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   title="معاينة وقراءة نماذج من الترجمة مباشرة"
                 >
-                  <Eye className="w-3.5 h-3.5 text-[#394E43] dark:text-[#B9A477]" />
+                  <Eye className="w-3.5 h-3.5 text-[#0EA5A4]" />
                   <span>معاينة وقراءة</span>
                 </button>
 
-                {/* Download Text file */}
                 <button
+                  type="button"
                   onClick={() => handleDownloadTxt(edition)}
-                  className="py-2 px-3 rounded-xl bg-[#F0EDE4] dark:bg-[#1F221E] hover:bg-[#E5DCCB] dark:hover:bg-[#343832] border border-[#D8CEBB] dark:border-[#3A4237] text-xs font-bold text-[#343832] dark:text-[#F7F5EF] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="min-h-[40px] py-2 px-3 rounded-xl bg-[#EAF8FF] dark:bg-[#0A223D] hover:bg-[#D8F1FD] dark:hover:bg-[#133158] border border-[#12345A]/15 dark:border-[#87CEEB]/25 text-xs font-bold text-[#12345A] dark:text-[#EAF8FF] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                   title="تنزيل ملف النص المعتمد بصيغة TXT"
                 >
-                  <FileText className="w-3.5 h-3.5 text-[#657568] dark:text-[#B9A477]" />
+                  <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
                   <span>ملف نصي (TXT)</span>
                 </button>
-
               </div>
 
-              {/* Direct Link Copier */}
-              <div className="flex items-center justify-between text-[11px] pt-1 px-1 text-[#657568] dark:text-[#D8CEBB]">
+              <div className="flex items-center justify-between text-[11px] pt-1 px-1 text-[#2B547E] dark:text-[#B8DEF5]">
                 <button
+                  type="button"
                   onClick={() => handleCopyLink(edition)}
-                  className="hover:text-[#394E43] dark:hover:text-[#F7F5EF] flex items-center gap-1 font-bold cursor-pointer"
+                  className="hover:text-[#12345A] dark:hover:text-white flex items-center gap-1 font-bold cursor-pointer"
                 >
                   {copiedId === edition.id ? (
                     <>
-                      <Check className="w-3 h-3 text-emerald-600" />
-                      <span className="text-emerald-700 dark:text-emerald-400">تم نسخ رابط التحميل!</span>
+                      <Check className="w-3.5 h-3.5 text-[#0EA5A4]" />
+                      <span className="text-[#0D7A7A] dark:text-[#2DD4BF]">تم نسخ رابط التحميل!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3 h-3" />
+                      <Copy className="w-3.5 h-3.5" />
                       <span>نسخ الرابط المباشر</span>
                     </>
                   )}
                 </button>
 
                 {downloadSuccessId === edition.id && (
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
-                    <Check className="w-3 h-3" />
+                  <span className="text-[#0D7A7A] dark:text-[#2DD4BF] font-bold flex items-center gap-1">
+                    <Check className="w-3.5 h-3.5" />
                     <span>بدأ التحميل!</span>
                   </span>
                 )}
               </div>
-
             </div>
-
           </div>
         ))}
       </div>
 
       {filteredEditions.length === 0 && (
-        <div className="p-12 text-center rounded-3xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] space-y-3">
-          <BookOpen className="w-10 h-10 text-[#80887D] mx-auto" />
-          <h4 className="text-base font-bold text-[#343832] dark:text-[#F7F5EF]">
+        <div className="sky-card-3d p-12 text-center rounded-3xl space-y-3">
+          <BookOpen className="w-10 h-10 text-[#0EA5A4] mx-auto" />
+          <h4 className="text-base font-bold text-[#12345A] dark:text-[#EAF8FF]">
             لم نجد نتائج مطابقة لبحثك
           </h4>
-          <p className="text-xs text-[#5E655B] dark:text-[#D8CEBB]">
+          <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
             جرب البحث باسم اللغة أو اضغط على «جميع اللغات العالمية» لعرض كافة النسخ المعتمدة.
           </p>
         </div>
@@ -322,26 +315,27 @@ https://alnoor-complex.org
 
       {/* Interactive Reader Preview Modal */}
       {previewEdition && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
-          <div className="w-full max-w-3xl max-h-[90vh] bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] rounded-3xl shadow-2xl flex flex-col overflow-hidden">
-            
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0A223D]/70 backdrop-blur-sm">
+          <div className="w-full max-w-3xl max-h-[90vh] bg-white dark:bg-[#0F2747] border border-[#12345A]/20 dark:border-[#87CEEB]/30 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
             {/* Modal Header */}
-            <div className="p-5 sm:p-6 border-b border-[#E5DCCB] dark:border-[#343832] flex items-center justify-between gap-4 bg-[#F0EDE4] dark:bg-[#1F221E]">
+            <div className="p-5 sm:p-6 border-b border-[#12345A]/12 dark:border-[#87CEEB]/20 flex items-center justify-between gap-4 bg-[#EAF8FF] dark:bg-[#0A223D]">
               <div className="flex items-center gap-3 min-w-0">
                 <span className="text-3xl shrink-0">{previewEdition.flagEmoji}</span>
                 <div className="min-w-0">
-                  <h3 className="text-base font-black text-[#343832] dark:text-[#F7F5EF] truncate">
+                  <h3 className="text-base font-black text-[#12345A] dark:text-[#EAF8FF] truncate">
                     {previewEdition.titleAr}
                   </h3>
-                  <span className="text-xs text-[#657568] dark:text-[#D8CEBB] font-sans truncate block">
-                    {previewEdition.titleNative} • {previewEdition.languageNameNative}
+                  <span className="text-xs text-[#2B547E] dark:text-[#B8DEF5] truncate block">
+                    {previewEdition.titleNative} · {previewEdition.languageNameNative}
                   </span>
                 </div>
               </div>
 
               <button
+                type="button"
                 onClick={() => setPreviewEdition(null)}
-                className="p-2 rounded-xl bg-[#FAF8F2] dark:bg-[#272B25] text-[#657568] hover:text-[#343832] cursor-pointer"
+                className="min-h-[40px] min-w-[40px] p-2 rounded-xl bg-white dark:bg-[#12345A] text-[#12345A] dark:text-[#EAF8FF] hover:bg-[#D8F1FD] cursor-pointer flex items-center justify-center"
+                aria-label="إغلاق المعاينة"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -349,90 +343,95 @@ https://alnoor-complex.org
 
             {/* Modal Body */}
             <div className="p-6 space-y-6 overflow-y-auto flex-1">
-              
               {/* Publication Credentials Card */}
-              <div className="p-4 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#D8CEBB] dark:border-[#343832] grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-4 rounded-2xl bg-[#EAF8FF] dark:bg-[#0A223D]/70 border border-[#12345A]/12 dark:border-[#87CEEB]/20 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div>
-                  <span className="text-[10px] text-[#80887D] block">المترجم المعتمد:</span>
-                  <span className="font-bold text-[#343832] dark:text-[#F7F5EF]">{previewEdition.translator}</span>
+                  <span className="text-[11px] text-[#4A7298] dark:text-[#84B4D6] block">المترجم المعتمد:</span>
+                  <span className="font-bold text-[#12345A] dark:text-[#EAF8FF]">
+                    {previewEdition.translator}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-[#80887D] block">جهة الاعتماد الرسمية:</span>
-                  <span className="font-bold text-[#394E43] dark:text-[#B9A477]">{previewEdition.accreditation}</span>
+                  <span className="text-[11px] text-[#4A7298] dark:text-[#84B4D6] block">جهة الاعتماد الرسمية:</span>
+                  <span className="font-bold text-[#0D7A7A] dark:text-[#2DD4BF]">
+                    {previewEdition.accreditation}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-[#80887D] block">الناشر وسنة الإصدار:</span>
-                  <span className="text-[#5E655B] dark:text-[#D8CEBB]">{previewEdition.publisher} ({previewEdition.yearPublished})</span>
+                  <span className="text-[11px] text-[#4A7298] dark:text-[#84B4D6] block">الناشر وسنة الإصدار:</span>
+                  <span className="text-[#2B547E] dark:text-[#B8DEF5]">
+                    {previewEdition.publisher} ({previewEdition.yearPublished})
+                  </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-[#80887D] block">حجم النسخة الأصلية:</span>
-                  <span className="text-[#5E655B] dark:text-[#D8CEBB] font-mono">{previewEdition.fileSizeBytes} ({previewEdition.pagesCount} صفحة)</span>
+                  <span className="text-[11px] text-[#4A7298] dark:text-[#84B4D6] block">حجم النسخة الأصلية:</span>
+                  <span className="text-[#2B547E] dark:text-[#B8DEF5] font-mono tabular-nums">
+                    {previewEdition.fileSizeBytes} · {previewEdition.pagesCount} صفحة
+                  </span>
                 </div>
               </div>
 
               {/* Sample Ayahs Reader View */}
               <div className="space-y-4">
-                <h4 className="text-sm font-black text-[#394E43] dark:text-[#F7F5EF] flex items-center gap-2 border-b border-[#E5DCCB] dark:border-[#343832] pb-2">
-                  <BookOpen className="w-4 h-4 text-[#B9A477]" />
+                <h4 className="text-sm font-black text-[#12345A] dark:text-[#EAF8FF] flex items-center gap-2 border-b border-[#12345A]/12 dark:border-[#87CEEB]/20 pb-2">
+                  <BookOpen className="w-4 h-4 text-[#0EA5A4]" />
                   <span>نماذج من الآيات المترجمة في هذه النسخة:</span>
                 </h4>
 
                 <div className="space-y-4">
                   {previewEdition.sampleAyahs.map((ayah, aIdx) => (
-                    <div
-                      key={aIdx}
-                      className="p-5 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#D8CEBB] dark:border-[#343832] space-y-3"
-                    >
-                      <div className="flex items-center justify-between text-xs text-[#80887D] border-b border-[#E5DCCB]/60 dark:border-[#343832] pb-1.5">
-                        <span className="font-bold text-[#394E43] dark:text-[#B9A477]">{ayah.surahNameAr}</span>
-                        <span className="font-sans font-medium">{ayah.surahNameNative}</span>
+                    <div key={aIdx} className="scholarly-reading-paper p-5 rounded-2xl space-y-3">
+                      <div className="flex items-center justify-between text-xs text-[#4A7298] dark:text-[#84B4D6] border-b border-[#12345A]/10 dark:border-[#87CEEB]/15 pb-1.5">
+                        <span className="font-bold text-[#12345A] dark:text-[#F7E7B4]">
+                          {ayah.surahNameAr}
+                        </span>
+                        <span className="font-medium">{ayah.surahNameNative}</span>
                       </div>
 
-                      {/* Arabic Verse */}
-                      <p className="text-lg sm:text-xl font-amiri font-bold text-[#343832] dark:text-[#F7F5EF] leading-loose text-right">
+                      <p className="text-lg sm:text-xl font-amiri font-bold text-[#12345A] dark:text-[#EAF8FF] leading-loose text-right">
                         {ayah.arabicText}
                       </p>
 
-                      {/* Translated Verse */}
-                      <p className="text-xs sm:text-sm text-[#5E655B] dark:text-[#D8CEBB] font-sans leading-relaxed pt-1 border-t border-[#E5DCCB]/60 dark:border-[#343832]">
+                      <p className="text-xs sm:text-sm text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed pt-2 border-t border-[#12345A]/10 dark:border-[#87CEEB]/15">
                         {ayah.translationText}
                       </p>
                     </div>
                   ))}
                 </div>
               </div>
-
             </div>
 
             {/* Modal Footer with Direct Actions */}
-            <div className="p-4 sm:p-5 border-t border-[#E5DCCB] dark:border-[#343832] bg-[#F0EDE4] dark:bg-[#1F221E] flex flex-wrap items-center justify-between gap-3">
-              <div className="text-xs text-[#657568] dark:text-[#D8CEBB] font-medium">
+            <div className="p-4 sm:p-5 border-t border-[#12345A]/12 dark:border-[#87CEEB]/20 bg-[#EAF8FF] dark:bg-[#0A223D] flex flex-wrap items-center justify-between gap-3">
+              <div className="text-xs text-[#2B547E] dark:text-[#B8DEF5] font-medium">
                 نسخة مجمع الملك فهد الأصلية بصيغة PDF كاملة
               </div>
 
               <div className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={() => handleDownloadTxt(previewEdition)}
-                  className="px-4 py-2 rounded-xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#D8CEBB] dark:border-[#3A4237] text-xs font-bold text-[#343832] dark:text-[#F7F5EF] hover:bg-[#E5DCCB] cursor-pointer flex items-center gap-1.5"
+                  className="min-h-[40px] px-4 py-2 rounded-xl bg-white dark:bg-[#12345A] border border-[#12345A]/15 dark:border-[#87CEEB]/25 text-xs font-bold text-[#12345A] dark:text-[#EAF8FF] hover:bg-[#D8F1FD] cursor-pointer flex items-center gap-1.5"
                 >
-                  <FileText className="w-3.5 h-3.5 text-[#B9A477]" />
+                  <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
                   <span>تنزيل النص (TXT)</span>
                 </button>
 
-                <button
-                  onClick={() => handleTriggerPdfDownload(previewEdition)}
-                  className="px-5 py-2 rounded-xl bg-[#394E43] hover:bg-[#2D3E35] text-[#F7F5EF] text-xs font-bold shadow-xs cursor-pointer flex items-center gap-1.5"
+                <a
+                  href={previewEdition.pdfDownloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => handleMarkDownload(previewEdition.id)}
+                  className="min-h-[40px] px-5 py-2 rounded-xl bg-[#12345A] hover:bg-[#0E3F66] text-white text-xs font-bold shadow-xs flex items-center gap-1.5"
                 >
-                  <Download className="w-4 h-4 text-[#B9A477]" />
+                  <Download className="w-4 h-4 text-[#D4AF37]" />
                   <span>تنزيل النسخة الأصلية (PDF)</span>
-                </button>
+                </a>
               </div>
             </div>
-
           </div>
         </div>
       )}
-
     </div>
   );
 };

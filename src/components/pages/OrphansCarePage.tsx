@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { 
-  Heart, Users, ShieldCheck, CheckCircle2, AlertCircle, Phone, 
-  MessageCircle, Mail, Search, FileText, Upload, Sparkles, 
-  ArrowRight, ArrowLeft, Calendar, User, MapPin, DollarSign,
-  Clock, Check, Filter, ExternalLink, Lock, Eye, RefreshCw, Copy, Building2
+import {
+  Heart, Users, ShieldCheck, CheckCircle2, AlertCircle, Phone,
+  MessageCircle, Search, FileText, Upload, Sparkles,
+  ArrowRight, ArrowLeft, Check, Lock, RefreshCw, Copy, Building2, MapPin
 } from 'lucide-react';
 import { NavigationPage, OrphanApplication, OrphanProfile, SponsorshipProgram } from '../../types';
 import { ORPHANS_CONTACT_INFO, SPONSORSHIP_PROGRAMS, INITIAL_ORPHANS_PROFILES, INITIAL_ORPHAN_APPLICATIONS } from '../../data/orphansData';
@@ -13,13 +12,15 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { auth } from '../../services/firebase';
 import { orphansFirebaseService } from '../../services/orphansFirebaseService';
+import { Sky3DIcon } from '../Sky3DIcon';
+import { SectionDynamicItems } from '../SectionDynamicItems';
 
 interface OrphansCarePageProps {
   onNavigate: (page: NavigationPage) => void;
 }
 
-export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) => {
-  const { lang, isRtl } = useLanguage();
+export const OrphansCarePage: React.FC<OrphansCarePageProps> = () => {
+  const { isRtl } = useLanguage();
   const { user, openAuthModal } = useAuth();
   const { showToast } = useToast();
   const isAuthorizedAdmin = Boolean(
@@ -32,28 +33,23 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
   // Multi-step Registration Form State (Steps 1 to 5)
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [formData, setFormData] = useState({
-    // Step 1: Guardian / Applicant
     applicantName: '',
     relation: 'أم اليتيم',
     phone: '',
     nationalId: '',
     address: '',
-    // Step 2: Assistance Type
     assistanceType: 'full_sponsorship',
     monthlyRequiredUsd: 50,
-    // Step 3: Orphan Details
     orphanName: '',
     orphanBirthDate: '',
     orphanGender: 'male' as 'male' | 'female',
     academicLevel: 'الابتدائي',
     healthNotes: '',
     familyMembersCount: 3,
-    // Step 4: Documents Upload & Verification
     hasDeathCert: false,
     hasBirthCert: false,
     hasResidenceProof: false,
     uploadedDocName: '',
-    // Step 5: Declaration
     termsAgreed: false,
     captchaAnswer: '',
   });
@@ -135,7 +131,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
         phone: formData.phone,
         nationalId: formData.nationalId,
         address: formData.address,
-        assistanceType: formData.assistanceType as any,
+        assistanceType: formData.assistanceType as OrphanApplication['assistanceType'],
         orphanName: formData.orphanName,
         orphanBirthDate: formData.orphanBirthDate,
         orphanGender: formData.orphanGender,
@@ -150,25 +146,22 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
         updatedAt: new Date().toISOString(),
       };
 
-      // Add to admin list & submitted state
       setAdminApplications((prev) => [newApp, ...prev]);
       setSubmittedApplication(newApp);
 
-      // Firestore persistence
       try {
         await orphansFirebaseService.submitApplication(newApp);
       } catch (err) {
         console.warn('Firestore application sync note:', err);
       }
 
-      // Backend sync attempt
       try {
         await fetch('/api/v1/orphans/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newApp)
+          body: JSON.stringify(newApp),
         });
-      } catch (err) {
+      } catch {
         // Local state already updated
       }
     } finally {
@@ -183,7 +176,6 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
     const q = trackQuery.trim().toUpperCase();
     if (!q) return;
 
-    // Check local list first
     const found = adminApplications.find(
       (a) => a.trackingNumber.toUpperCase() === q || a.phone.includes(q) || a.nationalId === q
     );
@@ -193,7 +185,6 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
       return;
     }
 
-    // Check Firestore
     try {
       const remote = await orphansFirebaseService.lookupApplication(q);
       if (remote) {
@@ -210,12 +201,16 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
   };
 
   // Admin status update
-  const handleUpdateStatus = async (appId: string, newStatus: any) => {
+  const handleUpdateStatus = async (appId: string, newStatus: OrphanApplication['status']) => {
     setStatusUpdatingId(appId);
     const noteSnapshot = adminFieldNote;
     try {
       setAdminApplications((prev) =>
-        prev.map((a) => (a.id === appId ? { ...a, status: newStatus, fieldNotes: noteSnapshot || a.fieldNotes, updatedAt: new Date().toISOString() } : a))
+        prev.map((a) =>
+          a.id === appId
+            ? { ...a, status: newStatus, fieldNotes: noteSnapshot || a.fieldNotes, updatedAt: new Date().toISOString() }
+            : a
+        )
       );
       setAdminFieldNote('');
       try {
@@ -237,31 +232,38 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
     }
   };
 
+  const getStatusText = (status: OrphanApplication['status']) => {
+    if (status === 'approved') return 'معتمد وتمت الكفالة';
+    if (status === 'field_visit') return 'جارية الزيارة الميدانية';
+    if (status === 'in_review') return 'قيد المراجعة والتدقيق';
+    return 'لم يستوف الشروط';
+  };
+
   return (
-    <div className="space-y-10 max-w-7xl mx-auto pb-16">
-      
+    <div className="space-y-8 max-w-7xl mx-auto pb-16" dir={isRtl ? 'rtl' : 'ltr'}>
+
       {/* Top Unified Official Contact Bar */}
-      <div className="rounded-2xl bg-[#394E43] text-[#F7F5EF] p-4 px-6 flex flex-wrap items-center justify-between gap-4 shadow-md border border-[#B9A477]/40">
+      <div className="rounded-2xl bg-gradient-to-r from-[#12345A] via-[#0F2747] to-[#0A223D] text-white p-4 px-6 flex flex-wrap items-center justify-between gap-4 shadow-lg border border-[#87CEEB]/45">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#2F4238] border border-[#B9A477]/50 flex items-center justify-center text-[#B9A477]">
-            <Heart className="w-5 h-5 fill-current animate-pulse" />
+          <div className="w-10 h-10 rounded-xl bg-[#0EA5A4]/20 border border-[#87CEEB]/40 flex items-center justify-center text-[#F7E7B4]">
+            <Heart className="w-5 h-5 fill-current" />
           </div>
           <div>
-            <h4 className="text-xs sm:text-sm font-black font-amiri text-[#F7F5EF]">
-              قسم كفالة ورعاية الأيتام • مجمع النور الإسلامي العالمي
+            <h4 className="text-xs sm:text-sm font-black font-amiri text-white">
+              قسم كفالة ورعاية الأيتام · مجمع النور الإسلامي العالمي
             </h4>
-            <p className="text-[11px] text-[#E5DCCB]">
+            <p className="text-[11px] text-[#B8DEF5]">
               هواتف التواصل المعتمدة الرسمية لتقديم الطلبات والكفالات المباشرة
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap text-xs font-mono font-bold">
+        <div className="flex items-center gap-3 flex-wrap text-xs font-mono font-bold tabular-nums">
           <a
             href={ORPHANS_CONTACT_INFO.mobileTel}
-            className="px-3.5 py-1.5 rounded-xl bg-[#283830] hover:bg-[#1E2B25] border border-[#B9A477]/40 text-[#F7F5EF] flex items-center gap-2 transition-all shadow-sm"
+            className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-[#87CEEB]/35 text-white flex items-center gap-2 transition-colors whitespace-nowrap shrink-0"
           >
-            <Phone className="w-3.5 h-3.5 text-[#B9A477]" />
+            <Phone className="w-3.5 h-3.5 text-[#F7E7B4]" />
             <span dir="ltr">{ORPHANS_CONTACT_INFO.mobile}</span>
           </a>
 
@@ -269,7 +271,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
             href={ORPHANS_CONTACT_INFO.whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white flex items-center gap-2 transition-all shadow-sm"
+            className="px-3.5 py-2 rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white flex items-center gap-2 transition-colors shadow-sm whitespace-nowrap shrink-0"
           >
             <MessageCircle className="w-3.5 h-3.5 fill-current" />
             <span>واتساب المجمع:</span>
@@ -278,117 +280,131 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
         </div>
       </div>
 
-      {/* Hero Banner with Hadith and Dignified Institutional Design */}
-      <section className="relative rounded-3xl overflow-hidden p-6 sm:p-12 shadow-lg border border-[#E5DCCB] dark:border-[#3A4237] bg-gradient-to-br from-[#F7F5EF] via-[#F0EDE4] to-[#E5DCCB] dark:from-[#272B25] dark:via-[#1F221E] dark:to-[#2F362C]">
+      {/* Sky-Blue 3D Hero Banner */}
+      <section className="relative rounded-3xl overflow-hidden p-6 sm:p-10 shadow-xl border border-[#87CEEB]/55 bg-gradient-to-br from-[#12345A] via-[#0E3F66] to-[#0EA5A4] text-white">
         <div className="absolute inset-0 bg-islamic-pattern opacity-10 pointer-events-none" />
 
-        <div className="relative z-10 max-w-4xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#394E43] text-[#F7F5EF] text-xs font-bold shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#B9A477]" />
-            <span>صرح الإحسان والبركة • Al-Noor Global Orphans Welfare</span>
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl font-black text-[#343832] dark:text-[#F7F5EF] font-amiri leading-tight">
-            كفالة الأيتام – مجمع النور الإسلامي العالمي
-          </h1>
-
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#FAF8F2]/90 dark:bg-[#1F221E]/90 border border-[#B9A477]/50 shadow-sm max-w-2xl">
-            <p className="text-base sm:text-lg font-amiri font-bold text-[#394E43] dark:text-[#B9A477] leading-relaxed">
-              {ORPHANS_CONTACT_INFO.hadithText}
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+          <div className="max-w-3xl space-y-4">
+            <p className="text-xs font-bold text-[#F7E7B4] flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-[#F7E7B4]" />
+              <span>صرح الإحسان والبركة · Al-Noor Global Orphans Welfare</span>
             </p>
-            <span className="text-[11px] text-[#657568] dark:text-[#D8CEBB] block mt-1">
-              رواه البخاري في صحيحه عن سهل بن سعد رضي الله عنه
-            </span>
+
+            <h1 className="text-2xl sm:text-4xl font-black text-white font-amiri leading-tight">
+              كفالة الأيتام – مجمع النور الإسلامي العالمي
+            </h1>
+
+            <div className="scholarly-reading-paper p-4 sm:p-5 rounded-2xl max-w-2xl">
+              <p className="text-base sm:text-lg font-amiri font-bold text-[#12345A] dark:text-[#F7E7B4] leading-relaxed">
+                {ORPHANS_CONTACT_INFO.hadithText}
+              </p>
+              <span className="text-xs text-[#2B547E] dark:text-[#B8DEF5] block mt-1">
+                رواه البخاري في صحيحه عن سهل بن سعد رضي الله عنه
+              </span>
+            </div>
+
+            <p className="text-xs sm:text-sm text-[#D7F1FC] leading-relaxed max-w-3xl">
+              نظام مؤسسي متكامل لرعاية الأيتام والأسر المتعففة، يجمع بين الكفالة المعيشية الشاملة، والتعليم القرآني والأكاديمي، والرعاية الصحية، مع توثيق ميداني وشفافية كاملة وتقارير دورية لكافل اليتيم.
+            </p>
+
+            <div className="flex items-center gap-3 pt-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setActiveTab('programs')}
+                className="px-5 py-2.5 rounded-xl bg-[#D4AF37] hover:bg-[#F7E7B4] text-[#12345A] text-xs font-black transition-all shadow-md flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
+              >
+                <Heart className="w-4 h-4 fill-current" />
+                <span>برامج الكفالة والتبرع</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('register')}
+                className="px-5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
+              >
+                <FileText className="w-4 h-4 text-[#F7E7B4]" />
+                <span>استمارة تسجيل يتيم جديد</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('track')}
+                className="px-4 py-2.5 rounded-xl bg-[#0A223D]/60 hover:bg-[#0A223D] border border-[#87CEEB]/35 text-[#EAF8FF] text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0"
+              >
+                <Search className="w-4 h-4 text-[#87CEEB]" />
+                <span>متابعة حالة طلب سابق</span>
+              </button>
+            </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-[#657568] dark:text-[#D8CEBB] leading-relaxed max-w-3xl">
-            نظام مؤسسي متكامل لرعاية الأيتام والأسر المتعففة، يجمع بين الكفالة المعيشية الشاملة، والتعليم القرآني والأكاديمي، والرعاية الصحية، مع توثيق ميداني وشفافية كاملة وتقارير دورية لكافل اليتيم.
-          </p>
-
-          <div className="flex items-center gap-3 pt-2 flex-wrap">
-            <button
-              onClick={() => setActiveTab('programs')}
-              className="px-5 py-2.5 rounded-xl bg-[#394E43] hover:bg-[#2F4238] text-[#F7F5EF] text-xs font-bold transition-all shadow-md flex items-center gap-2"
-            >
-              <Heart className="w-4 h-4 text-[#B9A477] fill-current" />
-              <span>برامج الكفالة والتبرع</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('register')}
-              className="px-5 py-2.5 rounded-xl bg-[#FAF8F2] dark:bg-[#272B25] hover:bg-[#F0EDE4] border border-[#394E43] text-[#394E43] dark:text-[#F7F5EF] text-xs font-bold transition-all shadow-sm flex items-center gap-2"
-            >
-              <FileText className="w-4 h-4 text-[#394E43] dark:text-[#B9A477]" />
-              <span>استمارة تسجيل يتيم جديد</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('track')}
-              className="px-4 py-2.5 rounded-xl bg-[#E5DCCB] dark:bg-[#343832] hover:bg-[#D8CEBB] text-[#343832] dark:text-[#F7F5EF] text-xs font-bold transition-all flex items-center gap-2"
-            >
-              <Search className="w-4 h-4 text-[#394E43] dark:text-[#B9A477]" />
-              <span>متابعة حالة طلب سابق</span>
-            </button>
+          <div className="hidden lg:flex justify-center">
+            <Sky3DIcon slug="orphansCare" tone="sky" size="lg" />
           </div>
         </div>
       </section>
 
       {/* Navigation Sub-Tabs */}
-      <div className="flex items-center justify-between border-b border-[#D8CEBB] dark:border-[#3A4237] pb-3 overflow-x-auto gap-2">
-        <div className="flex items-center gap-2">
+      <div className="sky-glass-panel rounded-2xl p-2 flex items-center justify-between overflow-x-auto gap-2">
+        <div className="flex items-center gap-1.5">
           <button
+            type="button"
             onClick={() => setActiveTab('programs')}
-            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer tabular-nums ${
               activeTab === 'programs'
-                ? 'bg-[#394E43] text-[#F7F5EF] shadow-sm'
-                : 'bg-[#FAF8F2] dark:bg-[#272B25] text-[#343832] dark:text-[#D8CEBB] hover:bg-[#F0EDE4]'
+                ? 'bg-[#12345A] text-white shadow-sm'
+                : 'text-[#12345A] dark:text-[#EAF8FF] hover:bg-[#87CEEB]/25'
             }`}
           >
-            <Heart className="w-3.5 h-3.5 text-[#B9A477]" />
-            <span>باقات وبرامج الكفالة ({SPONSORSHIP_PROGRAMS.length})</span>
+            <Heart className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <span>باقات الكفالة ({SPONSORSHIP_PROGRAMS.length})</span>
           </button>
 
           <button
+            type="button"
             onClick={() => setActiveTab('profiles')}
-            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer tabular-nums ${
               activeTab === 'profiles'
-                ? 'bg-[#394E43] text-[#F7F5EF] shadow-sm'
-                : 'bg-[#FAF8F2] dark:bg-[#272B25] text-[#343832] dark:text-[#D8CEBB] hover:bg-[#F0EDE4]'
+                ? 'bg-[#12345A] text-white shadow-sm'
+                : 'text-[#12345A] dark:text-[#EAF8FF] hover:bg-[#87CEEB]/25'
             }`}
           >
-            <Users className="w-3.5 h-3.5 text-[#B9A477]" />
+            <Users className="w-3.5 h-3.5 text-[#0EA5A4]" />
             <span>أيتام بانتظار الكفالة ({profiles.filter(p => !p.isSponsored).length})</span>
           </button>
 
           <button
+            type="button"
             onClick={() => setActiveTab('register')}
-            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
               activeTab === 'register'
-                ? 'bg-[#394E43] text-[#F7F5EF] shadow-sm'
-                : 'bg-[#FAF8F2] dark:bg-[#272B25] text-[#343832] dark:text-[#D8CEBB] hover:bg-[#F0EDE4]'
+                ? 'bg-[#12345A] text-white shadow-sm'
+                : 'text-[#12345A] dark:text-[#EAF8FF] hover:bg-[#87CEEB]/25'
             }`}
           >
-            <FileText className="w-3.5 h-3.5 text-[#B9A477]" />
+            <FileText className="w-3.5 h-3.5 text-[#D4AF37]" />
             <span>استمارة تسجيل يتيم (5 خطوات)</span>
           </button>
 
           <button
+            type="button"
             onClick={() => setActiveTab('track')}
-            className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
               activeTab === 'track'
-                ? 'bg-[#394E43] text-[#F7F5EF] shadow-sm'
-                : 'bg-[#FAF8F2] dark:bg-[#272B25] text-[#343832] dark:text-[#D8CEBB] hover:bg-[#F0EDE4]'
+                ? 'bg-[#12345A] text-white shadow-sm'
+                : 'text-[#12345A] dark:text-[#EAF8FF] hover:bg-[#87CEEB]/25'
             }`}
           >
-            <Search className="w-3.5 h-3.5 text-[#B9A477]" />
+            <Search className="w-3.5 h-3.5 text-[#0EA5A4]" />
             <span>الاستعلام عن طلب</span>
           </button>
         </div>
 
         <button
+          type="button"
           onClick={() => setActiveTab('admin')}
-          className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap border ${
+          className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 border cursor-pointer ${
             activeTab === 'admin'
-              ? 'bg-[#343832] text-[#B9A477] border-[#B9A477]'
-              : 'border-[#D8CEBB] dark:border-[#3A4237] text-[#657568] hover:text-[#343832]'
+              ? 'bg-[#12345A] text-[#F7E7B4] border-[#D4AF37]'
+              : 'border-[#87CEEB]/50 text-[#12345A] dark:text-[#EAF8FF] hover:bg-[#87CEEB]/20'
           }`}
         >
           <Lock className="w-3.5 h-3.5" />
@@ -401,46 +417,46 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
         <section className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl sm:text-2xl font-black text-[#343832] dark:text-[#F7F5EF] font-amiri">
+              <h2 className="text-xl sm:text-2xl font-black text-[#12345A] dark:text-white font-amiri">
                 باقات وبرامج الكفالة المعتمدة
               </h2>
-              <p className="text-xs text-[#657568] dark:text-[#D8CEBB]">
+              <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
                 كافة المبالغ تودع في الحساب الوقفي الرسمي لمجمع النور، وتصرف بإشراف لجان رقابية وشرعية معتمدة.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-xs font-bold text-[#394E43] dark:text-[#B9A477] bg-[#F0EDE4] dark:bg-[#272B25] p-2 px-3 rounded-xl">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <div className="flex items-center gap-2 text-xs font-bold text-[#0D7A7A] dark:text-[#5EEAD4]">
+              <ShieldCheck className="w-4 h-4" />
               <span>توثيق شرعي ورقابة دورية</span>
             </div>
           </div>
 
           {/* Official Bank of Khartoum Account Direct Transfer Card */}
-          <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#111C3D] via-[#0B132B] to-[#070D1E] border-2 border-amber-400/60 shadow-xl text-white">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-400/20 pb-4">
+          <div className="p-5 sm:p-7 rounded-3xl bg-gradient-to-br from-[#12345A] via-[#0F2747] to-[#0A223D] border-2 border-[#D4AF37]/75 shadow-xl text-white">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#87CEEB]/25 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-300 shrink-0">
+                <div className="w-12 h-12 rounded-2xl bg-[#D4AF37]/15 border border-[#D4AF37]/45 flex items-center justify-center text-[#F7E7B4] shrink-0">
                   <Building2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
                     <span className="font-bold text-base sm:text-lg text-white">
                       {OFFICIAL_DONATION_INFO.bankName}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-[10px] text-emerald-300 font-bold">
+                    <span className="text-[#87CEEB]">·</span>
+                    <span className="text-[#5EEAD4] font-bold">
                       حساب كفالة الأيتام والمجمع
                     </span>
                   </div>
-                  <span className="text-xs text-slate-300 mt-0.5 block font-medium">
+                  <span className="text-xs text-[#B8DEF5] mt-0.5 block font-medium">
                     التحويل الفوري متاح عبر تطبيق (بنكك - Bankak) من داخل وخارج السودان
                   </span>
                 </div>
               </div>
 
-              {/* Account Box & 1-Click Copy */}
-              <div className="flex items-center gap-3 bg-[#070D1E] px-4 py-3 rounded-2xl border border-amber-400/40">
+              <div className="flex items-center gap-3 bg-[#0A223D] px-4 py-3 rounded-2xl border border-[#D4AF37]/55">
                 <div className="text-right">
-                  <span className="text-[10px] text-slate-400 block font-semibold">رقم الحساب:</span>
-                  <span className="text-2xl font-mono font-black text-amber-300 tracking-wider">
+                  <span className="text-[11px] text-[#87CEEB] block font-semibold">رقم الحساب:</span>
+                  <span className="text-2xl font-mono font-black text-[#F7E7B4] tracking-wider tabular-nums">
                     {OFFICIAL_DONATION_INFO.accountNumber}
                   </span>
                 </div>
@@ -451,10 +467,10 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                     setCopiedBankAcc(true);
                     setTimeout(() => setCopiedBankAcc(false), 2000);
                   }}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                    copiedBankAcc 
-                      ? 'bg-emerald-600 text-white shadow-md' 
-                      : 'bg-amber-400 hover:bg-amber-300 text-slate-950 font-black'
+                  className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                    copiedBankAcc
+                      ? 'bg-[#0EA5A4] text-white shadow-md'
+                      : 'bg-[#D4AF37] hover:bg-[#F7E7B4] text-[#12345A] font-black'
                   }`}
                 >
                   {copiedBankAcc ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -465,14 +481,14 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
 
             <div className="pt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
-                <span className="text-slate-400 block text-[11px]">اسم صاحب الحساب:</span>
-                <span className="text-amber-200 font-bold text-sm font-amiri block">
+                <span className="text-[#87CEEB] block text-[11px]">اسم صاحب الحساب:</span>
+                <span className="text-[#F7E7B4] font-bold text-sm font-amiri block mt-0.5">
                   {OFFICIAL_DONATION_INFO.accountHolder}
                 </span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[11px]">الصفة المؤسسية:</span>
-                <span className="text-slate-300 font-medium text-xs block leading-relaxed">
+                <span className="text-[#87CEEB] block text-[11px]">الصفة المؤسسية:</span>
+                <span className="text-[#D7F1FC] font-medium text-xs block mt-0.5 leading-relaxed">
                   {OFFICIAL_DONATION_INFO.directorTitle}
                 </span>
               </div>
@@ -483,47 +499,39 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
             {SPONSORSHIP_PROGRAMS.map((prog) => (
               <div
                 key={prog.id}
-                className={`rounded-3xl p-6 sm:p-7 flex flex-col justify-between gap-6 transition-all border ${
-                  prog.popular
-                    ? 'bg-[#FAF8F2] dark:bg-[#272B25] border-[#394E43] shadow-lg ring-2 ring-[#394E43]/20 relative'
-                    : 'bg-[#FAF8F2] dark:bg-[#1F221E] border-[#E5DCCB] dark:border-[#3A4237] hover:shadow-md'
+                className={`sky-card-3d rounded-3xl p-6 sm:p-7 flex flex-col justify-between gap-6 ${
+                  prog.popular ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]/30' : ''
                 }`}
               >
-                {prog.popular && (
-                  <span className="absolute -top-3 right-6 px-3 py-0.5 rounded-full bg-[#394E43] text-[#F7F5EF] text-[10px] font-black shadow-sm">
-                    {prog.badgeText}
-                  </span>
-                )}
-
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-bold text-[#657568] dark:text-[#D8CEBB]">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-[#0D7A7A] dark:text-[#5EEAD4]">
                       {prog.badgeText}
                     </span>
-                    <div className="text-right">
-                      <span className="text-2xl font-black text-[#394E43] dark:text-[#B9A477] font-mono">
+                    <div className="text-right tabular-nums">
+                      <span className="text-2xl font-black text-[#12345A] dark:text-[#F7E7B4] font-mono">
                         ${prog.monthlyAmountUsd}
                       </span>
-                      <span className="text-[11px] text-[#657568] block">/ شهرياً</span>
+                      <span className="text-[11px] text-[#4A7298] dark:text-[#B8DEF5] block">/ شهرياً</span>
                     </div>
                   </div>
 
-                  <h3 className="text-lg font-black text-[#343832] dark:text-[#F7F5EF] font-amiri">
+                  <h3 className="text-lg font-black text-[#12345A] dark:text-white font-amiri">
                     {prog.titleAr}
                   </h3>
 
-                  <p className="text-xs text-[#657568] dark:text-[#D8CEBB] leading-relaxed">
+                  <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed">
                     {prog.descriptionAr}
                   </p>
 
-                  <div className="space-y-2 pt-2 border-t border-[#E5DCCB] dark:border-[#343832]">
-                    <span className="text-[11px] font-bold text-[#343832] dark:text-[#F7F5EF] block">
+                  <div className="space-y-2 pt-3 border-t border-[#87CEEB]/35 dark:border-[#87CEEB]/20">
+                    <span className="text-xs font-bold text-[#12345A] dark:text-[#EAF8FF] block">
                       ما تشمله الكفالة:
                     </span>
                     <ul className="space-y-1.5">
                       {(prog.coveredItems || prog.coveragePoints || []).map((item, idx) => (
-                        <li key={idx} className="text-xs text-[#657568] dark:text-[#D8CEBB] flex items-start gap-2">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                        <li key={idx} className="text-xs text-[#2B547E] dark:text-[#B8DEF5] flex items-start gap-2">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#0EA5A4] shrink-0 mt-0.5" />
                           <span>{item}</span>
                         </li>
                       ))}
@@ -531,15 +539,16 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#E5DCCB] dark:border-[#343832]">
+                <div className="pt-4 border-t border-[#87CEEB]/35 dark:border-[#87CEEB]/20">
                   <button
+                    type="button"
                     onClick={() => {
                       setSelectedProgram(prog);
                       setSponsorSuccess(false);
                     }}
-                    className="w-full py-2.5 rounded-xl bg-[#394E43] hover:bg-[#2F4238] text-[#F7F5EF] text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="w-full py-2.5 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer tabular-nums"
                   >
-                    <Heart className="w-3.5 h-3.5 text-[#B9A477] fill-current" />
+                    <Heart className="w-3.5 h-3.5 text-[#F7E7B4] fill-current" />
                     <span>اكفل هذا البرنامج الآن (${prog.monthlyAmountUsd})</span>
                   </button>
                 </div>
@@ -554,35 +563,38 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
         <section className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl sm:text-2xl font-black text-[#343832] dark:text-[#F7F5EF] font-amiri">
+              <h2 className="text-xl sm:text-2xl font-black text-[#12345A] dark:text-white font-amiri">
                 أيتام مجمع النور بانتظار الكفالة المباشرة
               </h2>
-              <p className="text-xs text-[#657568] dark:text-[#D8CEBB]">
-                حالات تم فحصها ميدانياً والتأكد من استحقاقها الشرعي والقانوني بنسبة 100%.
+              <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
+                حالات تم فحصها ميدانياً والتأكد من استحقاقها الشرعي والقانوني.
               </p>
             </div>
 
-            <div className="flex items-center gap-1.5 bg-[#FAF8F2] dark:bg-[#272B25] p-1 rounded-xl border border-[#D8CEBB]">
+            <div className="sky-glass-panel flex items-center gap-1.5 p-1.5 rounded-xl">
               <button
+                type="button"
                 onClick={() => setProfilesFilter('all')}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                  profilesFilter === 'all' ? 'bg-[#394E43] text-white' : 'text-[#657568]'
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  profilesFilter === 'all' ? 'bg-[#12345A] text-white' : 'text-[#2B547E] dark:text-[#B8DEF5]'
                 }`}
               >
                 الكل
               </button>
               <button
+                type="button"
                 onClick={() => setProfilesFilter('unsponsored')}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                  profilesFilter === 'unsponsored' ? 'bg-[#394E43] text-white' : 'text-[#657568]'
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  profilesFilter === 'unsponsored' ? 'bg-[#12345A] text-white' : 'text-[#2B547E] dark:text-[#B8DEF5]'
                 }`}
               >
                 بانتظار الكفالة
               </button>
               <button
+                type="button"
                 onClick={() => setProfilesFilter('sponsored')}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
-                  profilesFilter === 'sponsored' ? 'bg-[#394E43] text-white' : 'text-[#657568]'
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  profilesFilter === 'sponsored' ? 'bg-[#12345A] text-white' : 'text-[#2B547E] dark:text-[#B8DEF5]'
                 }`}
               >
                 تمت الكفالة
@@ -600,75 +612,76 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
               .map((orphan) => (
                 <div
                   key={orphan.id}
-                  className="rounded-3xl p-6 bg-[#FAF8F2] dark:bg-[#272B25] border border-[#E5DCCB] dark:border-[#3A4237] shadow-sm space-y-4"
+                  className="sky-card-3d rounded-3xl p-6 space-y-4"
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-[#E5DCCB] dark:bg-[#343832] flex items-center justify-center text-[#394E43] dark:text-[#B9A477] font-bold text-lg">
-                        {orphan.gender === 'male' ? '👦' : '👧'}
+                      <div className="w-12 h-12 rounded-2xl bg-[#EAF8FF] dark:bg-[#0A223D] border border-[#87CEEB]/50 flex items-center justify-center text-[#12345A] dark:text-[#F7E7B4] font-black text-base">
+                        {orphan.fullName.charAt(0)}
                       </div>
                       <div>
-                        <h3 className="text-base font-black text-[#343832] dark:text-[#F7F5EF]">
+                        <h3 className="text-base font-black text-[#12345A] dark:text-white font-amiri">
                           {orphan.fullName}
                         </h3>
-                        <span className="text-xs text-[#657568] dark:text-[#D8CEBB] flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-[#B9A477]" />
+                        <span className="text-xs text-[#2B547E] dark:text-[#B8DEF5] flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-[#0EA5A4]" />
                           <span>{orphan.governorate}</span>
                         </span>
                       </div>
                     </div>
 
                     <span
-                      className={`text-xs font-bold px-3 py-1 rounded-full ${
+                      className={`text-xs font-bold ${
                         orphan.isSponsored
-                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
-                          : 'bg-amber-100 text-amber-900 dark:bg-amber-900/40 dark:text-amber-200 animate-pulse'
+                          ? 'text-[#0D7A7A] dark:text-[#5EEAD4]'
+                          : 'text-[#9A7418] dark:text-[#F7E7B4]'
                       }`}
                     >
-                      {orphan.isSponsored ? '✓ تمت كفالته' : '● بانتظار الكافل'}
+                      {orphan.isSponsored ? 'تمت كفالته ✓' : 'بانتظار الكافل'}
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs pt-2">
-                    <div className="p-2.5 rounded-xl bg-[#F0EDE4] dark:bg-[#1F221E]">
-                      <span className="text-[10px] text-[#657568] block">العمر</span>
-                      <span className="font-bold text-[#343832] dark:text-[#F7F5EF]">{orphan.age} سنوات</span>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs pt-2 tabular-nums">
+                    <div className="p-2.5 rounded-xl bg-[#EAF8FF]/80 dark:bg-[#0A223D]/70 border border-[#87CEEB]/35">
+                      <span className="text-[11px] text-[#4A7298] dark:text-[#87CEEB] block">العمر</span>
+                      <span className="font-bold text-[#12345A] dark:text-white">{orphan.age} سنوات</span>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-[#F0EDE4] dark:bg-[#1F221E]">
-                      <span className="text-[10px] text-[#657568] block">المرحلة الدراسية</span>
-                      <span className="font-bold text-[#343832] dark:text-[#F7F5EF]">{orphan.academicStage}</span>
+                    <div className="p-2.5 rounded-xl bg-[#EAF8FF]/80 dark:bg-[#0A223D]/70 border border-[#87CEEB]/35">
+                      <span className="text-[11px] text-[#4A7298] dark:text-[#87CEEB] block">المرحلة الدراسية</span>
+                      <span className="font-bold text-[#12345A] dark:text-white">{orphan.academicStage}</span>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-[#F0EDE4] dark:bg-[#1F221E]">
-                      <span className="text-[10px] text-[#657568] block">أفراد الأسرة</span>
-                      <span className="font-bold text-[#343832] dark:text-[#F7F5EF]">{orphan.familyMembersCount} أفراد</span>
+                    <div className="p-2.5 rounded-xl bg-[#EAF8FF]/80 dark:bg-[#0A223D]/70 border border-[#87CEEB]/35">
+                      <span className="text-[11px] text-[#4A7298] dark:text-[#87CEEB] block">أفراد الأسرة</span>
+                      <span className="font-bold text-[#12345A] dark:text-white">{orphan.familyMembersCount} أفراد</span>
                     </div>
                   </div>
 
-                  <p className="text-xs text-[#657568] dark:text-[#D8CEBB] leading-relaxed bg-[#F0EDE4]/60 dark:bg-[#1F221E]/60 p-3 rounded-xl">
+                  <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed">
                     {orphan.storySummary}
                   </p>
 
-                  <div className="flex items-center justify-between pt-2">
-                    <div>
-                      <span className="text-[10px] text-[#657568] block">مبلغ الكفالة الشهري</span>
-                      <span className="text-base font-black text-[#394E43] dark:text-[#B9A477] font-mono">
+                  <div className="flex items-center justify-between pt-3 border-t border-[#87CEEB]/35 dark:border-[#87CEEB]/20">
+                    <div className="tabular-nums">
+                      <span className="text-[11px] text-[#4A7298] dark:text-[#87CEEB] block">مبلغ الكفالة الشهري</span>
+                      <span className="text-base font-black text-[#12345A] dark:text-[#F7E7B4] font-mono">
                         ${orphan.monthlyRequiredUsd} / شهر
                       </span>
                     </div>
 
                     {!orphan.isSponsored ? (
                       <button
+                        type="button"
                         onClick={() => {
                           setSelectedProgram(SPONSORSHIP_PROGRAMS[0]);
                           setSponsorSuccess(false);
                         }}
-                        className="px-4 py-2 rounded-xl bg-[#394E43] hover:bg-[#2F4238] text-[#F7F5EF] text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+                        className="px-4 py-2 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
                       >
-                        <Heart className="w-3.5 h-3.5 fill-current text-[#B9A477]" />
+                        <Heart className="w-3.5 h-3.5 fill-current text-[#F7E7B4]" />
                         <span>اكفل {orphan.fullName.split(' ')[0]} الآن</span>
                       </button>
                     ) : (
-                      <span className="text-xs text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">
+                      <span className="text-xs text-[#0D7A7A] dark:text-[#5EEAD4] font-bold flex items-center gap-1">
                         <CheckCircle2 className="w-4 h-4" />
                         <span>مكفول جزاكم الله خيراً</span>
                       </span>
@@ -682,49 +695,49 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
 
       {/* TAB 3: 5-STEP REGISTRATION FORM */}
       {activeTab === 'register' && (
-        <section className="rounded-3xl border border-[#E5DCCB] dark:border-[#3A4237] p-6 sm:p-10 shadow-lg bg-[#FAF8F2] dark:bg-[#272B25] space-y-8">
-          
+        <section className="sky-card-3d rounded-3xl p-6 sm:p-10 space-y-8">
           {submittedApplication ? (
-            /* Success confirmation screen */
-            <div className="text-center py-12 space-y-6 max-w-xl mx-auto">
-              <div className="w-20 h-20 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center shadow-md">
+            <div className="text-center py-10 space-y-6 max-w-xl mx-auto">
+              <div className="w-20 h-20 rounded-full bg-[#0EA5A4]/15 text-[#0EA5A4] mx-auto flex items-center justify-center shadow-md border border-[#0EA5A4]/30">
                 <Check className="w-10 h-10 stroke-[3]" />
               </div>
 
               <div className="space-y-2">
-                <h2 className="text-2xl sm:text-3xl font-black text-[#343832] dark:text-[#F7F5EF] font-amiri">
+                <h2 className="text-2xl sm:text-3xl font-black text-[#12345A] dark:text-white font-amiri">
                   تم استلام طلب كفالة اليتيم بنجاح!
                 </h2>
-                <p className="text-xs sm:text-sm text-[#657568] dark:text-[#D8CEBB]">
+                <p className="text-xs sm:text-sm text-[#2B547E] dark:text-[#B8DEF5]">
                   تم تسجيل ملف اليتيم {submittedApplication.orphanName} في سجلات مجمع النور الإسلامي العالمي. سيقوم الباحث الاجتماعي بالتواصل معكم لتنسيق الزيارة الميدانية.
                 </p>
               </div>
 
-              <div className="p-5 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#B9A477]/40 space-y-2">
-                <span className="text-xs text-[#657568] dark:text-[#D8CEBB] block font-bold">
+              <div className="scholarly-reading-paper p-5 rounded-2xl space-y-2">
+                <span className="text-xs text-[#2B547E] dark:text-[#B8DEF5] block font-bold">
                   الرقم المرجعي لتتبع الطلب (احتفظ به):
                 </span>
-                <span className="text-xl sm:text-2xl font-black font-mono text-[#394E43] dark:text-[#B9A477] tracking-wider select-all block">
+                <span className="text-xl sm:text-2xl font-black font-mono text-[#12345A] dark:text-[#F7E7B4] tracking-wider select-all block tabular-nums">
                   {submittedApplication.trackingNumber}
                 </span>
               </div>
 
-              <div className="flex items-center justify-center gap-3 pt-2">
+              <div className="flex items-center justify-center gap-3 pt-2 flex-wrap">
                 <button
+                  type="button"
                   onClick={() => {
                     setSubmittedApplication(null);
                     setCurrentStep(1);
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-[#394E43] hover:bg-[#2F4238] text-[#F7F5EF] text-xs font-bold transition-all"
+                  className="px-5 py-2.5 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white text-xs font-bold transition-all cursor-pointer"
                 >
                   تسجيل طلب يتيم آخر
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     setTrackQuery(submittedApplication.trackingNumber);
                     setActiveTab('track');
                   }}
-                  className="px-5 py-2.5 rounded-xl bg-[#E5DCCB] dark:bg-[#343832] text-[#343832] dark:text-[#F7F5EF] text-xs font-bold transition-all"
+                  className="px-5 py-2.5 rounded-xl bg-[#EAF8FF] dark:bg-[#0A223D] border border-[#87CEEB]/50 text-[#12345A] dark:text-white text-xs font-bold transition-all cursor-pointer"
                 >
                   متابعة حالة هذا الطلب
                 </button>
@@ -732,36 +745,39 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
             </div>
           ) : (
             <>
-              {/* Form Header & Step Indicator */}
               <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E5DCCB] dark:border-[#343832] pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#87CEEB]/35 dark:border-[#87CEEB]/20 pb-4">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-black text-[#343832] dark:text-[#F7F5EF] font-amiri">
+                    <h2 className="text-xl sm:text-2xl font-black text-[#12345A] dark:text-white font-amiri">
                       استمارة تسجيل يتيم جديد – مجمع النور الإسلامي
                     </h2>
-                    <p className="text-xs text-[#657568] dark:text-[#D8CEBB]">
-                      الخطوة {currentStep} من 5: {
-                        currentStep === 1 ? 'بيانات ولي الأمر / مقدم الطلب' :
-                        currentStep === 2 ? 'تحديد نوع الرعاية والمساعدة' :
-                        currentStep === 3 ? 'بيانات الطفل اليتيم' :
-                        currentStep === 4 ? 'إرفاق الوثائق والمستندات' : 'الإقرار الشرعي وتأكيد الإرسال'
-                      }
+                    <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] tabular-nums">
+                      الخطوة {currentStep} من 5:{' '}
+                      {currentStep === 1
+                        ? 'بيانات ولي الأمر / مقدم الطلب'
+                        : currentStep === 2
+                        ? 'تحديد نوع الرعاية والمساعدة'
+                        : currentStep === 3
+                        ? 'بيانات الطفل اليتيم'
+                        : currentStep === 4
+                        ? 'إرفاق الوثائق والمستندات'
+                        : 'الإقرار الشرعي وتأكيد الإرسال'}
                     </p>
                   </div>
 
-                  <span className="text-xs font-mono font-bold text-[#394E43] dark:text-[#B9A477]">
+                  <span className="text-xs font-bold text-[#0D7A7A] dark:text-[#5EEAD4]">
                     قسم الرعاية الميدانية
                   </span>
                 </div>
 
                 {/* Progress Bar Steps */}
-                <div className="grid grid-cols-5 gap-2 text-center text-[10px] font-bold">
+                <div className="grid grid-cols-5 gap-2 text-center text-[11px] font-bold">
                   {[
                     '1. ولي الأمر',
                     '2. نوع الرعاية',
                     '3. بيانات اليتيم',
                     '4. المستندات',
-                    '5. التأكيد'
+                    '5. التأكيد',
                   ].map((label, idx) => {
                     const stepNum = idx + 1;
                     const isDone = currentStep > stepNum;
@@ -771,10 +787,10 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                         key={idx}
                         className={`p-2 rounded-xl transition-all border ${
                           isDone
-                            ? 'bg-[#394E43] text-[#F7F5EF] border-[#394E43]'
+                            ? 'bg-[#0EA5A4] text-white border-[#0EA5A4]'
                             : isCurrent
-                            ? 'bg-[#E5DCCB] dark:bg-[#343832] text-[#394E43] dark:text-[#B9A477] border-[#394E43] ring-2 ring-[#394E43]/20'
-                            : 'bg-[#F0EDE4] dark:bg-[#1F221E] text-[#657568] border-transparent'
+                            ? 'bg-[#12345A] text-[#F7E7B4] border-[#12345A] ring-2 ring-[#87CEEB]/50'
+                            : 'bg-[#EAF8FF] dark:bg-[#0A223D] text-[#4A7298] dark:text-[#84B4D6] border-[#87CEEB]/40'
                         }`}
                       >
                         {label}
@@ -785,22 +801,22 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
               </div>
 
               {formError && (
-                <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-900 text-red-700 dark:text-red-300 text-xs font-bold flex items-center gap-2">
+                <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-400/50 text-red-700 dark:text-red-300 text-xs font-bold flex items-center gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>{formError}</span>
                 </div>
               )}
 
-              {/* Step 1: Guardian info */}
+              {/* Step 1 */}
               {currentStep === 1 && (
-                <div className="space-y-4 max-w-2xl">
-                  <h3 className="text-sm font-black text-[#343832] dark:text-[#F7F5EF]">
+                <div className="space-y-4 max-w-2xl text-xs">
+                  <h3 className="text-sm font-black text-[#12345A] dark:text-white">
                     بيانات مقدم الطلب / ولي أمر اليتيم
                   </h3>
 
-                  <div className="space-y-3 text-xs">
+                  <div className="space-y-3">
                     <div>
-                      <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                      <label className="block text-[#12345A] dark:text-[#EAF8FF] font-bold mb-1">
                         الاسم الرباعي لمقدم الطلب *
                       </label>
                       <input
@@ -808,19 +824,19 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                         value={formData.applicantName}
                         onChange={(e) => setFormData({ ...formData, applicantName: e.target.value })}
                         placeholder="مثال: آمنة عبد الله البشير"
-                        className="w-full px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-[#FAF8F2] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+                        className="w-full px-4 py-2.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                        <label className="block text-[#12345A] dark:text-[#EAF8FF] font-bold mb-1">
                           صلة القرابة باليتيم *
                         </label>
                         <select
                           value={formData.relation}
                           onChange={(e) => setFormData({ ...formData, relation: e.target.value })}
-                          className="w-full px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-[#FAF8F2] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                         >
                           <option value="أم اليتيم">أم اليتيم (أرملة)</option>
                           <option value="جد / جدة">جد / جدة اليتيم</option>
@@ -831,7 +847,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                       </div>
 
                       <div>
-                        <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                        <label className="block text-[#12345A] dark:text-[#EAF8FF] font-bold mb-1">
                           رقم الهاتف / الواتساب للتواصل *
                         </label>
                         <input
@@ -839,7 +855,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           placeholder="+249912169169"
-                          className="w-full px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-[#FAF8F2] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                           dir="ltr"
                         />
                       </div>
@@ -847,7 +863,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                        <label className="block text-[#12345A] dark:text-[#EAF8FF] font-bold mb-1">
                           الرقم الوطني / رقم الهوية *
                         </label>
                         <input
@@ -855,12 +871,12 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                           value={formData.nationalId}
                           onChange={(e) => setFormData({ ...formData, nationalId: e.target.value })}
                           placeholder="الرقم الوطني المكون من 10 أرقام"
-                          className="w-full px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-[#FAF8F2] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                        <label className="block text-[#12345A] dark:text-[#EAF8FF] font-bold mb-1">
                           عنوان السكن الحالي بالتفصيل *
                         </label>
                         <input
@@ -868,7 +884,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                           value={formData.address}
                           onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                           placeholder="المدينة، الحي، رقم المنزل أو المعلم البارز"
-                          className="w-full px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-[#FAF8F2] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+                          className="w-full px-4 py-2.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                         />
                       </div>
                     </div>
@@ -876,10 +892,10 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                 </div>
               )}
 
-              {/* Step 2: Assistance Type */}
+              {/* Step 2 */}
               {currentStep === 2 && (
                 <div className="space-y-4 max-w-2xl">
-                  <h3 className="text-sm font-black text-[#343832] dark:text-[#F7F5EF]">
+                  <h3 className="text-sm font-black text-[#12345A] dark:text-white">
                     تحديد نوع المساعدة والرعاية المطلوبة
                   </h3>
 
@@ -888,14 +904,14 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                       { id: 'full_sponsorship', title: 'كفالة شاملة شهرية ($50)', desc: 'تغطي الغذاء والدراسة والرعاية الطبية وكسوة العيد' },
                       { id: 'monthly_stipend', title: 'كفالة تعليمية وحفظ قرآن ($25)', desc: 'تغطي الرسوم الدراسية والكتب والحلقات القرآنية' },
                       { id: 'food_basket', title: 'سلة غذائية تموينية شهرية ($40)', desc: 'توفير المؤونة الأساسية لأسرة اليتيم شهرياً' },
-                      { id: 'medical_aid', title: 'رعاية صحية وتغطية علاجية ($35)', desc: 'مساعدة الحالات المرضية والأدوية المستمرة' }
+                      { id: 'medical_aid', title: 'رعاية صحية وتغطية علاجية ($35)', desc: 'مساعدة الحالات المرضية والأدوية المستمرة' },
                     ].map((opt) => (
                       <label
                         key={opt.id}
                         className={`p-4 rounded-2xl border flex items-start gap-3 cursor-pointer transition-all ${
                           formData.assistanceType === opt.id
-                            ? 'bg-[#F0EDE4] dark:bg-[#1F221E] border-[#394E43] ring-2 ring-[#394E43]/20'
-                            : 'bg-[#FAF8F2] dark:bg-[#272B25] border-[#D8CEBB] dark:border-[#343832]'
+                            ? 'bg-[#EAF8FF] dark:bg-[#0A223D] border-[#0EA5A4] ring-2 ring-[#0EA5A4]/25'
+                            : 'bg-white/70 dark:bg-[#0F2747]/70 border-[#87CEEB]/40'
                         }`}
                       >
                         <input
@@ -904,13 +920,13 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                           value={opt.id}
                           checked={formData.assistanceType === opt.id}
                           onChange={(e) => setFormData({ ...formData, assistanceType: e.target.value })}
-                          className="mt-1 accent-[#394E43]"
+                          className="mt-1 accent-[#0EA5A4]"
                         />
                         <div>
-                          <span className="text-xs font-black text-[#343832] dark:text-[#F7F5EF] block">
+                          <span className="text-xs font-black text-[#12345A] dark:text-white block">
                             {opt.title}
                           </span>
-                          <span className="text-[11px] text-[#657568] dark:text-[#D8CEBB]">
+                          <span className="text-[11px] text-[#2B547E] dark:text-[#B8DEF5]">
                             {opt.desc}
                           </span>
                         </div>
@@ -920,15 +936,15 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                 </div>
               )}
 
-              {/* Step 3: Orphan details */}
+              {/* Step 3 */}
               {currentStep === 3 && (
                 <div className="space-y-4 max-w-2xl text-xs">
-                  <h3 className="text-sm font-black text-[#343832] dark:text-[#F7F5EF]">
+                  <h3 className="text-sm font-black text-[#12345A] dark:text-white">
                     بيانات الطفل اليتيم المستفيد
                   </h3>
 
                   <div>
-                    <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                    <label className="block text-[#12345A] dark:text-[#EAF8FF] font-bold mb-1">
                       الاسم الرباعي للطفل اليتيم *
                     </label>
                     <input
@@ -936,31 +952,31 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                       value={formData.orphanName}
                       onChange={(e) => setFormData({ ...formData, orphanName: e.target.value })}
                       placeholder="اسم اليتيم كاملاً كما هو في شهادة الميلاد"
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-[#FAF8F2] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                      <label className="block text-[#12345A] dark:text-[#EAF8FF] font-bold mb-1">
                         تاريخ الميلاد *
                       </label>
                       <input
                         type="date"
                         value={formData.orphanBirthDate}
                         onChange={(e) => setFormData({ ...formData, orphanBirthDate: e.target.value })}
-                        className="w-full px-4 py-2 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-[#FAF8F2] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+                        className="w-full px-4 py-2 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                      <label className="block text-[#12345A] dark:text-[#EAF8FF] font-bold mb-1">
                         الجنس *
                       </label>
                       <select
                         value={formData.orphanGender}
-                        onChange={(e) => setFormData({ ...formData, orphanGender: e.target.value as any })}
-                        className="w-full px-4 py-2 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-[#FAF8F2] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+                        onChange={(e) => setFormData({ ...formData, orphanGender: e.target.value as 'male' | 'female' })}
+                        className="w-full px-4 py-2 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                       >
                         <option value="male">ذكر</option>
                         <option value="female">أنثى</option>
@@ -968,13 +984,13 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                     </div>
 
                     <div>
-                      <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                      <label className="block text-[#12345A] dark:text-[#EAF8FF] font-bold mb-1">
                         المرحلة الدراسية
                       </label>
                       <select
                         value={formData.academicLevel}
                         onChange={(e) => setFormData({ ...formData, academicLevel: e.target.value })}
-                        className="w-full px-4 py-2 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-[#FAF8F2] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+                        className="w-full px-4 py-2 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                       >
                         <option value="ما قبل المدرسة (الروضة)">ما قبل المدرسة (الروضة)</option>
                         <option value="المرحلة الابتدائية">المرحلة الابتدائية</option>
@@ -986,7 +1002,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                   </div>
 
                   <div>
-                    <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                    <label className="block text-[#12345A] dark:text-[#EAF8FF] font-bold mb-1">
                       الحالة الصحية وملاحظات الرعاية (إن وجدت)
                     </label>
                     <textarea
@@ -994,58 +1010,58 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                       value={formData.healthNotes}
                       onChange={(e) => setFormData({ ...formData, healthNotes: e.target.value })}
                       placeholder="هل يعاني من حساسية أو مرض مزمن أو احتياجات بصرية/سمعية خاصة؟"
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-[#FAF8F2] dark:bg-[#1F221E] text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+                      className="w-full px-4 py-2.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                     />
                   </div>
                 </div>
               )}
 
-              {/* Step 4: Documents Upload & Verification */}
+              {/* Step 4 */}
               {currentStep === 4 && (
                 <div className="space-y-4 max-w-2xl text-xs">
-                  <h3 className="text-sm font-black text-[#343832] dark:text-[#F7F5EF]">
+                  <h3 className="text-sm font-black text-[#12345A] dark:text-white">
                     الوثائق الرسمية المطلوبة للتحقق الشرعي
                   </h3>
 
-                  <div className="space-y-3 bg-[#F0EDE4] dark:bg-[#1F221E] p-4 rounded-2xl border border-[#D8CEBB] dark:border-[#343832]">
-                    <label className="flex items-center gap-2 cursor-pointer font-bold text-[#343832] dark:text-[#F7F5EF]">
+                  <div className="space-y-3 bg-[#EAF8FF]/85 dark:bg-[#0A223D] p-4 rounded-2xl border border-[#87CEEB]/50">
+                    <label className="flex items-center gap-2 cursor-pointer font-bold text-[#12345A] dark:text-white">
                       <input
                         type="checkbox"
                         checked={formData.hasDeathCert}
                         onChange={(e) => setFormData({ ...formData, hasDeathCert: e.target.checked })}
-                        className="rounded accent-[#394E43] w-4 h-4"
+                        className="rounded accent-[#0EA5A4] w-4 h-4"
                       />
                       <span>أؤكد توفر شهادة وفاة الأب الرسمية الصادرة من السجل المدني *</span>
                     </label>
 
-                    <label className="flex items-center gap-2 cursor-pointer font-bold text-[#343832] dark:text-[#F7F5EF]">
+                    <label className="flex items-center gap-2 cursor-pointer font-bold text-[#12345A] dark:text-white">
                       <input
                         type="checkbox"
                         checked={formData.hasBirthCert}
                         onChange={(e) => setFormData({ ...formData, hasBirthCert: e.target.checked })}
-                        className="rounded accent-[#394E43] w-4 h-4"
+                        className="rounded accent-[#0EA5A4] w-4 h-4"
                       />
                       <span>أؤكد توفر شهادة ميلاد اليتيم الرسمية أو الرقم الوطني *</span>
                     </label>
 
-                    <label className="flex items-center gap-2 cursor-pointer font-bold text-[#343832] dark:text-[#F7F5EF]">
+                    <label className="flex items-center gap-2 cursor-pointer font-bold text-[#12345A] dark:text-white">
                       <input
                         type="checkbox"
                         checked={formData.hasResidenceProof}
                         onChange={(e) => setFormData({ ...formData, hasResidenceProof: e.target.checked })}
-                        className="rounded accent-[#394E43] w-4 h-4"
+                        className="rounded accent-[#0EA5A4] w-4 h-4"
                       />
                       <span>شهادة إثبات سكن أو إفادة من اللجنة المحلية (مستحسن)</span>
                     </label>
                   </div>
 
-                  <div className="p-4 border-2 border-dashed border-[#D8CEBB] dark:border-[#3A4237] rounded-2xl text-center space-y-2">
-                    <Upload className="w-8 h-8 text-[#B9A477] mx-auto" />
+                  <div className="p-4 border-2 border-dashed border-[#87CEEB]/70 dark:border-[#87CEEB]/35 rounded-2xl text-center space-y-2">
+                    <Upload className="w-8 h-8 text-[#0EA5A4] mx-auto" />
                     <div>
-                      <span className="font-bold text-[#343832] dark:text-[#F7F5EF] block">
+                      <span className="font-bold text-[#12345A] dark:text-white block">
                         رفع نسخة ضوئية من المستندات (PDF أو صور JPG/PNG)
                       </span>
-                      <span className="text-[11px] text-[#657568]">
+                      <span className="text-[11px] text-[#4A7298] dark:text-[#84B4D6]">
                         الحد الأقصى للملف 10 ميغابايت
                       </span>
                     </div>
@@ -1056,18 +1072,18 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          setFormData({ 
-                            ...formData, 
+                          setFormData({
+                            ...formData,
                             uploadedDocName: file.name,
                             hasDeathCert: true,
-                            hasBirthCert: true 
+                            hasBirthCert: true,
                           });
                         }
                       }}
                     />
                     <label
                       htmlFor="doc-upload"
-                      className="inline-block px-4 py-2 rounded-xl bg-[#394E43] text-[#F7F5EF] text-xs font-bold cursor-pointer hover:bg-[#2F4238] transition-all"
+                      className="inline-block px-4 py-2 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white text-xs font-bold cursor-pointer transition-all"
                     >
                       {formData.uploadedDocName ? `تم اختيار: ${formData.uploadedDocName}` : 'اختيار الملفات من جهازك'}
                     </label>
@@ -1075,66 +1091,68 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                 </div>
               )}
 
-              {/* Step 5: Declaration & Submission */}
+              {/* Step 5 */}
               {currentStep === 5 && (
                 <div className="space-y-4 max-w-2xl text-xs">
-                  <h3 className="text-sm font-black text-[#343832] dark:text-[#F7F5EF]">
+                  <h3 className="text-sm font-black text-[#12345A] dark:text-white">
                     الإقرار الشرعي وتأكيد تقديم الطلب
                   </h3>
 
-                  <div className="p-4 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#B9A477]/40 space-y-2 text-[#343832] dark:text-[#F7F5EF]">
-                    <div className="flex items-center gap-2 font-bold text-sm">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <div className="scholarly-reading-paper p-4 rounded-2xl space-y-2">
+                    <div className="flex items-center gap-2 font-bold text-sm text-[#12345A] dark:text-[#F7E7B4]">
+                      <ShieldCheck className="w-4 h-4 text-[#0EA5A4]" />
                       <span>إقرار بصحة البيانات</span>
                     </div>
-                    <p className="text-[11px] text-[#657568] dark:text-[#D8CEBB] leading-relaxed">
+                    <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed">
                       أقر أنا مقدم الطلب بأن جميع البيانات الواردة في هذه الاستمارة صحيحة تماماً ومطابقة للواقع، وأتحمل المسؤولية الشرعية والقانونية، وأوافق على زيارة مندوب مجمع النور الإسلامي للتحقق الميداني من الوضع المعيشي لأسرة اليتيم.
                     </p>
                   </div>
 
-                  <label className="flex items-center gap-2 cursor-pointer font-bold text-[#343832] dark:text-[#F7F5EF]">
+                  <label className="flex items-center gap-2 cursor-pointer font-bold text-[#12345A] dark:text-white">
                     <input
                       type="checkbox"
                       checked={formData.termsAgreed}
                       onChange={(e) => setFormData({ ...formData, termsAgreed: e.target.checked })}
-                      className="rounded accent-[#394E43] w-4 h-4"
+                      className="rounded accent-[#0EA5A4] w-4 h-4"
                     />
                     <span>أوافق على الإقرار الشرعي ولائحة كفالة الأيتام بمجمع النور *</span>
                   </label>
 
-                  <div className="p-4 rounded-2xl bg-[#FAF8F2] dark:bg-[#1F221E] border border-[#D8CEBB] dark:border-[#3A4237] space-y-2">
-                    <label className="block font-bold text-[#343832] dark:text-[#F7F5EF]">
+                  <div className="p-4 rounded-2xl bg-[#EAF8FF]/85 dark:bg-[#0A223D] border border-[#87CEEB]/50 space-y-2">
+                    <label className="block font-bold text-[#12345A] dark:text-white">
                       التحقق الأمني لمنع الإرسال الآلي: كم حاصل جمع 4 + 3؟ *
                     </label>
                     <input
                       type="text"
                       value={formData.captchaAnswer}
                       onChange={(e) => setFormData({ ...formData, captchaAnswer: e.target.value })}
-                      placeholder="اكتب الناتج بالأرقام (7)"
-                      className="w-32 px-4 py-2 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-white dark:bg-[#272B25] text-center font-bold text-base focus:outline-none focus:border-[#394E43]"
+                      placeholder="7"
+                      className="w-32 px-4 py-2 rounded-xl border border-[#87CEEB]/60 bg-white dark:bg-[#0F2747] text-center font-bold text-base text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
                     />
                   </div>
                 </div>
               )}
 
               {/* Step Navigation Buttons */}
-              <div className="flex items-center justify-between pt-6 border-t border-[#E5DCCB] dark:border-[#343832]">
+              <div className="flex items-center justify-between pt-6 border-t border-[#87CEEB]/35 dark:border-[#87CEEB]/20">
                 {currentStep > 1 ? (
                   <button
                     type="button"
                     onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
-                    className="px-4 py-2.5 rounded-xl bg-[#E5DCCB] dark:bg-[#343832] text-[#343832] dark:text-[#F7F5EF] text-xs font-bold transition-all flex items-center gap-2"
+                    className="px-4 py-2.5 rounded-xl bg-[#EAF8FF] dark:bg-[#0A223D] border border-[#87CEEB]/50 text-[#12345A] dark:text-white text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
                   >
                     <ArrowRight className={`w-3.5 h-3.5 ${isRtl ? '' : 'rotate-180'}`} />
                     <span>السابق</span>
                   </button>
-                ) : <div />}
+                ) : (
+                  <div />
+                )}
 
                 {currentStep < 5 ? (
                   <button
                     type="button"
                     onClick={handleNextStep}
-                    className="px-6 py-2.5 rounded-xl bg-[#394E43] hover:bg-[#2F4238] text-[#F7F5EF] text-xs font-bold transition-all shadow-sm flex items-center gap-2"
+                    className="px-6 py-2.5 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer"
                   >
                     <span>المتابعة للخطوة التالية</span>
                     <ArrowLeft className={`w-3.5 h-3.5 ${isRtl ? '' : 'rotate-180'}`} />
@@ -1144,12 +1162,12 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                     type="button"
                     onClick={handleSubmitForm}
                     disabled={isSubmitting}
-                    className="px-8 py-2.5 rounded-xl bg-[#394E43] hover:bg-[#2F4238] disabled:opacity-50 text-[#F7F5EF] text-xs font-black transition-all shadow-md flex items-center gap-2"
+                    className="px-8 py-2.5 rounded-xl bg-[#0EA5A4] hover:bg-[#0D7A7A] disabled:opacity-50 text-white text-xs font-black transition-all shadow-md flex items-center gap-2 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <RefreshCw className="w-4 h-4 animate-spin" />
                     ) : (
-                      <CheckCircle2 className="w-4 h-4 text-[#B9A477]" />
+                      <CheckCircle2 className="w-4 h-4 text-[#F7E7B4]" />
                     )}
                     <span>{isSubmitting ? 'جاري الإرسال وتوليد الرقم المرجعي...' : 'إرسال طلب كفالة اليتيم رسمياً'}</span>
                   </button>
@@ -1162,15 +1180,15 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
 
       {/* TAB 4: TRACK APPLICATION */}
       {activeTab === 'track' && (
-        <section className="rounded-3xl border border-[#E5DCCB] dark:border-[#3A4237] p-6 sm:p-10 shadow-lg bg-[#FAF8F2] dark:bg-[#272B25] space-y-6 max-w-3xl mx-auto">
+        <section className="sky-card-3d rounded-3xl p-6 sm:p-10 space-y-6 max-w-3xl mx-auto">
           <div className="space-y-2 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-[#E5DCCB] dark:bg-[#343832] text-[#394E43] dark:text-[#B9A477] flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-[#EAF8FF] dark:bg-[#0A223D] border border-[#87CEEB]/60 text-[#0EA5A4] flex items-center justify-center mx-auto">
               <Search className="w-6 h-6" />
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-[#343832] dark:text-[#F7F5EF] font-amiri">
+            <h2 className="text-xl sm:text-2xl font-black text-[#12345A] dark:text-white font-amiri">
               الاستعلام عن حالة طلب كفالة اليتيم
             </h2>
-            <p className="text-xs text-[#657568] dark:text-[#D8CEBB]">
+            <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
               أدخل رقم التتبع (مثل ALNOOR-ORPHAN-841920) أو رقم الهاتف المسجل به الطلب
             </p>
           </div>
@@ -1181,70 +1199,71 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
               value={trackQuery}
               onChange={(e) => setTrackQuery(e.target.value)}
               placeholder="رقم التتبع أو رقم هاتف مقدم الطلب..."
-              className="flex-1 px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-white dark:bg-[#1F221E] text-xs text-[#343832] dark:text-[#F7F5EF] focus:outline-none focus:border-[#394E43]"
+              className="flex-1 px-4 py-2.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-xs text-[#12345A] dark:text-white focus:outline-none focus:border-[#0EA5A4]"
             />
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#394E43] hover:bg-[#2F4238] text-[#F7F5EF] text-xs font-bold transition-all shadow-sm"
+              className="px-6 py-2.5 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
             >
               استعلام
             </button>
           </form>
 
           {trackNotFound && (
-            <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200 text-xs font-bold text-center">
+            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-400/50 text-amber-800 dark:text-amber-200 text-xs font-bold text-center">
               لم يتم العثور على طلب بهذا الرقم. يرجى التأكد من كتابة الرمز بشكل صحيح أو التواصل معنا عبر الواتساب: {ORPHANS_CONTACT_INFO.whatsapp}
             </div>
           )}
 
           {trackedApp && (
-            <div className="p-6 rounded-2xl bg-[#F0EDE4] dark:bg-[#1F221E] border border-[#B9A477]/40 space-y-4">
-              <div className="flex items-center justify-between border-b border-[#D8CEBB] dark:border-[#343832] pb-3">
+            <div className="scholarly-reading-paper p-6 rounded-2xl space-y-4">
+              <div className="flex items-center justify-between border-b border-[#87CEEB]/40 pb-3">
                 <div>
-                  <span className="text-[10px] text-[#657568] block">الرقم المرجعي</span>
-                  <span className="text-sm font-black font-mono text-[#394E43] dark:text-[#B9A477]">
+                  <span className="text-[11px] text-[#4A7298] dark:text-[#87CEEB] block">الرقم المرجعي</span>
+                  <span className="text-sm font-black font-mono text-[#12345A] dark:text-[#F7E7B4] tabular-nums">
                     {trackedApp.trackingNumber}
                   </span>
                 </div>
 
                 <span
-                  className={`text-xs font-bold px-3 py-1 rounded-full ${
+                  className={`text-xs font-bold ${
                     trackedApp.status === 'approved'
-                      ? 'bg-emerald-100 text-emerald-800'
+                      ? 'text-[#0D7A7A] dark:text-[#5EEAD4]'
                       : trackedApp.status === 'field_visit'
-                      ? 'bg-blue-100 text-blue-800'
+                      ? 'text-[#0284C7] dark:text-[#87CEEB]'
                       : trackedApp.status === 'in_review'
-                      ? 'bg-amber-100 text-amber-800'
-                      : 'bg-red-100 text-red-800'
+                      ? 'text-[#9A7418] dark:text-[#F7E7B4]'
+                      : 'text-red-600 dark:text-red-400'
                   }`}
                 >
-                  {trackedApp.status === 'approved' && '✓ معتمد وتمت الكفالة'}
-                  {trackedApp.status === 'field_visit' && '🔎 جارية الزيارة الميدانية'}
-                  {trackedApp.status === 'in_review' && '⏳ قيد المراجعة والتدقيق'}
-                  {trackedApp.status === 'rejected' && '✕ لم يستوف الشروط'}
+                  {getStatusText(trackedApp.status)}
                 </span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                 <div>
-                  <span className="text-[10px] text-[#657568] block">اسم اليتيم</span>
-                  <span className="font-bold text-[#343832] dark:text-[#F7F5EF]">{trackedApp.orphanName}</span>
+                  <span className="text-[11px] text-[#4A7298] dark:text-[#87CEEB] block">اسم اليتيم</span>
+                  <span className="font-bold text-[#12345A] dark:text-white">{trackedApp.orphanName}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-[#657568] block">مقدم الطلب</span>
-                  <span className="font-bold text-[#343832] dark:text-[#F7F5EF]">{trackedApp.applicantName} ({trackedApp.relation})</span>
+                  <span className="text-[11px] text-[#4A7298] dark:text-[#87CEEB] block">مقدم الطلب</span>
+                  <span className="font-bold text-[#12345A] dark:text-white">
+                    {trackedApp.applicantName} ({trackedApp.relation})
+                  </span>
                 </div>
-                <div>
-                  <span className="text-[10px] text-[#657568] block">تاريخ التسجيل</span>
-                  <span className="font-bold text-[#343832] dark:text-[#F7F5EF]">{new Date(trackedApp.createdAt).toLocaleDateString('ar-SA')}</span>
+                <div className="tabular-nums">
+                  <span className="text-[11px] text-[#4A7298] dark:text-[#87CEEB] block">تاريخ التسجيل</span>
+                  <span className="font-bold text-[#12345A] dark:text-white">
+                    {new Date(trackedApp.createdAt).toLocaleDateString('ar-SA')}
+                  </span>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#FAF8F2] dark:bg-[#272B25] border border-[#D8CEBB] dark:border-[#3A4237]">
-                <span className="text-[11px] font-bold text-[#394E43] dark:text-[#B9A477] block mb-1">
+              <div className="p-3.5 rounded-xl bg-white/80 dark:bg-[#0A223D] border border-[#87CEEB]/40">
+                <span className="text-[11px] font-bold text-[#0D7A7A] dark:text-[#5EEAD4] block mb-1">
                   تقرير لجنة المتابعة والبحث الاجتماعي:
                 </span>
-                <p className="text-xs text-[#657568] dark:text-[#D8CEBB]">
+                <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5]">
                   {trackedApp.fieldNotes || 'الملف تحت المراجعة الفنية.'}
                 </p>
               </div>
@@ -1255,48 +1274,55 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
 
       {/* TAB 5: DEDICATED ORPHANS ADMIN DASHBOARD */}
       {activeTab === 'admin' && (
-        <section className="rounded-3xl border border-[#E5DCCB] dark:border-[#3A4237] p-6 sm:p-8 shadow-lg bg-[#FAF8F2] dark:bg-[#272B25] space-y-6">
+        <section className="sky-card-3d rounded-3xl p-6 sm:p-8 space-y-6">
           {!isAuthorizedAdmin ? (
             <div className="max-w-md mx-auto text-center space-y-4 py-8">
-              <div className="w-12 h-12 rounded-2xl bg-[#343832] text-[#B9A477] flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-[#12345A] text-[#F7E7B4] flex items-center justify-center mx-auto">
                 <Lock className="w-6 h-6" />
               </div>
-              <h2 className="text-lg font-black text-[#343832] dark:text-[#F7F5EF]">
+              <h2 className="text-lg font-black text-[#12345A] dark:text-white">
                 دخول لوحة إدارة قسم كفالة الأيتام
               </h2>
-              <p className="text-xs text-[#657568] dark:text-[#D8CEBB] leading-relaxed">
+              <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] leading-relaxed">
                 مخصصة للباحثين الاجتماعيين ولجنة اعتماد طلبات الكفالة بمجمع النور عبر المصادقة المؤسسية المعتمدة.
               </p>
               {user && (
-                <p className="text-[11px] font-bold text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5">
+                <p className="text-[11px] font-bold text-amber-800 dark:text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5">
                   أنت مسجل حالياً بحساب ({user.email}) دون صلاحية مشرف أيتام. يرجى تسجيل الدخول بحساب الإدارة المعتمد.
                 </p>
               )}
               <button
                 type="button"
                 onClick={openAuthModal}
-                className="w-full py-3 rounded-xl bg-[#394E43] hover:bg-[#2F4238] text-white text-xs font-bold transition-colors cursor-pointer"
+                className="w-full py-3 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white text-xs font-bold transition-colors cursor-pointer"
               >
                 تسجيل الدخول بحساب الإدارة المعتمد
               </button>
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#D8CEBB] dark:border-[#343832] pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#87CEEB]/35 dark:border-[#87CEEB]/20 pb-4">
                 <div>
-                  <h2 className="text-xl font-black text-[#343832] dark:text-[#F7F5EF] font-amiri">
-                    لوحة متابعة واعتماد طلبات الأيتام (Orphans Operations Console)
+                  <h2 className="text-xl font-black text-[#12345A] dark:text-white font-amiri">
+                    لوحة متابعة واعتماد طلبات الأيتام
                   </h2>
-                  <p className="text-xs text-[#657568] dark:text-[#D8CEBB]">
-                    إجمالي الطلبات المسجلة: {adminApplications.length} طلب • المشرف: {user?.email}
+                  <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] tabular-nums">
+                    إجمالي الطلبات المسجلة: {adminApplications.length} طلب · المشرف: {user?.email}
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <input
+                    type="text"
+                    value={adminFieldNote}
+                    onChange={(e) => setAdminFieldNote(e.target.value)}
+                    placeholder="ملاحظة التحديث الميداني (اختياري)..."
+                    className="px-3 py-1.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 text-xs bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white focus:outline-none"
+                  />
                   <select
                     value={adminStatusFilter}
                     onChange={(e) => setAdminStatusFilter(e.target.value)}
-                    className="px-3 py-1.5 rounded-xl border border-[#D8CEBB] text-xs bg-white dark:bg-[#1F221E]"
+                    className="px-3 py-1.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 text-xs bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white"
                   >
                     <option value="all">جميع الحالات</option>
                     <option value="in_review">قيد المراجعة</option>
@@ -1308,9 +1334,9 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-xs text-right border-collapse">
+                <table className="w-full text-xs text-right border-collapse tabular-nums">
                   <thead>
-                    <tr className="border-b border-[#D8CEBB] dark:border-[#3A4237] text-[#657568]">
+                    <tr className="border-b border-[#87CEEB]/40 text-[#4A7298] dark:text-[#87CEEB]">
                       <th className="py-2.5 px-3">رقم التتبع</th>
                       <th className="py-2.5 px-3">اسم اليتيم</th>
                       <th className="py-2.5 px-3">ولي الأمر</th>
@@ -1319,54 +1345,60 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                       <th className="py-2.5 px-3">الإجراء السريع</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#E5DCCB] dark:divide-[#343832]">
+                  <tbody className="divide-y divide-[#87CEEB]/25">
                     {adminApplications
                       .filter((a) => (adminStatusFilter === 'all' ? true : a.status === adminStatusFilter))
                       .map((app) => (
-                        <tr key={app.id} className="hover:bg-[#F0EDE4] dark:hover:bg-[#1F221E]">
-                          <td className="py-3 px-3 font-mono font-bold text-[#394E43] dark:text-[#B9A477]">
+                        <tr key={app.id} className="hover:bg-[#EAF8FF]/70 dark:hover:bg-[#0A223D]/70">
+                          <td className="py-3 px-3 font-mono font-bold text-[#12345A] dark:text-[#F7E7B4]">
                             {app.trackingNumber}
                           </td>
-                          <td className="py-3 px-3 font-bold text-[#343832] dark:text-[#F7F5EF]">
+                          <td className="py-3 px-3 font-bold text-[#12345A] dark:text-white">
                             {app.orphanName}
                           </td>
-                          <td className="py-3 px-3 text-[#657568]">
+                          <td className="py-3 px-3 text-[#2B547E] dark:text-[#B8DEF5]">
                             {app.applicantName} ({app.relation})
                           </td>
-                          <td className="py-3 px-3 font-mono" dir="ltr">
+                          <td className="py-3 px-3 font-mono text-[#12345A] dark:text-[#EAF8FF]" dir="ltr">
                             {app.phone}
                           </td>
                           <td className="py-3 px-3">
                             <span
-                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              className={`text-xs font-bold ${
                                 app.status === 'approved'
-                                  ? 'bg-emerald-100 text-emerald-800'
+                                  ? 'text-[#0D7A7A] dark:text-[#5EEAD4]'
                                   : app.status === 'field_visit'
-                                  ? 'bg-blue-100 text-blue-800'
+                                  ? 'text-[#0284C7] dark:text-[#87CEEB]'
                                   : app.status === 'in_review'
-                                  ? 'bg-amber-100 text-amber-800'
-                                  : 'bg-red-100 text-red-800'
+                                  ? 'text-[#9A7418] dark:text-[#F7E7B4]'
+                                  : 'text-red-600 dark:text-red-400'
                               }`}
                             >
-                              {app.status}
+                              {getStatusText(app.status)}
                             </span>
                           </td>
                           <td className="py-3 px-3 flex items-center gap-1.5">
                             <button
+                              type="button"
+                              disabled={statusUpdatingId === app.id}
                               onClick={() => handleUpdateStatus(app.id, 'field_visit')}
-                              className="px-2 py-1 rounded bg-blue-600 text-white text-[10px] font-bold"
+                              className="px-2.5 py-1 rounded-lg bg-[#0284C7] text-white text-[11px] font-bold cursor-pointer disabled:opacity-50"
                             >
                               زيارة
                             </button>
                             <button
+                              type="button"
+                              disabled={statusUpdatingId === app.id}
                               onClick={() => handleUpdateStatus(app.id, 'approved')}
-                              className="px-2 py-1 rounded bg-emerald-600 text-white text-[10px] font-bold"
+                              className="px-2.5 py-1 rounded-lg bg-[#0EA5A4] text-white text-[11px] font-bold cursor-pointer disabled:opacity-50"
                             >
                               اعتماد
                             </button>
                             <button
+                              type="button"
+                              disabled={statusUpdatingId === app.id}
                               onClick={() => handleUpdateStatus(app.id, 'rejected')}
-                              className="px-2 py-1 rounded bg-red-600 text-white text-[10px] font-bold"
+                              className="px-2.5 py-1 rounded-lg bg-red-600 text-white text-[11px] font-bold cursor-pointer disabled:opacity-50"
                             >
                               رفض
                             </button>
@@ -1383,18 +1415,19 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
 
       {/* SPONSOR MODAL */}
       {selectedProgram && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-[#FAF8F2] dark:bg-[#272B25] rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-6 border border-[#B9A477]/40 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[#D8CEBB] dark:border-[#343832] pb-4">
+        <div className="fixed inset-0 z-50 bg-[#091B33]/75 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="sky-card-3d rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-6 border-[#D4AF37]/60">
+            <div className="flex items-center justify-between border-b border-[#87CEEB]/35 dark:border-[#87CEEB]/20 pb-4">
               <div className="flex items-center gap-2">
-                <Heart className="w-5 h-5 text-red-600 fill-current" />
-                <h3 className="text-lg font-black text-[#343832] dark:text-[#F7F5EF] font-amiri">
+                <Heart className="w-5 h-5 text-[#0EA5A4] fill-current" />
+                <h3 className="text-lg font-black text-[#12345A] dark:text-white font-amiri">
                   كفالة: {selectedProgram.titleAr}
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedProgram(null)}
-                className="text-xs font-bold text-[#657568] hover:text-[#343832]"
+                className="text-xs font-bold text-[#2B547E] dark:text-[#B8DEF5] hover:text-[#12345A] dark:hover:text-white cursor-pointer"
               >
                 ✕ إغلاق
               </button>
@@ -1402,35 +1435,36 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
 
             {sponsorSuccess ? (
               <div className="text-center py-6 space-y-3">
-                <div className="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center">
+                <div className="w-14 h-14 rounded-full bg-[#0EA5A4]/15 text-[#0EA5A4] mx-auto flex items-center justify-center">
                   <Check className="w-8 h-8" />
                 </div>
-                <h4 className="text-base font-black text-[#343832] dark:text-[#F7F5EF]">
+                <h4 className="text-base font-black text-[#12345A] dark:text-white">
                   تقبل الله كفالتكم المباركة!
                 </h4>
-                <p className="text-xs text-[#657568] dark:text-[#D8CEBB]">
+                <p className="text-xs text-[#2B547E] dark:text-[#B8DEF5] tabular-nums">
                   تم تسجيل نيتكم لكفالة البرنامج (${selectedProgram.monthlyAmountUsd}/شهر). سيتواصل معكم منسق الكفالات بمجمع النور عبر الواتساب لتزويدكم بتقرير اليتيم وسند الاستلام.
                 </p>
                 <button
+                  type="button"
                   onClick={() => setSelectedProgram(null)}
-                  className="px-6 py-2 rounded-xl bg-[#394E43] text-white text-xs font-bold"
+                  className="px-6 py-2 rounded-xl bg-[#12345A] text-white text-xs font-bold cursor-pointer"
                 >
                   تم
                 </button>
               </div>
             ) : (
               <div className="space-y-4 text-xs">
-                <div className="p-3.5 rounded-xl bg-[#F0EDE4] dark:bg-[#1F221E] space-y-1">
-                  <span className="font-bold text-[#394E43] dark:text-[#B9A477] block">
+                <div className="p-3.5 rounded-xl bg-[#EAF8FF] dark:bg-[#0A223D] border border-[#87CEEB]/50 space-y-1 tabular-nums">
+                  <span className="font-bold text-[#12345A] dark:text-[#F7E7B4] block">
                     المبلغ الشهري للكفالة: ${selectedProgram.monthlyAmountUsd} دولار أمريكي
                   </span>
-                  <p className="text-[11px] text-[#657568]">
+                  <p className="text-[11px] text-[#2B547E] dark:text-[#B8DEF5]">
                     {selectedProgram.descriptionAr}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                  <label className="block text-[#12345A] dark:text-white font-bold mb-1">
                     اسم الكافل الكريم (أو فاعل خير)
                   </label>
                   <input
@@ -1438,12 +1472,12 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                     value={sponsorName}
                     onChange={(e) => setSponsorName(e.target.value)}
                     placeholder="مثال: فاعل خير من مكة المكرمة"
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-white dark:bg-[#1F221E]"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[#343832] dark:text-[#F7F5EF] font-bold mb-1">
+                  <label className="block text-[#12345A] dark:text-white font-bold mb-1">
                     رقم الواتساب للتواصل وإرسال التقارير الدورية
                   </label>
                   <input
@@ -1451,7 +1485,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                     value={sponsorPhone}
                     onChange={(e) => setSponsorPhone(e.target.value)}
                     placeholder="+966xxxxxxxxx أو +249xxxxxxxxx"
-                    className="w-full px-4 py-2.5 rounded-xl border border-[#D8CEBB] dark:border-[#3A4237] bg-white dark:bg-[#1F221E]"
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#87CEEB]/60 dark:border-[#87CEEB]/30 bg-white dark:bg-[#0A223D] text-[#12345A] dark:text-white"
                     dir="ltr"
                   />
                 </div>
@@ -1463,15 +1497,16 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-center flex items-center justify-center gap-2"
+                    className="flex-1 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold text-center flex items-center justify-center gap-2"
                   >
                     <MessageCircle className="w-4 h-4" />
                     <span>تأكيد عبر واتساب المجمع</span>
                   </a>
 
                   <button
+                    type="button"
                     onClick={() => setSponsorSuccess(true)}
-                    className="px-5 py-2.5 rounded-xl bg-[#394E43] hover:bg-[#2F4238] text-white font-bold"
+                    className="px-5 py-2.5 rounded-xl bg-[#12345A] hover:bg-[#0EA5A4] text-white font-bold cursor-pointer"
                   >
                     تأكيد الكفالة
                   </button>
@@ -1482,27 +1517,30 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
         </div>
       )}
 
+      {/* Admin-managed Dynamic Section Items */}
+      <SectionDynamicItems sectionSlug="orphansCare" />
+
       {/* Official Slogan & Verified Al-Noor Contact Card */}
-      <section className="rounded-3xl border border-[#B9A477]/40 bg-[#343832] text-[#F7F5EF] p-6 sm:p-10 space-y-6">
+      <section className="rounded-3xl border border-[#87CEEB]/45 bg-gradient-to-br from-[#12345A] via-[#0F2747] to-[#0A223D] text-white p-6 sm:p-10 space-y-6 shadow-xl">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-2 text-center md:text-right">
-            <span className="text-xs font-mono text-[#B9A477] font-bold">
-              مجمع النور الإسلامي العالمي • لجنة كفالة الأيتام والرعاية الاجتماعية
+            <span className="text-xs font-bold text-[#F7E7B4]">
+              مجمع النور الإسلامي العالمي · لجنة كفالة الأيتام والرعاية الاجتماعية
             </span>
-            <h3 className="text-xl sm:text-2xl font-black font-amiri text-[#F7F5EF]">
+            <h3 className="text-xl sm:text-2xl font-black font-amiri text-white">
               «نورٌ يرعى براءة الطفولة.. وأجرٌ دائم يرافقك إلى الجنة»
             </h3>
-            <p className="text-xs text-[#E5DCCB] max-w-xl">
+            <p className="text-xs text-[#B8DEF5] max-w-xl">
               تصل كفالتك إلى مستحقيها مباشرة، مع توثيق دوري بالصور والتقارير الأكاديمية والتربوية لليتيم المكفول.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto tabular-nums">
             <a
               href={ORPHANS_CONTACT_INFO.mobileTel}
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#283830] hover:bg-[#1E2B25] border border-[#B9A477]/40 text-[#F7F5EF] text-xs font-bold text-center flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-[#87CEEB]/35 text-white text-xs font-bold text-center flex items-center justify-center gap-2 whitespace-nowrap shrink-0"
             >
-              <Phone className="w-4 h-4 text-[#B9A477]" />
+              <Phone className="w-4 h-4 text-[#F7E7B4]" />
               <span dir="ltr">{ORPHANS_CONTACT_INFO.mobile}</span>
             </a>
 
@@ -1510,7 +1548,7 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
               href={ORPHANS_CONTACT_INFO.whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold text-center flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white text-xs font-bold text-center flex items-center justify-center gap-2 whitespace-nowrap shrink-0"
             >
               <MessageCircle className="w-4 h-4 fill-current" />
               <span>واتساب المجمع: {ORPHANS_CONTACT_INFO.whatsapp}</span>
@@ -1518,7 +1556,6 @@ export const OrphansCarePage: React.FC<OrphansCarePageProps> = ({ onNavigate }) 
           </div>
         </div>
       </section>
-
     </div>
   );
 };

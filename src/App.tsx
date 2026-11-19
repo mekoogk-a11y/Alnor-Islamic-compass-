@@ -14,6 +14,7 @@ import { AuthModal } from './components/AuthModal';
 import { DepartmentBreadcrumb } from './components/DepartmentBreadcrumb';
 import { PrayerTimesBar } from './components/PrayerTimesBar';
 import { LiveMakkahQuranRadio } from './components/LiveMakkahQuranRadio';
+import { SectionDynamicItems } from './components/SectionDynamicItems';
 
 // Pages
 import { HomePage } from './components/pages/HomePage';
@@ -40,6 +41,7 @@ import { DiscoverIslamPage } from './components/pages/DiscoverIslamPage';
 import { DawahLibraryPage } from './components/pages/DawahLibraryPage';
 import { ResearchCenterPage } from './components/pages/ResearchCenterPage';
 import { MediaCenterPage } from './components/pages/MediaCenterPage';
+import { VideoLibraryPage } from './components/pages/VideoLibraryPage';
 import { InternationalRelationsPage } from './components/pages/InternationalRelationsPage';
 import { ContactPage } from './components/pages/ContactPage';
 
@@ -106,6 +108,7 @@ function MainAppContent() {
       dawahLibrary: 'المكتبة الدعوية العالمية',
       researchCenter: 'مركز البحوث والدراسات الإسلامية',
       mediaCenter: 'المركز الإعلامي والنشر',
+      videoLibrary: 'المكتبة المرئية الإسلامية (HLS)',
       internationalRelations: 'مركز العلاقات والشراكات الدولية',
       contact: 'اتصل بالمجمع ومكتب الاستقبال',
     };
@@ -136,6 +139,7 @@ function MainAppContent() {
       dawahLibrary: 'International Dawah Library',
       researchCenter: 'Research & Studies Center',
       mediaCenter: 'Media & Publications Center',
+      videoLibrary: 'Official Islamic Video Library',
       internationalRelations: 'International Relations Center',
       contact: 'Contact Us',
     };
@@ -150,11 +154,14 @@ function MainAppContent() {
   return (
     <div
       dir={isRtl ? 'rtl' : 'ltr'}
-      className={`min-h-screen bg-[#FAF8F2] dark:bg-[#022C22] text-[#0F2920] dark:text-[#FAF8F2] flex flex-col font-sans selection:bg-[#C8A24A]/30 selection:text-[#0F2920] dark:selection:text-[#FAF8F2] antialiased pb-28 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}
+      className={`min-h-screen bg-[#87CEEB] dark:bg-[#091B33] text-[#12345A] dark:text-[#EAF8FF] flex flex-col font-sans selection:bg-[#0EA5A4]/25 selection:text-[#12345A] dark:selection:text-[#EAF8FF] antialiased pb-28 xl:pb-8 transition-colors ${isRtl ? 'text-right' : 'text-left'}`}
+      style={{
+        backgroundImage: 'linear-gradient(180deg, rgba(135,206,235,0.98) 0%, rgba(169,222,245,0.96) 52%, rgba(203,235,251,0.98) 100%)',
+      }}
     >
       {/* Offline Alert Indicator */}
       {!isOnline && (
-        <div className="bg-[#C8A24A] text-[#022C22] text-xs font-bold py-2 px-4 text-center flex items-center justify-center gap-2 sticky top-0 z-50 shadow-sm border-b border-[#064E3B]/20">
+        <div className="bg-[#D4AF37] text-[#12345A] text-xs font-bold py-2 px-4 text-center flex items-center justify-center gap-2 sticky top-0 z-50 shadow-sm border-b border-[#12345A]/20">
           <WifiOff className="w-4 h-4" />
           <span>
             {isAr
@@ -174,52 +181,56 @@ function MainAppContent() {
       {/* Real-time Astronomical Prayer Times & Hijri Calendar Bar */}
       <PrayerTimesBar />
 
-      {/* Main Pages Container */}
+      {/* Main Pages Container with Smooth Page Transition */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8">
         {/* Campus Departmental Breadcrumb on Sub-pages */}
         <DepartmentBreadcrumb currentPage={currentPage} onNavigate={handleNavigate} />
 
-        {currentPage === 'home' && <HomePage onNavigate={handleNavigate} onOpenSearch={() => setIsSearchOpen(true)} />}
-        {currentPage === 'newMuslims' && <NewMuslimsPage onNavigate={handleNavigate} />}
-        {currentPage === 'quran' && <QuranPage onNavigate={handleNavigate} />}
-        {currentPage === 'hadith' && <HadithPage onNavigate={handleNavigate} initialHadithId={pageParams?.hadithId} />}
-        {currentPage === 'academy' && <AcademyPage onNavigate={handleNavigate} initialCourseId={pageParams?.courseId} />}
-        {currentPage === 'scholars' && <ScholarsDirectoryPage onNavigate={handleNavigate} initialScholarId={pageParams?.scholarId} />}
-        {currentPage === 'aiScholar' && <IslamicAIScholarPage onNavigate={handleNavigate} />}
-        {currentPage === 'community' && <CommunityPage onNavigate={handleNavigate} />}
-        {currentPage === 'dashboard' && <UserDashboardPage onNavigate={handleNavigate} />}
-        {currentPage === 'admin' && <AdminDashboardPage onNavigate={handleNavigate} />}
-        {currentPage === 'sciences' && <SciencesPage onNavigate={handleNavigate} />}
-        {currentPage === 'library' && <LibraryPage onNavigate={handleNavigate} />}
-        {currentPage === 'waqf' && <WaqfPage onNavigate={handleNavigate} />}
-        {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
-        {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
-        {currentPage === 'noorAmbassador' && <NoorAmbassadorPage onNavigate={handleNavigate} />}
-        {currentPage === 'discoverIslam' && <DiscoverIslamPage onNavigate={handleNavigate} />}
-        {currentPage === 'dawahLibrary' && <DawahLibraryPage onNavigate={handleNavigate} />}
-        {currentPage === 'audioStudio' && <SudaneseAudioStudioPage onNavigate={handleNavigate} />}
-        {currentPage === 'orphansCare' && <OrphansCarePage onNavigate={handleNavigate} />}
-        {currentPage === 'translationsReader' && <QuranTranslationsReaderPage onNavigate={handleNavigate} />}
-        {currentPage === 'apiGateway' && <ApiGatewayPage onNavigate={handleNavigate} />}
-        {currentPage === 'researchCenter' && <ResearchCenterPage onNavigate={handleNavigate} />}
-        {currentPage === 'mediaCenter' && <MediaCenterPage onNavigate={handleNavigate} />}
-        {currentPage === 'internationalRelations' && <InternationalRelationsPage onNavigate={handleNavigate} />}
-        {currentPage === 'contact' && <ContactPage onNavigate={handleNavigate} />}
-        {currentPage === 'radio' && (
-          <div className="space-y-8 animate-fade-in">
-            <LiveMakkahQuranRadio initialExpanded={true} />
-          </div>
-        )}
+        <div key={currentPage} className="page-enter-transition space-y-8">
+          {currentPage === 'home' && <HomePage onNavigate={handleNavigate} onOpenSearch={() => setIsSearchOpen(true)} />}
+          {currentPage === 'newMuslims' && <NewMuslimsPage onNavigate={handleNavigate} />}
+          {currentPage === 'quran' && <QuranPage onNavigate={handleNavigate} />}
+          {currentPage === 'hadith' && <HadithPage onNavigate={handleNavigate} initialHadithId={pageParams?.hadithId} />}
+          {currentPage === 'academy' && <AcademyPage onNavigate={handleNavigate} initialCourseId={pageParams?.courseId} />}
+          {currentPage === 'scholars' && <ScholarsDirectoryPage onNavigate={handleNavigate} initialScholarId={pageParams?.scholarId} />}
+          {currentPage === 'aiScholar' && <IslamicAIScholarPage onNavigate={handleNavigate} />}
+          {currentPage === 'community' && <CommunityPage onNavigate={handleNavigate} />}
+          {currentPage === 'dashboard' && <UserDashboardPage onNavigate={handleNavigate} />}
+          {currentPage === 'admin' && <AdminDashboardPage onNavigate={handleNavigate} />}
+          {currentPage === 'sciences' && <SciencesPage onNavigate={handleNavigate} />}
+          {currentPage === 'library' && <LibraryPage onNavigate={handleNavigate} />}
+          {currentPage === 'waqf' && <WaqfPage onNavigate={handleNavigate} />}
+          {currentPage === 'about' && <AboutPage onNavigate={handleNavigate} />}
+          {currentPage === 'register' && <RegisterPage onNavigate={handleNavigate} />}
+          {currentPage === 'noorAmbassador' && <NoorAmbassadorPage onNavigate={handleNavigate} />}
+          {currentPage === 'discoverIslam' && <DiscoverIslamPage onNavigate={handleNavigate} />}
+          {currentPage === 'dawahLibrary' && <DawahLibraryPage onNavigate={handleNavigate} />}
+          {currentPage === 'audioStudio' && <SudaneseAudioStudioPage onNavigate={handleNavigate} />}
+          {currentPage === 'orphansCare' && <OrphansCarePage onNavigate={handleNavigate} />}
+          {currentPage === 'translationsReader' && <QuranTranslationsReaderPage onNavigate={handleNavigate} />}
+          {currentPage === 'apiGateway' && <ApiGatewayPage onNavigate={handleNavigate} />}
+          {currentPage === 'researchCenter' && <ResearchCenterPage onNavigate={handleNavigate} />}
+          {currentPage === 'mediaCenter' && <MediaCenterPage onNavigate={handleNavigate} />}
+          {currentPage === 'videoLibrary' && <VideoLibraryPage onNavigate={handleNavigate} />}
+          {currentPage === 'internationalRelations' && <InternationalRelationsPage onNavigate={handleNavigate} />}
+          {currentPage === 'contact' && <ContactPage onNavigate={handleNavigate} />}
+          {currentPage === 'radio' && (
+            <div className="space-y-8 animate-fade-in">
+              <LiveMakkahQuranRadio initialExpanded={true} />
+              <SectionDynamicItems sectionSlug="radio" />
+            </div>
+          )}
+        </div>
       </main>
 
-      {/* Global Comprehensive Architectural Islamic Campus Footer */}
-      <footer className="border-t-2 border-[#C8A24A]/40 bg-[#022C22] text-[#FAF8F2] pt-14 pb-12 xl:pb-8 px-4 text-xs transition-colors">
+      {/* Global Comprehensive Sky-Blue & Deep Navy Architectural Footer */}
+      <footer className="border-t-2 border-[#87CEEB]/50 bg-gradient-to-b from-[#12345A] to-[#0A223D] text-[#EAF8FF] pt-14 pb-12 xl:pb-8 px-4 text-xs transition-colors">
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Column 1: Identity & Official Slogan (2 cols on lg) */}
             <div className="lg:col-span-2 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="relative shrink-0 flex items-center justify-center w-14 h-14 rounded-2xl bg-[#064E3B] border border-[#C8A24A]/50 p-1.5 shadow-md">
+                <div className="relative shrink-0 flex items-center justify-center w-14 h-14 rounded-2xl bg-white border-2 border-[#D4AF37]/75 p-1.5 shadow-md">
                   <img
                     src={OFFICIAL_COMPLEX_LOGO}
                     alt="شعار مجمع النور الإسلامي العالمي"
@@ -230,31 +241,31 @@ function MainAppContent() {
                   <h4 className="text-sm sm:text-base font-black text-white leading-tight font-amiri">
                     {t.complexName}
                   </h4>
-                  <span className="text-[11px] text-[#E5C97B] font-medium tracking-wide">
+                  <span className="text-[11px] text-[#87CEEB] font-medium tracking-wide">
                     AL NOOR GLOBAL ISLAMIC CHARITABLE COMPLEX
                   </span>
                 </div>
               </div>
 
               {/* Official Slogan */}
-              <div className="p-3.5 bg-[#064E3B]/70 rounded-2xl border border-[#C8A24A]/35">
-                <span className="text-[11px] text-[#E5C97B] font-bold block mb-1">
+              <div className="p-3.5 bg-[#0F2747]/90 rounded-2xl border border-[#87CEEB]/30">
+                <span className="text-[11px] text-[#87CEEB] font-bold block mb-1">
                   {isAr ? 'الشعار المؤسسي المعتمد:' : 'Official Institutional Motto:'}
                 </span>
-                <span className="text-base sm:text-lg font-amiri font-bold text-[#FAF8F2] block">
+                <span className="text-base sm:text-lg font-amiri font-bold text-[#F7E7B4] block">
                   «القرآن هداية، والعلم بناء، والعمل الخيري عطاء»
                 </span>
               </div>
 
-              <p className="text-xs text-[#D1E7DD] leading-relaxed max-w-md">
+              <p className="text-xs text-[#BCE7FB] leading-relaxed max-w-md">
                 {t.heroDesc}
               </p>
 
               {/* PWA Install Box */}
-              <div className="p-3 bg-[#064E3B]/60 rounded-xl border border-[#C8A24A]/30 flex items-center justify-between gap-3">
+              <div className="p-3 bg-[#0F2747]/80 rounded-xl border border-[#87CEEB]/25 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                  <Laptop className="w-4 h-4 text-[#E5C97B] shrink-0" />
-                  <span className="text-[11px] text-[#D1E7DD]">
+                  <Laptop className="w-4 h-4 text-[#87CEEB] shrink-0" />
+                  <span className="text-[11px] text-[#BCE7FB]">
                     {isAr
                       ? 'متوافق كتطبيق على أجهزة الحاسوب والآيفون والأندرويد'
                       : 'Installable Campus App on Desktop, iOS & Android'}
@@ -266,8 +277,8 @@ function MainAppContent() {
 
             {/* Column 2: The 8 Core Campus Buildings */}
             <div className="space-y-3">
-              <h5 className="text-sm font-bold text-[#E5C97B] border-b border-[#C8A24A]/30 pb-2 flex items-center gap-1.5">
-                <Building2 className="w-4 h-4" />
+              <h5 className="text-sm font-bold text-[#87CEEB] border-b border-[#87CEEB]/25 pb-2 flex items-center gap-1.5">
+                <Building2 className="w-4 h-4 text-[#D4AF37]" />
                 <span>{isAr ? 'مباني وأقسام المجمع الثمانية' : 'The 8 Campus Wings'}</span>
               </h5>
               <ul className="space-y-2 text-xs">
@@ -276,9 +287,9 @@ function MainAppContent() {
                     <button
                       type="button"
                       onClick={() => handleNavigate(b.targetPage)}
-                      className="hover:text-[#E5C97B] transition-colors flex items-center gap-1.5 text-[#D1E7DD] cursor-pointer text-start"
+                      className="hover:text-[#F7E7B4] transition-colors flex items-center gap-1.5 text-[#CBEBFB] cursor-pointer text-start"
                     >
-                      <span className="font-mono text-[10px] text-[#E5C97B]">{b.code}</span>
+                      <span className="font-mono text-[10px] text-[#D4AF37]">{b.code}</span>
                       <span>{isAr ? b.nameAr : b.nameEn}</span>
                     </button>
                   </li>
@@ -288,61 +299,67 @@ function MainAppContent() {
 
             {/* Column 3: Essential Services & Specialized Wings */}
             <div className="space-y-3">
-              <h5 className="text-sm font-bold text-[#E5C97B] border-b border-[#C8A24A]/30 pb-2">
+              <h5 className="text-sm font-bold text-[#87CEEB] border-b border-[#87CEEB]/25 pb-2">
                 {isAr ? 'البوابات والخدمات المتخصصة' : 'Specialized Wings & Services'}
               </h5>
               <ul className="space-y-2 text-xs">
                 <li>
-                  <button type="button" onClick={() => handleNavigate('translationsReader')} className="hover:text-[#E5C97B] transition-colors flex items-center gap-1.5 text-[#D1E7DD] cursor-pointer">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-[#C8A24A] ${isRtl ? '' : 'rotate-180'}`} />
+                  <button type="button" onClick={() => handleNavigate('translationsReader')} className="hover:text-[#F7E7B4] transition-colors flex items-center gap-1.5 text-[#CBEBFB] cursor-pointer">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#0EA5A4] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{isAr ? 'ترجمات القرآن (76 لغة)' : 'Quran Translations (76 Languages)'}</span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" onClick={() => handleNavigate('hadith')} className="hover:text-[#E5C97B] transition-colors flex items-center gap-1.5 text-[#D1E7DD] cursor-pointer">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-[#C8A24A] ${isRtl ? '' : 'rotate-180'}`} />
+                  <button type="button" onClick={() => handleNavigate('hadith')} className="hover:text-[#F7E7B4] transition-colors flex items-center gap-1.5 text-[#CBEBFB] cursor-pointer">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#0EA5A4] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{isAr ? 'موسوعة السنة النبوية' : 'Hadith Encyclopedia'}</span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" onClick={() => handleNavigate('orphansCare')} className="hover:text-[#E5C97B] transition-colors flex items-center gap-1.5 text-[#FAF8F2] font-bold cursor-pointer">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-[#C8A24A] ${isRtl ? '' : 'rotate-180'}`} />
+                  <button type="button" onClick={() => handleNavigate('orphansCare')} className="hover:text-[#F7E7B4] transition-colors flex items-center gap-1.5 text-white font-bold cursor-pointer">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#D4AF37] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{isAr ? 'كفالة ورعاية الأيتام' : 'Orphans Care Portal'}</span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" onClick={() => handleNavigate('discoverIslam')} className="hover:text-[#E5C97B] transition-colors flex items-center gap-1.5 text-[#D1E7DD] cursor-pointer">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-[#C8A24A] ${isRtl ? '' : 'rotate-180'}`} />
+                  <button type="button" onClick={() => handleNavigate('discoverIslam')} className="hover:text-[#F7E7B4] transition-colors flex items-center gap-1.5 text-[#CBEBFB] cursor-pointer">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#0EA5A4] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{isAr ? 'اسأل عن الإسلام' : 'Ask About Islam'}</span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" onClick={() => handleNavigate('newMuslims')} className="hover:text-[#E5C97B] transition-colors flex items-center gap-1.5 text-[#D1E7DD] cursor-pointer">
-                    <ChevronLeft className={`w-3.5 h-3.5 text-[#C8A24A] ${isRtl ? '' : 'rotate-180'}`} />
+                  <button type="button" onClick={() => handleNavigate('newMuslims')} className="hover:text-[#F7E7B4] transition-colors flex items-center gap-1.5 text-[#CBEBFB] cursor-pointer">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#0EA5A4] ${isRtl ? '' : 'rotate-180'}`} />
                     <span>{t.navNewMuslims}</span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" onClick={() => handleNavigate('radio')} className="text-[#E5C97B] hover:text-white font-bold transition-colors flex items-center gap-1.5 cursor-pointer">
+                  <button type="button" onClick={() => handleNavigate('videoLibrary')} className="hover:text-[#F7E7B4] transition-colors flex items-center gap-1.5 text-[#CBEBFB] cursor-pointer">
+                    <ChevronLeft className={`w-3.5 h-3.5 text-[#0EA5A4] ${isRtl ? '' : 'rotate-180'}`} />
+                    <span>{isAr ? 'المكتبة المرئية الإسلامية' : 'Islamic Video Library'}</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" onClick={() => handleNavigate('radio')} className="text-[#87CEEB] hover:text-white font-bold transition-colors flex items-center gap-1.5 cursor-pointer">
                     <Radio className="w-3.5 h-3.5 animate-pulse" />
                     <span>{isAr ? 'إذاعة مكة مباشر 24/7' : 'Makkah Quran Radio 24/7'}</span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" onClick={() => handleNavigate('audioStudio')} className="text-[#D1E7DD] hover:text-[#E5C97B] transition-colors flex items-center gap-1.5 cursor-pointer">
-                    <Mic className="w-3.5 h-3.5 text-[#C8A24A]" />
+                  <button type="button" onClick={() => handleNavigate('audioStudio')} className="text-[#CBEBFB] hover:text-[#F7E7B4] transition-colors flex items-center gap-1.5 cursor-pointer">
+                    <Mic className="w-3.5 h-3.5 text-[#D4AF37]" />
                     <span>{isAr ? 'استوديو الصوت الإعلاني السوداني' : 'Sudanese Voice Studio'}</span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" onClick={() => handleNavigate('aiScholar')} className="text-[#D1E7DD] hover:text-[#E5C97B] transition-colors flex items-center gap-1.5 cursor-pointer">
-                    <Sparkles className="w-3.5 h-3.5 text-[#C8A24A]" />
+                  <button type="button" onClick={() => handleNavigate('aiScholar')} className="text-[#CBEBFB] hover:text-[#F7E7B4] transition-colors flex items-center gap-1.5 cursor-pointer">
+                    <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
                     <span>{isAr ? 'الباحث العلمي الذكي' : 'Scholarly AI Assistant'}</span>
                   </button>
                 </li>
                 <li>
-                  <button type="button" onClick={() => handleNavigate('apiGateway')} className="text-[#D1E7DD] hover:text-[#E5C97B] transition-colors flex items-center gap-1.5 cursor-pointer">
-                    <Zap className="w-3.5 h-3.5 text-[#C8A24A]" />
+                  <button type="button" onClick={() => handleNavigate('apiGateway')} className="text-[#CBEBFB] hover:text-[#F7E7B4] transition-colors flex items-center gap-1.5 cursor-pointer">
+                    <Zap className="w-3.5 h-3.5 text-[#D4AF37]" />
                     <span>{isAr ? 'بوابة واجهات API' : 'API Gateway'}</span>
                   </button>
                 </li>
@@ -351,7 +368,7 @@ function MainAppContent() {
 
             {/* Column 4: Official Contact & Headquarters */}
             <div className="space-y-3">
-              <h5 className="text-sm font-bold text-[#E5C97B] border-b border-[#C8A24A]/30 pb-2">
+              <h5 className="text-sm font-bold text-[#87CEEB] border-b border-[#87CEEB]/25 pb-2">
                 {isAr ? 'التواصل الرسمي والمقر العام' : 'Official Contact & Office'}
               </h5>
               <div className="space-y-2.5 text-xs">
@@ -359,46 +376,46 @@ function MainAppContent() {
                   href={`https://wa.me/${COMPLEX_INFO.phones.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('السلام عليكم ورحمة الله، استفسار عن مجمع النور')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#064E3B] border border-[#C8A24A]/35 hover:border-[#C8A24A] transition-colors group"
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#0F2747] border border-[#87CEEB]/30 hover:border-[#87CEEB] transition-colors group"
                 >
-                  <MessageCircle className="w-4 h-4 text-[#E5C97B] shrink-0" />
+                  <MessageCircle className="w-4 h-4 text-[#5EEAD4] shrink-0" />
                   <div>
-                    <span className="text-[10px] text-[#E5C97B] block">{t.contactWhatsapp}</span>
-                    <span className="text-[#FAF8F2] text-xs font-bold">{t.chatWhatsapp}</span>
+                    <span className="text-[10px] text-[#87CEEB] block">{t.contactWhatsapp}</span>
+                    <span className="text-white text-xs font-bold">{t.chatWhatsapp}</span>
                   </div>
                 </a>
 
                 <a
                   href={`tel:${COMPLEX_INFO.phones.mobile.replace(/[^0-9+]/g, '')}`}
-                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#064E3B] border border-[#C8A24A]/35 hover:border-[#C8A24A] transition-colors group"
+                  className="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#0F2747] border border-[#87CEEB]/30 hover:border-[#87CEEB] transition-colors group"
                 >
-                  <Phone className="w-4 h-4 text-[#E5C97B] shrink-0" />
+                  <Phone className="w-4 h-4 text-[#D4AF37] shrink-0" />
                   <div>
-                    <span className="text-[10px] text-[#D1E7DD] block">{t.contactMobile}</span>
-                    <span className="text-[#FAF8F2] text-xs font-bold">{t.callDirect}</span>
+                    <span className="text-[10px] text-[#BCE7FB] block">{t.contactMobile}</span>
+                    <span className="text-white text-xs font-bold">{t.callDirect}</span>
                   </div>
                 </a>
 
                 <div className="flex items-start gap-2 pt-1">
-                  <Mail className="w-4 h-4 text-[#E5C97B] shrink-0 mt-0.5" />
+                  <Mail className="w-4 h-4 text-[#87CEEB] shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[10px] text-[#A3C4B8] block">{t.contactEmail}:</span>
-                    <span className="font-mono text-[#FAF8F2] text-xs font-bold">{COMPLEX_INFO.officialEmail}</span>
+                    <span className="text-[10px] text-[#84B4D6] block">{t.contactEmail}:</span>
+                    <span className="font-mono text-white text-xs font-bold">{COMPLEX_INFO.officialEmail}</span>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-[#E5C97B] shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-[#87CEEB] shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[10px] text-[#A3C4B8] block">{t.contactAddress}:</span>
-                    <span className="text-[#D1E7DD] text-xs">{COMPLEX_INFO.headquarters}</span>
+                    <span className="text-[10px] text-[#84B4D6] block">{t.contactAddress}:</span>
+                    <span className="text-[#CBEBFB] text-xs">{COMPLEX_INFO.headquarters}</span>
                   </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => handleNavigate('contact')}
-                  className="w-full py-2 px-3 rounded-xl bg-[#C8A24A] hover:bg-[#DFBE68] text-[#022C22] font-black text-xs text-center transition-colors cursor-pointer"
+                  className="w-full py-2 px-3 rounded-xl bg-[#0EA5A4] hover:bg-[#87CEEB] hover:text-[#12345A] text-white font-black text-xs text-center transition-colors cursor-pointer"
                 >
                   {isAr ? 'مكتب الاستقبال واتصل بنا' : 'Open Contact Desk'}
                 </button>
@@ -407,14 +424,14 @@ function MainAppContent() {
           </div>
 
           {/* Official Domain Showcase Bar (www.mojamaalnor.com) */}
-          <div className="rounded-3xl bg-gradient-to-r from-[#064E3B] via-[#04382B] to-[#064E3B] border-2 border-[#C8A24A]/50 p-6 sm:p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+          <div className="rounded-3xl bg-gradient-to-r from-[#0F2747] via-[#174270] to-[#0F2747] border-2 border-[#87CEEB]/45 p-6 sm:p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
             <div className="space-y-2 text-center md:text-start z-10">
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-                <span className="px-3.5 py-1 rounded-full bg-[#C8A24A] text-[#022C22] text-xs font-black flex items-center gap-1.5 shadow-sm">
-                  <Globe className="w-3.5 h-3.5 text-[#022C22]" />
+                <span className="px-3.5 py-1 rounded-full bg-[#87CEEB] text-[#12345A] text-xs font-black flex items-center gap-1.5 shadow-sm">
+                  <Globe className="w-3.5 h-3.5 text-[#12345A]" />
                   <span>{isAr ? 'الدومين الرسمي المعتمد لمجمع النور الإسلامي العالمي' : 'Official Verified Global Domain'}</span>
                 </span>
-                <span className="px-2.5 py-1 rounded-full bg-[#022C22] border border-[#C8A24A]/40 text-[#E5C97B] text-[11px] font-mono font-bold">
+                <span className="px-2.5 py-1 rounded-full bg-[#0A223D] border border-[#87CEEB]/40 text-[#F7E7B4] text-[11px] font-mono font-bold">
                   www.mojamaalnor.com
                 </span>
               </div>
@@ -425,7 +442,7 @@ function MainAppContent() {
                 </span>
               </div>
 
-              <p className="text-xs text-[#D1E7DD] max-w-xl">
+              <p className="text-xs text-[#BCE7FB] max-w-xl">
                 {isAr
                   ? 'بوابتك الرقمية العالمية المعتمدة لتعليم القرآن الكريم، العلوم الشرعية، المكتبة، إذاعة مكة 24/7، والعمل الخيري.'
                   : 'Your unified international gateway to Quran education, Islamic sciences, library archives, and transparent charitable work.'}
@@ -438,8 +455,8 @@ function MainAppContent() {
                 onClick={handleCopyDomain}
                 className={`px-6 py-3.5 rounded-2xl text-xs sm:text-sm font-black flex items-center gap-2 transition-all shadow-lg cursor-pointer ${
                   copiedDomain
-                    ? 'bg-[#047857] text-white'
-                    : 'bg-[#C8A24A] hover:bg-[#DFBE68] text-[#022C22]'
+                    ? 'bg-[#0EA5A4] text-white'
+                    : 'bg-[#D4AF37] hover:bg-[#F7E7B4] text-[#12345A]'
                 }`}
                 title={isAr ? 'انقر لنسخ رابط الدومين الرسمي' : 'Copy Official Domain'}
               >
@@ -450,7 +467,7 @@ function MainAppContent() {
                   </>
                 ) : (
                   <>
-                    <Copy className="w-4 h-4 text-[#022C22]" />
+                    <Copy className="w-4 h-4 text-[#12345A]" />
                     <span>{isAr ? 'نسخ رابط الدومين' : 'Copy Official Domain'}</span>
                   </>
                 )}
@@ -460,7 +477,7 @@ function MainAppContent() {
                 href="https://www.mojamaalnor.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-3.5 rounded-2xl bg-[#022C22] hover:bg-[#04382B] text-[#E5C97B] hover:text-white border border-[#C8A24A]/50 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-4 py-3.5 rounded-2xl bg-[#0A223D] hover:bg-[#12345A] text-[#87CEEB] hover:text-white border border-[#87CEEB]/45 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <span>{isAr ? 'زيارة الموقع' : 'Visit Domain'}</span>
                 <ExternalLink className="w-4 h-4" />
@@ -469,13 +486,13 @@ function MainAppContent() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="border-t border-[#C8A24A]/25 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-start text-[11px] text-[#A3C4B8]">
+          <div className="border-t border-[#87CEEB]/25 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-start text-[11px] text-[#BCE7FB]">
             <div>
               {isAr
                 ? `جميع الحقوق محفوظة © ${new Date().getFullYear()} مجمع النور الإسلامي العالمي • صرحٌ وقفي لله تعالى`
                 : `All Rights Reserved © ${new Date().getFullYear()} Al-Noor Global Islamic Charitable Complex`}
             </div>
-            <div className="flex items-center gap-4 text-[#E5C97B] font-amiri text-xs">
+            <div className="flex items-center gap-4 text-[#F7E7B4] font-amiri text-xs">
               <span>« وَقُل رَّبِّ زِدْنِي عِلْمًا »</span>
               <span>•</span>
               <span>« إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ »</span>
